@@ -1,0 +1,13 @@
+^renv$
+^renv\.lock$
+^AddFonts\.Rproj$
+^\.Rproj\.user$
+^\.github$
+^scripts$
+^data-raw$
+^pyproject\.toml$
+^addfontsbunny_scraper\.egg-info$
+^ARCHITECTURE\.md$
+^\.venv$
+^__pycache__$
+^LICENSE\.md$

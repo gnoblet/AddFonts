@@ -1,0 +1,223 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# AddFonts
+
+<!-- badges: start -->
+
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![R-CMD-check](https://github.com/gnoblet/AddFonts/workflows/R-CMD-check/badge.svg)](https://github.com/gnoblet/AddFonts/actions)
+<!-- badges: end -->
+
+AddFonts provides an easy way to download and use fonts from various
+providers in R graphics. Currently supports [Bunny
+Fonts](https://fonts.bunny.net/), a privacy-focused, GDPR-compliant
+alternative to Google Fonts.
+
+## Features
+
+- 🔒 **Privacy-focused**: Use Bunny Fonts instead of Google Fonts
+- 📦 **Simple API**: Similar to `showtext::font_add_google()`
+- 💾 **Smart caching**: Downloads fonts once, uses them everywhere
+- 🔍 **Easy discovery**: Search for fonts by name or category
+- 🎨 **Full support**: Regular, bold, italic, and bold-italic variants
+
+## Installation
+
+You can install the development version of AddFonts from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("gnoblet/AddFonts")
+```
+
+## Quick Start
+
+``` r
+library(AddFonts)
+library(showtext)
+
+# Add a font from Bunny Fonts
+add_font_bunny("open-sans")
+
+# Enable showtext for graphics
+showtext_auto()
+
+# Use the font in your plots
+plot(1:10, main = "Using Open Sans from Bunny Fonts!")
+```
+
+### With ggplot2
+
+``` r
+library(ggplot2)
+library(AddFonts)
+library(showtext)
+
+# Add custom fonts
+add_font_bunny("roboto", family = "Roboto")
+add_font_bunny("merriweather", family = "Merriweather")
+
+showtext_auto()
+
+ggplot(mtcars, aes(wt, mpg)) +
+  geom_point() +
+  labs(
+    title = "Motor Trend Car Road Tests",
+    subtitle = "Relationship between weight and fuel efficiency"
+  ) +
+  theme_minimal(base_family = "Roboto") +
+  theme(
+    plot.title = element_text(family = "Merriweather", face = "bold", size = 16)
+  )
+```
+
+## Searching for Fonts
+
+Find fonts by name or browse by category:
+
+``` r
+# Search for fonts by name
+font_search_bunny("roboto")
+
+# List all sans-serif fonts
+fonts <- font_list_bunny()
+sans_fonts <- fonts[fonts$category == "sans-serif", ]
+head(sans_fonts)
+
+# Browse all available categories
+table(fonts$category)
+```
+
+## Advanced Usage
+
+### Custom Font Weights and Variants
+
+``` r
+# Use a lighter weight for regular text
+add_font_bunny(
+  "roboto",
+  family = "RobotoLight",
+  regular.wt = 300,
+  bold.wt = 500
+)
+
+# Skip italic variants if not needed
+add_font_bunny(
+  "source-code-pro",
+  family = "SourceCodePro",
+  italic = FALSE
+)
+
+# Specify a different character subset
+add_font_bunny(
+  "noto-sans",
+  family = "NotoSans",
+  subset = "latin-ext"
+)
+```
+
+### Custom Cache Directory
+
+By default, fonts are cached in a platform-appropriate directory. You
+can customize this:
+
+``` r
+# Check current cache directory
+get_font_cache_dir()
+
+# Use a custom cache location
+add_font_bunny("open-sans", cache_dir = "~/my-fonts")
+
+# Clear the font cache
+clear_font_cache_dir()
+```
+
+## Font Database
+
+AddFonts includes a bundled database of **1,700+ fonts** from Bunny
+Fonts, updated monthly via GitHub Actions. This means:
+
+- ✅ No API calls needed for browsing
+- ✅ Fast font search and listing
+- ✅ Works offline (after initial font download)
+- ✅ Automatically stays up-to-date
+
+The database is regenerated monthly using a Python script:
+
+``` bash
+# Update the font database manually
+uv run scripts/create_bunny_font_db.py
+```
+
+## Comparison with Other Packages
+
+| Feature               | AddFonts        | showtext | systemfonts |
+|-----------------------|-----------------|----------|-------------|
+| Google Fonts          | ❌              | ✅       | ❌          |
+| Bunny Fonts (Privacy) | ✅              | ❌       | ❌          |
+| Local fonts           | ➡️ Use showtext | ✅       | ✅          |
+| Font caching          | ✅              | Partial  | N/A         |
+| Easy search           | ✅              | ❌       | ❌          |
+| Offline catalog       | ✅              | ❌       | N/A         |
+
+AddFonts is designed to complement `showtext` by providing an easy way
+to add fonts from privacy-focused providers.
+
+## Why Bunny Fonts?
+
+[Bunny Fonts](https://fonts.bunny.net/) is an open-source, privacy-first
+alternative to Google Fonts:
+
+- 🔒 **GDPR compliant**: No tracking, no data collection
+- 🚀 **Fast CDN**: Globally distributed network
+- 🆓 **Free & open**: No accounts or API keys needed
+- 🎨 **Full coverage**: Includes most popular Google Fonts
+
+Perfect for users in the EU or anyone concerned about privacy.
+
+## How It Works
+
+1.  **Search**: Browse the bundled font database (updated monthly)
+2.  **Download**: Fetch font files from Bunny’s CDN (cached locally)
+3.  **Register**: Add fonts to R via `sysfonts`
+4.  **Use**: Enable with `showtext_auto()` and use in any graphics
+    device
+
+## Contributing
+
+Contributions are welcome! Ideas for future development:
+
+- [ ] Support for additional font providers (Fontsource, etc.)
+- [ ] Shiny app for interactive font browsing
+- [ ] Font preview function
+- [ ] Automatic font pairing suggestions
+- [ ] Support for variable fonts
+
+## Related Packages
+
+- [showtext](https://github.com/yixuan/showtext): Using fonts in R
+  graphics
+- [sysfonts](https://github.com/yixuan/sysfonts): Loading fonts into R
+- [systemfonts](https://github.com/r-lib/systemfonts): System font
+  management
+- [extrafont](https://github.com/wch/extrafont): TrueType font support
+
+## License
+
+GPL (\>= 3)
+
+## Acknowledgments
+
+- [Bunny Fonts](https://fonts.bunny.net/) for providing a
+  privacy-focused font CDN
+- [showtext](https://github.com/yixuan/showtext) by Yixuan Qiu for the
+  underlying font rendering
+- Font database updated automatically via GitHub Actions
+
+------------------------------------------------------------------------
+
+**Note**: AddFonts is in early development. The API may change. Feedback
+and contributions welcome!

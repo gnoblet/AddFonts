@@ -1,0 +1,29 @@
+Package: AddFonts
+Title: Add Fonts from Several Providers to 'showtext'
+Version: 1.0.0
+Authors@R: 
+    person("Guillaume", "Noblet", , "gnoblet@zaclys.net", role = c("aut", "cre"))
+Description: Download and register fonts from several providers for use in R graphics 
+    with the 'showtext' package. Currently supports Bunny Fonts (<https://fonts.bunny.net/>), 
+    a privacy-focused alternative to Google Fonts. Functions are designed similar to 
+    'font_add_google()' with extensible architecture for additional font providers.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports:
+    sysfonts,
+    showtext,
+    httr,
+    fs,
+    rappdirs,
+    checkmate
+Suggests:
+    testthat (>= 3.0.0),
+    usethis,
+    ggplot2,
+    showtext
+Config/testthat/edition: 3
+LazyData: true
+Depends: 
+    R (>= 3.5)
