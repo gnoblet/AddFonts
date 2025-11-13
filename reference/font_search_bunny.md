@@ -1,0 +1,46 @@
+# Search Bunny Fonts by Name or Category (Direct Function)
+
+Search for fonts available on Bunny Fonts by name, category, or other
+attributes. This is a convenience function that directly searches Bunny
+Fonts without going through the generic interface.
+
+## Usage
+
+``` r
+font_search_bunny(query = NULL, category = NULL)
+```
+
+## Arguments
+
+- query:
+
+  Character string to search for in font names or categories. If NULL or
+  empty, returns all fonts (optionally filtered by category).
+
+- category:
+
+  Character. Filter by category (e.g., "sans-serif", "serif", "display",
+  "handwriting", "monospace"). Default: NULL (all categories).
+
+## Value
+
+A data.frame with matching font metadata, or an empty data.frame if no
+matches.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Search for fonts with "sans" in the name
+font_search_bunny("sans")
+
+# Search within a specific category
+font_search_bunny("roboto", category = "sans-serif")
+
+# List all monospace fonts
+font_search_bunny(category = "monospace")
+
+# List all available fonts
+font_search_bunny()
+} # }
+```

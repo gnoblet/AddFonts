@@ -1,0 +1,8 @@
+pandoc: 3.1.11
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles: {}
+last_built: 2025-11-13T18:41Z
+urls:
+  reference: http://guillaume-noblet.com/AddFonts/reference
+  article: http://guillaume-noblet.com/AddFonts/articles

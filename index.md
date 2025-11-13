@@ -1,0 +1,603 @@
+# AddFonts
+
+AddFonts provides an easy way to download and use fonts from various
+providers in R graphics. Currently supports [Bunny
+Fonts](https://fonts.bunny.net/), a privacy-focused, GDPR-compliant
+alternative to Google Fonts.
+
+## Features
+
+- 🔒 **Privacy-focused**: Use Bunny Fonts instead of Google Fonts
+- 📦 **Simple**: Similar to `showtext::font_add_google()`
+- 💾 **Smart caching**: Downloads fonts once, uses them everywhere
+- 🔍 **Easy discovery**: Search for fonts by name or category
+- 🎨 **Full support**: Regular, bold, italic, and bold-italic variants
+
+## Installation
+
+You can install the development version of AddFonts from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("gnoblet/AddFonts")
+```
+
+### System Requirements
+
+AddFonts requires the `woff2_decompress` command-line tool to convert
+downloaded font files to a format compatible with R graphics. Install it
+using your system’s package manager:
+
+``` bash
+# macOS (Homebrew)
+brew install woff2
+
+# Debian/Ubuntu
+sudo apt install woff2
+
+# Fedora/RHEL
+sudo dnf install woff2-tools
+
+# Arch Linux
+sudo pacman -S woff2
+
+# Windows
+# Build from source: https://github.com/google/woff2
+```
+
+## Quick Start
+
+``` r
+library(AddFonts)
+#> AddFonts loaded successfully. woff2_decompress found at: /usr/bin/woff2_decompress
+library(showtext)
+#> Loading required package: sysfonts
+#> Loading required package: showtextdb
+
+# Add a font from Bunny Fonts (downloads all weights and styles by default)
+add_font("open-sans")
+
+# Or use the provider-specific function
+add_font_bunny("roboto")
+
+# Enable showtext for graphics
+showtext_auto()
+
+# Use the font in your plots
+plot(1:10, main = "Using Open Sans from Bunny Fonts!")
+```
+
+![](reference/figures/README-example-1.png)
+
+### With ggplot2
+
+``` r
+library(ggplot2)
+library(AddFonts)
+library(showtext)
+
+# Add custom fonts with specific weights
+add_font_bunny(
+  "Advent Pro",
+  family = "main_font",
+  regular_wt = 400,
+  bold_wt = 700
+)
+
+showtext_auto()
+
+ggplot(mtcars, aes(wt, mpg)) +
+  geom_point() +
+  labs(
+    title = "Motor Trend Car Road Tests",
+    subtitle = "Relationship between weight and fuel efficiency"
+  ) +
+  theme_minimal(base_family = "main_font") +
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),
+    plot.subtitle = element_text(size = 14)
+  )
+```
+
+![](reference/figures/README-ggplot2-example-1.png)
+
+## Searching for Fonts
+
+Find fonts by name or browse by category:
+
+``` r
+# Search for fonts by name (uses default provider: Bunny)
+font_search("roboto")
+#>            familyName   category                                     weights
+#> 1379           Roboto sans-serif                100, 300, 400, 500, 700, 900
+#> 1380 Roboto Condensed sans-serif 100, 200, 300, 400, 500, 600, 700, 800, 900
+#> 1381      Roboto Flex sans-serif                                         400
+#> 1382      Roboto Mono  monospace           100, 200, 300, 400, 500, 600, 700
+#> 1383     Roboto Serif      serif 100, 200, 300, 400, 500, 600, 700, 800, 900
+#> 1384      Roboto Slab      serif 100, 200, 300, 400, 500, 600, 700, 800, 900
+
+# Or use provider-specific function
+font_search_bunny("roboto")
+#>            familyName   category                                     weights
+#> 1379           Roboto sans-serif                100, 300, 400, 500, 700, 900
+#> 1380 Roboto Condensed sans-serif 100, 200, 300, 400, 500, 600, 700, 800, 900
+#> 1381      Roboto Flex sans-serif                                         400
+#> 1382      Roboto Mono  monospace           100, 200, 300, 400, 500, 600, 700
+#> 1383     Roboto Serif      serif 100, 200, 300, 400, 500, 600, 700, 800, 900
+#> 1384      Roboto Slab      serif 100, 200, 300, 400, 500, 600, 700, 800, 900
+
+# List all available fonts
+fonts <- font_list()
+head(fonts)
+#>           family     familyName   category variants.latin variants.latin-ext
+#> 1        abeezee        ABeeZee sans-serif              2                  2
+#> 2           abel           Abel sans-serif              1                 NA
+#> 3   abhaya-libre   Abhaya Libre      serif              5                  5
+#> 4        aboreto        Aboreto    display              1                  1
+#> 5  abril-fatface  Abril Fatface    display              1                  1
+#> 6 abyssinica-sil Abyssinica SIL      serif              1                  1
+#>   variants.sinhala variants.ethiopic variants.adlam variants.greek
+#> 1               NA                NA             NA             NA
+#> 2               NA                NA             NA             NA
+#> 3                5                NA             NA             NA
+#> 4               NA                NA             NA             NA
+#> 5               NA                NA             NA             NA
+#> 6               NA                 1             NA             NA
+#>   variants.cyrillic variants.cyrillic-ext variants.math variants.symbols
+#> 1                NA                    NA            NA               NA
+#> 2                NA                    NA            NA               NA
+#> 3                NA                    NA            NA               NA
+#> 4                NA                    NA            NA               NA
+#> 5                NA                    NA            NA               NA
+#> 6                NA                    NA            NA               NA
+#>   variants.vietnamese variants.tifinagh variants.kannada variants.telugu
+#> 1                  NA                NA               NA              NA
+#> 2                  NA                NA               NA              NA
+#> 3                  NA                NA               NA              NA
+#> 4                  NA                NA               NA              NA
+#> 5                  NA                NA               NA              NA
+#> 6                  NA                NA               NA              NA
+#>   variants.devanagari variants.hebrew variants.greek-ext variants.arabic
+#> 1                  NA              NA                 NA              NA
+#> 2                  NA              NA                 NA              NA
+#> 3                  NA              NA                 NA              NA
+#> 4                  NA              NA                 NA              NA
+#> 5                  NA              NA                 NA              NA
+#> 6                  NA              NA                 NA              NA
+#>   variants.oriya variants.bengali variants.gujarati variants.gurmukhi
+#> 1             NA               NA                NA                NA
+#> 2             NA               NA                NA                NA
+#> 3             NA               NA                NA                NA
+#> 4             NA               NA                NA                NA
+#> 5             NA               NA                NA                NA
+#> 6             NA               NA                NA                NA
+#>   variants.malayalam variants.tamil variants.khmer variants.thai
+#> 1                 NA             NA             NA            NA
+#> 2                 NA             NA             NA            NA
+#> 3                 NA             NA             NA            NA
+#> 4                 NA             NA             NA            NA
+#> 5                 NA             NA             NA            NA
+#> 6                 NA             NA             NA            NA
+#>   variants.japanese variants.korean variants.chinese-hongkong
+#> 1                NA              NA                        NA
+#> 2                NA              NA                        NA
+#> 3                NA              NA                        NA
+#> 4                NA              NA                        NA
+#> 5                NA              NA                        NA
+#> 6                NA              NA                        NA
+#>   variants.new-tai-lue variants.cherokee variants.armenian variants.tibetan
+#> 1                   NA                NA                NA               NA
+#> 2                   NA                NA                NA               NA
+#> 3                   NA                NA                NA               NA
+#> 4                   NA                NA                NA               NA
+#> 5                   NA                NA                NA               NA
+#> 6                   NA                NA                NA               NA
+#>   variants.kayah-li variants.lisu variants.chinese-simplified variants.lepcha
+#> 1                NA            NA                          NA              NA
+#> 2                NA            NA                          NA              NA
+#> 3                NA            NA                          NA              NA
+#> 4                NA            NA                          NA              NA
+#> 5                NA            NA                          NA              NA
+#> 6                NA            NA                          NA              NA
+#>   variants.limbu variants.gunjala-gondi variants.emoji variants.music
+#> 1             NA                     NA             NA             NA
+#> 2             NA                     NA             NA             NA
+#> 3             NA                     NA             NA             NA
+#> 4             NA                     NA             NA             NA
+#> 5             NA                     NA             NA             NA
+#> 6             NA                     NA             NA             NA
+#>   variants.anatolian-hieroglyphs variants.avestan variants.balinese
+#> 1                             NA               NA                NA
+#> 2                             NA               NA                NA
+#> 3                             NA               NA                NA
+#> 4                             NA               NA                NA
+#> 5                             NA               NA                NA
+#> 6                             NA               NA                NA
+#>   variants.bamum variants.bassa-vah variants.batak variants.bhaiksuki
+#> 1             NA                 NA             NA                 NA
+#> 2             NA                 NA             NA                 NA
+#> 3             NA                 NA             NA                 NA
+#> 4             NA                 NA             NA                 NA
+#> 5             NA                 NA             NA                 NA
+#> 6             NA                 NA             NA                 NA
+#>   variants.brahmi variants.buginese variants.buhid variants.canadian-aboriginal
+#> 1              NA                NA             NA                           NA
+#> 2              NA                NA             NA                           NA
+#> 3              NA                NA             NA                           NA
+#> 4              NA                NA             NA                           NA
+#> 5              NA                NA             NA                           NA
+#> 6              NA                NA             NA                           NA
+#>   variants.carian variants.caucasian-albanian variants.chakma variants.cham
+#> 1              NA                          NA              NA            NA
+#> 2              NA                          NA              NA            NA
+#> 3              NA                          NA              NA            NA
+#> 4              NA                          NA              NA            NA
+#> 5              NA                          NA              NA            NA
+#> 6              NA                          NA              NA            NA
+#>   variants.chorasmian variants.coptic variants.cuneiform variants.cypriot
+#> 1                  NA              NA                 NA               NA
+#> 2                  NA              NA                 NA               NA
+#> 3                  NA              NA                 NA               NA
+#> 4                  NA              NA                 NA               NA
+#> 5                  NA              NA                 NA               NA
+#> 6                  NA              NA                 NA               NA
+#>   variants.cypro-minoan variants.deseret variants.duployan
+#> 1                    NA               NA                NA
+#> 2                    NA               NA                NA
+#> 3                    NA               NA                NA
+#> 4                    NA               NA                NA
+#> 5                    NA               NA                NA
+#> 6                    NA               NA                NA
+#>   variants.egyptian-hieroglyphs variants.elbasan variants.elymaic
+#> 1                            NA               NA               NA
+#> 2                            NA               NA               NA
+#> 3                            NA               NA               NA
+#> 4                            NA               NA               NA
+#> 5                            NA               NA               NA
+#> 6                            NA               NA               NA
+#>   variants.georgian variants.glagolitic variants.gothic variants.grantha
+#> 1                NA                  NA              NA               NA
+#> 2                NA                  NA              NA               NA
+#> 3                NA                  NA              NA               NA
+#> 4                NA                  NA              NA               NA
+#> 5                NA                  NA              NA               NA
+#> 6                NA                  NA              NA               NA
+#>   variants.hanifi-rohingya variants.hanunoo variants.hatran
+#> 1                       NA               NA              NA
+#> 2                       NA               NA              NA
+#> 3                       NA               NA              NA
+#> 4                       NA               NA              NA
+#> 5                       NA               NA              NA
+#> 6                       NA               NA              NA
+#>   variants.imperial-aramaic variants.indic-siyaq-numbers
+#> 1                        NA                           NA
+#> 2                        NA                           NA
+#> 3                        NA                           NA
+#> 4                        NA                           NA
+#> 5                        NA                           NA
+#> 6                        NA                           NA
+#>   variants.inscriptional-pahlavi variants.inscriptional-parthian
+#> 1                             NA                              NA
+#> 2                             NA                              NA
+#> 3                             NA                              NA
+#> 4                             NA                              NA
+#> 5                             NA                              NA
+#> 6                             NA                              NA
+#>   variants.javanese variants.kaithi variants.kawi variants.kharoshthi
+#> 1                NA              NA            NA                  NA
+#> 2                NA              NA            NA                  NA
+#> 3                NA              NA            NA                  NA
+#> 4                NA              NA            NA                  NA
+#> 5                NA              NA            NA                  NA
+#> 6                NA              NA            NA                  NA
+#>   variants.khojki variants.khudawadi variants.lao variants.linear-a
+#> 1              NA                 NA           NA                NA
+#> 2              NA                 NA           NA                NA
+#> 3              NA                 NA           NA                NA
+#> 4              NA                 NA           NA                NA
+#> 5              NA                 NA           NA                NA
+#> 6              NA                 NA           NA                NA
+#>   variants.linear-b variants.lycian variants.lydian variants.mahajani
+#> 1                NA              NA              NA                NA
+#> 2                NA              NA              NA                NA
+#> 3                NA              NA              NA                NA
+#> 4                NA              NA              NA                NA
+#> 5                NA              NA              NA                NA
+#> 6                NA              NA              NA                NA
+#>   variants.mandaic variants.manichaean variants.marchen variants.masaram-gondi
+#> 1               NA                  NA               NA                     NA
+#> 2               NA                  NA               NA                     NA
+#> 3               NA                  NA               NA                     NA
+#> 4               NA                  NA               NA                     NA
+#> 5               NA                  NA               NA                     NA
+#> 6               NA                  NA               NA                     NA
+#>   variants.mayan-numerals variants.medefaidrin variants.meetei-mayek
+#> 1                      NA                   NA                    NA
+#> 2                      NA                   NA                    NA
+#> 3                      NA                   NA                    NA
+#> 4                      NA                   NA                    NA
+#> 5                      NA                   NA                    NA
+#> 6                      NA                   NA                    NA
+#>   variants.mende-kikakui variants.meroitic variants.meroitic-cursive
+#> 1                     NA                NA                        NA
+#> 2                     NA                NA                        NA
+#> 3                     NA                NA                        NA
+#> 4                     NA                NA                        NA
+#> 5                     NA                NA                        NA
+#> 6                     NA                NA                        NA
+#>   variants.meroitic-hieroglyphs variants.miao variants.modi variants.mongolian
+#> 1                            NA            NA            NA                 NA
+#> 2                            NA            NA            NA                 NA
+#> 3                            NA            NA            NA                 NA
+#> 4                            NA            NA            NA                 NA
+#> 5                            NA            NA            NA                 NA
+#> 6                            NA            NA            NA                 NA
+#>   variants.mro variants.multani variants.myanmar variants.nabataean
+#> 1           NA               NA               NA                 NA
+#> 2           NA               NA               NA                 NA
+#> 3           NA               NA               NA                 NA
+#> 4           NA               NA               NA                 NA
+#> 5           NA               NA               NA                 NA
+#> 6           NA               NA               NA                 NA
+#>   variants.nag-mundari variants.nandinagari variants.newa variants.nko
+#> 1                   NA                   NA            NA           NA
+#> 2                   NA                   NA            NA           NA
+#> 3                   NA                   NA            NA           NA
+#> 4                   NA                   NA            NA           NA
+#> 5                   NA                   NA            NA           NA
+#> 6                   NA                   NA            NA           NA
+#>   variants.nushu variants.ogham variants.ol-chiki variants.old-hungarian
+#> 1             NA             NA                NA                     NA
+#> 2             NA             NA                NA                     NA
+#> 3             NA             NA                NA                     NA
+#> 4             NA             NA                NA                     NA
+#> 5             NA             NA                NA                     NA
+#> 6             NA             NA                NA                     NA
+#>   variants.old-italic variants.old-north-arabian variants.old-permic
+#> 1                  NA                         NA                  NA
+#> 2                  NA                         NA                  NA
+#> 3                  NA                         NA                  NA
+#> 4                  NA                         NA                  NA
+#> 5                  NA                         NA                  NA
+#> 6                  NA                         NA                  NA
+#>   variants.old-persian variants.old-sogdian variants.old-south-arabian
+#> 1                   NA                   NA                         NA
+#> 2                   NA                   NA                         NA
+#> 3                   NA                   NA                         NA
+#> 4                   NA                   NA                         NA
+#> 5                   NA                   NA                         NA
+#> 6                   NA                   NA                         NA
+#>   variants.old-turkic variants.osage variants.osmanya variants.pahawh-hmong
+#> 1                  NA             NA               NA                    NA
+#> 2                  NA             NA               NA                    NA
+#> 3                  NA             NA               NA                    NA
+#> 4                  NA             NA               NA                    NA
+#> 5                  NA             NA               NA                    NA
+#> 6                  NA             NA               NA                    NA
+#>   variants.palmyrene variants.pau-cin-hau variants.phags-pa variants.phoenician
+#> 1                 NA                   NA                NA                  NA
+#> 2                 NA                   NA                NA                  NA
+#> 3                 NA                   NA                NA                  NA
+#> 4                 NA                   NA                NA                  NA
+#> 5                 NA                   NA                NA                  NA
+#> 6                 NA                   NA                NA                  NA
+#>   variants.psalter-pahlavi variants.rejang variants.runic variants.samaritan
+#> 1                       NA              NA             NA                 NA
+#> 2                       NA              NA             NA                 NA
+#> 3                       NA              NA             NA                 NA
+#> 4                       NA              NA             NA                 NA
+#> 5                       NA              NA             NA                 NA
+#> 6                       NA              NA             NA                 NA
+#>   variants.saurashtra variants.sharada variants.shavian variants.siddham
+#> 1                  NA               NA               NA               NA
+#> 2                  NA               NA               NA               NA
+#> 3                  NA               NA               NA               NA
+#> 4                  NA               NA               NA               NA
+#> 5                  NA               NA               NA               NA
+#> 6                  NA               NA               NA               NA
+#>   variants.signwriting variants.sogdian variants.sora-sompeng variants.soyombo
+#> 1                   NA               NA                    NA               NA
+#> 2                   NA               NA                    NA               NA
+#> 3                   NA               NA                    NA               NA
+#> 4                   NA               NA                    NA               NA
+#> 5                   NA               NA                    NA               NA
+#> 6                   NA               NA                    NA               NA
+#>   variants.sundanese variants.syloti-nagri variants.braille variants.syriac
+#> 1                 NA                    NA               NA              NA
+#> 2                 NA                    NA               NA              NA
+#> 3                 NA                    NA               NA              NA
+#> 4                 NA                    NA               NA              NA
+#> 5                 NA                    NA               NA              NA
+#> 6                 NA                    NA               NA              NA
+#>   variants.tagalog variants.tagbanwa variants.tai-le variants.tai-tham
+#> 1               NA                NA              NA                NA
+#> 2               NA                NA              NA                NA
+#> 3               NA                NA              NA                NA
+#> 4               NA                NA              NA                NA
+#> 5               NA                NA              NA                NA
+#> 6               NA                NA              NA                NA
+#>   variants.tai-viet variants.takri variants.tamil-supplement variants.tangsa
+#> 1                NA             NA                        NA              NA
+#> 2                NA             NA                        NA              NA
+#> 3                NA             NA                        NA              NA
+#> 4                NA             NA                        NA              NA
+#> 5                NA             NA                        NA              NA
+#> 6                NA             NA                        NA              NA
+#>   variants.chinese-traditional variants.thaana variants.tirhuta
+#> 1                           NA              NA               NA
+#> 2                           NA              NA               NA
+#> 3                           NA              NA               NA
+#> 4                           NA              NA               NA
+#> 5                           NA              NA               NA
+#> 6                           NA              NA               NA
+#>   variants.ugaritic variants.vai variants.vithkuqi variants.wancho
+#> 1                NA           NA                NA              NA
+#> 2                NA           NA                NA              NA
+#> 3                NA           NA                NA              NA
+#> 4                NA           NA                NA              NA
+#> 5                NA           NA                NA              NA
+#> 6                NA           NA                NA              NA
+#>   variants.warang-citi variants.yi variants.zanabazar-square variants.ahom
+#> 1                   NA          NA                        NA            NA
+#> 2                   NA          NA                        NA            NA
+#> 3                   NA          NA                        NA            NA
+#> 4                   NA          NA                        NA            NA
+#> 5                   NA          NA                        NA            NA
+#> 6                   NA          NA                        NA            NA
+#>   variants.dogra variants.khitan-small-script variants.makasar
+#> 1             NA                           NA               NA
+#> 2             NA                           NA               NA
+#> 3             NA                           NA               NA
+#> 4             NA                           NA               NA
+#> 5             NA                           NA               NA
+#> 6             NA                           NA               NA
+#>   variants.nyiakeng-puachue-hmong variants.old-uyghur
+#> 1                              NA                  NA
+#> 2                              NA                  NA
+#> 3                              NA                  NA
+#> 4                              NA                  NA
+#> 5                              NA                  NA
+#> 6                              NA                  NA
+#>   variants.ottoman-siyaq-numbers variants.tangut variants.toto variants.yezidi
+#> 1                             NA              NA            NA              NA
+#> 2                             NA              NA            NA              NA
+#> 3                             NA              NA            NA              NA
+#> 4                             NA              NA            NA              NA
+#> 5                             NA              NA            NA              NA
+#> 6                             NA              NA            NA              NA
+#>   variants.znamenny                 weights         styles defSubset isVariable
+#> 1                NA                     400 italic, normal     latin      FALSE
+#> 2                NA                     400         normal     latin      FALSE
+#> 3                NA 400, 500, 600, 700, 800         normal     latin      FALSE
+#> 4                NA                     400         normal     latin      FALSE
+#> 5                NA                     400         normal     latin      FALSE
+#> 6                NA                     400         normal     latin      FALSE
+#>                                             url
+#> 1        https://fonts.bunny.net/family/abeezee
+#> 2           https://fonts.bunny.net/family/abel
+#> 3   https://fonts.bunny.net/family/abhaya-libre
+#> 4        https://fonts.bunny.net/family/aboreto
+#> 5  https://fonts.bunny.net/family/abril-fatface
+#> 6 https://fonts.bunny.net/family/abyssinica-sil
+
+# List all sans-serif fonts
+sans_fonts <- font_search(category = "sans-serif")
+
+# Browse all available categories
+table(fonts$category)
+#> 
+#>     display handwriting   monospace  sans-serif       serif 
+#>         460         286          41         617         324
+```
+
+## Advanced Usage
+
+### Custom Font Weights and Styles
+
+``` r
+# Download all available weights and styles (default)
+add_font("roboto")
+
+# Download only specific weights
+add_font("roboto", wt = c(300, 400, 700))
+
+# Download only normal (non-italic) styles
+add_font("roboto", wt = c(400, 700), styles = "normal")
+
+# Download only italic styles with specific weights
+add_font("merriweather", wt = c(400, 700), styles = "italic")
+
+# Download a single weight
+add_font("source-code-pro", wt = 400, styles = "normal")
+
+# Specify a different character subset
+add_font("noto-sans", subset = "latin-ext")
+
+# You can also use provider-specific functions
+add_font_bunny("inter", wt = c(300, 500), styles = "normal")
+```
+
+### Custom Cache Directory
+
+By default, fonts are cached in a platform-appropriate directory. You
+can customize this:
+
+``` r
+# Check current cache directory
+get_font_cache_dir()
+#> [1] "~/.cache/AddFonts"
+
+# Use a custom cache location
+add_font_bunny("open-sans", cache_dir = "~/my-fonts")
+
+# Clear the font cache
+clear_font_cache_dir()
+#> ℹ No cached fonts found in '~/.cache/AddFonts'
+#> [1] TRUE
+```
+
+## Font Database
+
+AddFonts includes a bundled database of **1,700+ fonts** from Bunny
+Fonts, updated monthly via GitHub Actions. This means:
+
+- ✅ No API calls needed for browsing
+- ✅ Fast font search and listing
+- ✅ Works offline (after initial font download)
+- ✅ Automatically stays up-to-date
+
+The database is regenerated monthly using a Python script:
+
+``` bash
+# Update the font database manually
+uv run scripts/create_bunny_font_db.py
+```
+
+## Why Bunny Fonts?
+
+[Bunny Fonts](https://fonts.bunny.net/) is an open-source, privacy-first
+alternative to Google Fonts:
+
+- 🔒 **GDPR compliant**: No tracking, no data collection
+- 🚀 **Fast CDN**: Globally distributed network
+- 🆓 **Free & open**: No accounts or API keys needed
+- 🎨 **Full coverage**: Includes most popular Google Fonts
+
+Perfect for users in the EU or anyone concerned about privacy.
+
+## How It Works
+
+1.  **Search**: Browse the bundled font database (updated monthly)
+2.  **Download**: Fetch WOFF2 font files from Bunny’s CDN (cached
+    locally)
+3.  **Convert**: Automatically convert WOFF2 to TTF format for R
+    compatibility
+4.  **Register**: Add fonts to R via `sysfonts`
+5.  **Use**: Enable with
+    [`showtext_auto()`](https://rdrr.io/pkg/showtext/man/showtext_auto.html)
+    and use in any graphics device
+
+**Why the conversion?** Bunny Fonts provides fonts in WOFF2 format
+(optimized for web use), but R’s `sysfonts` doesn’t support WOFF2
+out-of-the-box. AddFonts automatically converts downloaded fonts to TTF
+format for maximum compatibility.
+
+**Performance**: Conversion happens only once per font file. Subsequent
+uses of the same font load instantly from the TTF cache.
+
+## Related Packages
+
+- [showtext](https://github.com/yixuan/showtext): Using fonts in R
+  graphics
+- [sysfonts](https://github.com/yixuan/sysfonts): Loading fonts into R
+- [systemfonts](https://github.com/r-lib/systemfonts): System font
+  management
+- [extrafont](https://github.com/wch/extrafont): TrueType font support
+
+## License
+
+## GPL (\>= 3)
+
+**Note**: AddFonts is in early development. Everything may change.
+Feedback and contributions welcome!
