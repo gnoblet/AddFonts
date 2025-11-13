@@ -7,11 +7,11 @@
 clear_font_cache_dir(confirm = TRUE)
 }
 \arguments{
-\item{confirm}{Logical. Whether to ask for confirmation before deleting
-cached files. Default: TRUE.}
+\item{confirm}{(\code{logical(1)}) Whether to ask for confirmation before deleting cached files
+(default: \code{TRUE}).}
 }
 \value{
-Logical. TRUE if cache was cleared successfully, FALSE otherwise.
+(\verb{: logical(1)}) TRUE if cache was cleared successfully, FALSE otherwise.
 }
 \description{
 Removes cached Bunny Fonts to free up space or force re-download.

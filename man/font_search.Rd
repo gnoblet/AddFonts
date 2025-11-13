@@ -7,22 +7,20 @@
 font_search(query = NULL, provider = "bunny", category = NULL, ...)
 }
 \arguments{
-\item{query}{Character string to search for in font names or categories.
-If NULL or empty, returns all fonts (optionally filtered by category).}
+\item{query}{(\verb{character(1) or NULL}) String to search for in font names or categories
+(default: \code{NULL}, returns all fonts, optionally filtered by category).}
 
-\item{provider}{Character. Font provider to search. Currently supports:
-\itemize{
-\item \code{"bunny"}: Bunny Fonts (default)
-}}
+\item{provider}{(\code{character(1)}) Font provider to search. Currently supports "bunny" for Bunny Fonts
+(default: \code{"bunny"}).}
 
-\item{category}{Character. Filter by category (provider-specific).
-For Bunny Fonts: "sans-serif", "serif", "display", "handwriting", "monospace".
-Default: NULL (all categories).}
+\item{category}{(\verb{character(1) or NULL}) Filter by category (provider-specific).
+For Bunny Fonts: "sans-serif", "serif", "display", "handwriting", "monospace"
+(default: \code{NULL}, all categories).}
 
-\item{...}{Additional provider-specific arguments.}
+\item{...}{Additional provider-specific arguments (currently unused).}
 }
 \value{
-A data.frame with matching font metadata.
+(\verb{: data.frame}) A data.frame with matching font metadata.
 }
 \description{
 A general function to search for available fonts from various providers.

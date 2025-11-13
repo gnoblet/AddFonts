@@ -3,7 +3,8 @@
 #' Returns the directory where fonts are/should be cached.
 #' Uses platform-appropriate cache locations via the rappdirs package.
 #'
-#' @return Character string with absolute path to the fonts cache directory.
+#' @typedreturn: character(1)
+#'   Absolute path to the fonts cache directory.
 #'
 #' @examples
 #' \dontrun{

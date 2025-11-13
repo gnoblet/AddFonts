@@ -7,55 +7,92 @@
 add_font_bunny(
   name,
   family = NULL,
-  regular.wt = 400,
-  bold.wt = 700,
-  italic = TRUE,
+  wt = NULL,
+  styles = "both",
+  regular.wt = NULL,
+  bold.wt = NULL,
   subset = NULL,
   cache_dir = NULL,
   ...
 )
 }
 \arguments{
-\item{name}{Character. The font name as listed on Bunny Fonts (e.g., "open-sans").
+\item{name}{(\code{character(1)}) The font name as listed on Bunny Fonts (e.g., "open-sans").
 Can be the family ID (lowercase with hyphens) or display name (case-insensitive).}
 
-\item{family}{Character. The family name to register in R. Defaults to \code{name}.}
+\item{family}{(\verb{character(1) or NULL}) The family name to register in R (default: \code{NULL}, uses \code{name}).}
 
-\item{regular.wt}{Integer. The weight of the regular font variant (default: 400).}
+\item{wt}{(\verb{numeric or NULL}) Font weights to download (e.g., c(400, 700)).
+Use a vector to specify only certain weights (e.g., c(300, 500, 700))
+(default: \code{NULL}, downloads all available weights).}
 
-\item{bold.wt}{Integer. The weight of the bold font variant (default: 700).}
+\item{styles}{(\code{character(1)}) Which styles to download: "normal", "italic", or "both".
+Set to "normal" for regular styles only, "italic" for italic only,
+or "both" for all available styles (default: \code{"both"}).}
 
-\item{italic}{Logical. Whether to download italic variant (default: TRUE if available).}
+\item{regular.wt}{(\verb{numeric(1) or NULL}) Which weight to use as the regular font face for \code{sysfonts::font_add()}
+(default: \code{NULL}, uses the first weight in \code{wt}).}
 
-\item{subset}{Character. Font subset to use (e.g., "latin", "latin-ext").
-Defaults to the font's default subset.}
+\item{bold.wt}{(\verb{numeric(1) or NULL}) Which weight to use as the bold font face for \code{sysfonts::font_add()}
+(default: \code{NULL}, uses the last weight in \code{wt}).}
 
-\item{cache_dir}{Character. Directory to cache downloaded fonts. Defaults to
-a platform-appropriate cache directory (see \code{get_font_cache_dir()}).}
+\item{subset}{(\verb{character(1) or NULL}) Font subset to use (e.g., "latin", "latin-ext")
+(default: \code{NULL}, uses the font's default subset).}
+
+\item{cache_dir}{(\verb{character(1) or NULL}) Directory to cache downloaded fonts
+(default: \code{NULL}, uses platform-appropriate cache directory via \code{get_font_cache_dir()}).}
 
 \item{...}{Additional arguments passed to \code{sysfonts::font_add()}.}
 }
 \value{
-Invisibly returns a list of paths to the registered font files.
+(\verb{: list}) Invisibly returns a list of paths to the registered font files.
 }
 \description{
 Downloads a font from \href{https://fonts.bunny.net/}{fonts.bunny.net}, caches it locally,
 and registers it for use in R graphics devices via \code{sysfonts} and \code{showtext}.
 This provides a privacy-focused alternative to Google Fonts.
 }
+\details{
+Font files are downloaded as WOFF2 and automatically converted to TTF format for
+compatibility with \code{sysfonts}. This requires the \code{woff2_decompress} command-line tool
+to be installed on your system.
+}
+\section{System Requirements}{
+
+
+This function requires the \code{woff2_decompress} command-line tool to convert
+downloaded WOFF2 files to TTF format. Install it using:
+\itemize{
+\item \strong{macOS:} \verb{brew install woff2}
+\item \strong{Debian/Ubuntu:} \verb{sudo apt install woff2}
+\item \strong{Fedora/RHEL:} \verb{sudo dnf install woff2-tools}
+\item \strong{Arch Linux:} \verb{sudo pacman -S woff2}
+\item \strong{Windows:} Build from \url{https://github.com/google/woff2}
+}
+}
+
 \examples{
 \dontrun{
-# Add a font by its family ID
+# Add a font with all weights and styles (default)
 add_font_bunny("open-sans")
 
-# Or use the display name
-add_font_bunny("Open Sans")
+# Add only specific weights
+add_font_bunny("roboto", wt = c(300, 400, 700))
 
-# Specify custom family name and weight
-add_font_bunny("roboto", family = "Roboto", regular.wt = 300)
+# Add only normal (non-italic) styles
+add_font_bunny("roboto", styles = "normal")
+
+# Add specific weights in italic only
+add_font_bunny("merriweather", wt = c(400, 700), styles = "italic")
+
+# Specify which weights to use for regular and bold
+add_font_bunny("roboto", wt = c(300, 400, 700), regular.wt = 400, bold.wt = 700)
+
+# Specify custom family name
+add_font_bunny("source-code-pro", family = "SourceCode", wt = 400)
 
 # Enable showtext and use the font
 showtext::showtext_auto()
-plot(1:10, main = "This uses Open Sans from Bunny Fonts!")
+plot(1:10, main = "This uses fonts from Bunny Fonts!")
 }
 }

@@ -1,6 +1,6 @@
 Package: AddFonts
 Title: Add Fonts from Several Providers to 'showtext'
-Version: 1.0.0
+Version: 0.1.0
 Authors@R: 
     person("Guillaume", "Noblet", , "gnoblet@zaclys.net", role = c("aut", "cre"))
 Description: Download and register fonts from several providers for use in R graphics 
@@ -9,15 +9,15 @@ Description: Download and register fonts from several providers for use in R gra
     'font_add_google()' with extensible architecture for additional font providers.
 License: GPL (>= 3)
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
+Roxygen: list(markdown = TRUE, packages = "roxytypes")
 RoxygenNote: 7.3.3
-Imports:
+Config/Needs/documentation: roxytypes
+Imports: 
     sysfonts,
-    showtext,
-    httr,
+    httr2,
     fs,
     rappdirs,
-    checkmate
+    cli
 Suggests:
     testthat (>= 3.0.0),
     usethis,
@@ -26,6 +26,6 @@ Suggests:
 Config/testthat/edition: 3
 LazyData: true
 Depends: 
-    R (>= 3.5)
+    R (>= 4.1.0)
 URL: https://github.com/gnoblet/AddFonts
 BugReports: https://github.com/gnoblet/AddFonts/issues

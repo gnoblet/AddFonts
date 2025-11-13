@@ -10,4 +10,4 @@ options(
 )
 
 # use pak with renv
-options(renv.pak.enable = TRUE)
+# options(renv.config.pak.enabled = FALSE)

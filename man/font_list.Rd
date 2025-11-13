@@ -7,15 +7,13 @@
 font_list(provider = "bunny", ...)
 }
 \arguments{
-\item{provider}{Character. Font provider to query. Currently supports:
-\itemize{
-\item \code{"bunny"}: Bunny Fonts (default)
-}}
+\item{provider}{(\code{character(1)}) Font provider to query. Currently supports "bunny" for Bunny Fonts
+(default: \code{"bunny"}).}
 
-\item{...}{Additional provider-specific arguments.}
+\item{...}{Additional provider-specific arguments (currently unused).}
 }
 \value{
-A data.frame with font metadata from the specified provider.
+(\verb{: data.frame}) A data.frame with font metadata from the specified provider.
 }
 \description{
 A general function to list available fonts from various providers.

@@ -11,7 +11,15 @@ test_that("font_list_bunny returns expected structure", {
   result <- font_list_bunny()
 
   # Check key columns exist
-  expected_cols <- c("family", "familyName", "category", "variants", "weights", "styles", "defSubset")
+  expected_cols <- c(
+    "family",
+    "familyName",
+    "category",
+    "variants",
+    "weights",
+    "styles",
+    "defSubset"
+  )
   expect_true(all(expected_cols %in% names(result)))
 
   # Check data types
@@ -46,19 +54,13 @@ test_that("font_list returns correct categories", {
 
   # Bunny Fonts has standard CSS categories
   categories <- unique(result$category)
-  expected_categories <- c("sans-serif", "serif", "display", "handwriting", "monospace")
-
-  expect_true(all(categories %in% expected_categories))
-})
-
-test_that("font_list S3 dispatch works correctly", {
-  # Create object with class for dispatch
-  obj <- structure(
-    list(provider = "bunny"),
-    class = "font_provider_bunny"
+  expected_categories <- c(
+    "sans-serif",
+    "serif",
+    "display",
+    "handwriting",
+    "monospace"
   )
 
-  result <- font_list_dispatch(obj)
-  expect_s3_class(result, "data.frame")
-  expect_true(nrow(result) > 0)
+  expect_true(all(categories %in% expected_categories))
 })

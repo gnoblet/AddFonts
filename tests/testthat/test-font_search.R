@@ -73,14 +73,3 @@ test_that("font_search validates category parameter", {
   result <- font_search_bunny(category = "nonexistent_category")
   expect_equal(nrow(result), 0)
 })
-
-test_that("font_search S3 dispatch works correctly", {
-  # Create object with class for dispatch
-  obj <- structure(
-    list(provider = "bunny", query = "roboto", category = NULL),
-    class = "font_provider_bunny"
-  )
-
-  result <- font_search_dispatch(obj)
-  expect_s3_class(result, "data.frame")
-})

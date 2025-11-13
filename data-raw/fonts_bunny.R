@@ -36,7 +36,7 @@ attr(fonts_bunny, "api_endpoint") <- db$api_endpoint
 attr(fonts_bunny, "count") <- db$count
 
 # Save to data/
-usethis::use_data(fonts_bunny, overwrite = TRUE)
+usethis::use_data(fonts_bunny, overwrite = TRUE, internal = TRUE)
 
 # Print summary
 # cat("✓ Created fonts_bunny dataset with", nrow(fonts_bunny), "fonts\n")

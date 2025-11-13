@@ -3,18 +3,20 @@
 #' A general function to search for available fonts from various providers.
 #' Currently supports Bunny Fonts, with more providers planned for the future.
 #'
-#' @param query Character string to search for in font names or categories.
-#'   If NULL or empty, returns all fonts (optionally filtered by category).
-#' @param provider Character. Font provider to search. Currently supports:
-#'   \itemize{
-#'     \item \code{"bunny"}: Bunny Fonts (default)
-#'   }
-#' @param category Character. Filter by category (provider-specific).
-#'   For Bunny Fonts: "sans-serif", "serif", "display", "handwriting", "monospace".
-#'   Default: NULL (all categories).
-#' @param ... Additional provider-specific arguments.
+#' @typed query: character(1) or NULL
+#'   String to search for in font names or categories
+#'   (default: `NULL`, returns all fonts, optionally filtered by category).
+#' @typed provider: character(1)
+#'   Font provider to search. Currently supports "bunny" for Bunny Fonts
+#'   (default: `"bunny"`).
+#' @typed category: character(1) or NULL
+#'   Filter by category (provider-specific).
+#'   For Bunny Fonts: "sans-serif", "serif", "display", "handwriting", "monospace"
+#'   (default: `NULL`, all categories).
+#' @param ... Additional provider-specific arguments (currently unused).
 #'
-#' @return A data.frame with matching font metadata.
+#' @typedreturn: data.frame
+#'   A data.frame with matching font metadata.
 #' @export
 #'
 #' @examples
@@ -42,63 +44,44 @@ font_search <- function(
   supported_providers <- c("bunny")
 
   if (!provider %in% supported_providers) {
-    stop(sprintf(
-      "Provider '%s' is not supported. Available providers: %s",
-      provider,
-      paste(supported_providers, collapse = ", ")
+    cli::cli_abort(c(
+      "Provider {.val {provider}} is not supported.",
+      "i" = "Available providers: {.val {supported_providers}}"
     ))
   }
 
-  # Create an object with the provider class for S3 dispatch
-  obj <- structure(
-    list(query = query, category = category),
-    class = c(paste0("font_provider_", provider), "font_provider")
-  )
-  font_search_dispatch(obj, ...)
-}
+  # Currently only supports Bunny Fonts
+  if (provider == "bunny") {
+    fonts <- font_list_bunny()
 
-#' @keywords internal
-font_search_dispatch <- function(obj, ...) {
-  UseMethod("font_search_dispatch")
-}
+    # Filter by category if specified
+    if (!is.null(category) && nzchar(category)) {
+      fonts <- fonts[
+        tolower(fonts$category) == tolower(category),
+        ,
+        drop = FALSE
+      ]
+    }
 
-#' @keywords internal
-#' @export
-font_search_dispatch.font_provider_bunny <- function(obj, ...) {
-  fonts <- font_list_bunny()
+    # Search by query if specified
+    if (!is.null(query) && nzchar(query)) {
+      matches <- grepl(query, fonts$family, ignore.case = TRUE) |
+        grepl(query, fonts$familyName, ignore.case = TRUE) |
+        grepl(query, fonts$category, ignore.case = TRUE)
+      fonts <- fonts[matches, , drop = FALSE]
+    }
 
-  query <- obj$query
-  category <- obj$category
+    if (nrow(fonts) == 0) {
+      message("No fonts found matching the search criteria.")
+    }
 
-  # Filter by category if specified
-  if (!is.null(category) && nzchar(category)) {
-    fonts <- fonts[tolower(fonts$category) == tolower(category), , drop = FALSE]
+    # Return a nice output with familyName and a nice table with font weights and categories
+    output <- fonts[, c("familyName", "category", "weights")]
+    output$weights <- sapply(output$weights, function(x) {
+      paste(x, collapse = ", ")
+    })
+    return(output)
   }
-
-  # Search by query if specified
-  if (!is.null(query) && nzchar(query)) {
-    matches <- grepl(query, fonts$family, ignore.case = TRUE) |
-      grepl(query, fonts$familyName, ignore.case = TRUE) |
-      grepl(query, fonts$category, ignore.case = TRUE)
-    fonts <- fonts[matches, , drop = FALSE]
-  }
-
-  if (nrow(fonts) == 0) {
-    message("No fonts found matching the search criteria.")
-  }
-
-  # Return a nice output with familyName and a nice table with font weights and categories
-  output <- fonts[, c("familyName", "category", "weights")]
-  output$weights <- sapply(output$weights, function(x) {
-    paste(x, collapse = ", ")
-  })
-  output
-}
-
-#' @keywords internal
-#' @export
-font_search_dispatch.default <- function(obj, ...) {
-  stop(sprintf("No font_search method for provider"))
 }
 
 #' Search Bunny Fonts by Name or Category (Direct Function)

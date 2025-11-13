@@ -1,12 +1,15 @@
 test_that("clear_font_cache_dir parameter validation works", {
   expect_error(
     clear_font_cache_dir("yes"),
-    regexp = "Must be of type 'logical'"
+    regexp = "must be a single logical value"
   )
-  expect_error(clear_font_cache_dir(NULL), regexp = "Must be of type 'logical'")
+  expect_error(
+    clear_font_cache_dir(NULL),
+    regexp = "must be a single logical value"
+  )
   expect_error(
     clear_font_cache_dir(c(TRUE, FALSE)),
-    regexp = "Must have length 1"
+    regexp = "must be a single logical value"
   )
 })
 
@@ -34,7 +37,7 @@ test_that("clear_font_cache_dir handles empty cache directory", {
     {
       expect_message(
         result <- clear_font_cache_dir(confirm = FALSE),
-        "No cached Bunny Fonts found"
+        "No cached fonts found"
       )
       expect_true(result)
     }

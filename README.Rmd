@@ -18,6 +18,8 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/gnoblet/AddFonts/workflows/R-CMD-check/badge.svg)](https://github.com/gnoblet/AddFonts/actions)
+[![R-CMD-check](https://github.com/gnoblet/AddFonts/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gnoblet/AddFonts/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/gnoblet/AddFonts/graph/badge.svg)](https://app.codecov.io/gh/gnoblet/AddFonts)
 <!-- badges: end -->
 
 AddFonts provides an easy way to download and use fonts from various providers in R graphics. Currently supports [Bunny Fonts](https://fonts.bunny.net/), a privacy-focused, GDPR-compliant alternative to Google Fonts.
@@ -25,7 +27,7 @@ AddFonts provides an easy way to download and use fonts from various providers i
 ## Features
 
 - 🔒 **Privacy-focused**: Use Bunny Fonts instead of Google Fonts
-- 📦 **Simple API**: Similar to `showtext::font_add_google()`
+- 📦 **Simple**: Similar to `showtext::font_add_google()`
 - 💾 **Smart caching**: Downloads fonts once, uses them everywhere
 - 🔍 **Easy discovery**: Search for fonts by name or category
 - 🎨 **Full support**: Regular, bold, italic, and bold-italic variants
@@ -39,14 +41,38 @@ You can install the development version of AddFonts from [GitHub](https://github
 pak::pak("gnoblet/AddFonts")
 ```
 
+### System Requirements
+
+AddFonts requires the `woff2_decompress` command-line tool to convert downloaded font files to a format compatible with R graphics. Install it using your system's package manager:
+
+```bash
+# macOS (Homebrew)
+brew install woff2
+
+# Debian/Ubuntu
+sudo apt install woff2
+
+# Fedora/RHEL
+sudo dnf install woff2-tools
+
+# Arch Linux
+sudo pacman -S woff2
+
+# Windows
+# Build from source: https://github.com/google/woff2
+```
+
 ## Quick Start
 
-```{r example, eval = FALSE}
+```{r example}
 library(AddFonts)
 library(showtext)
 
-# Add a font from Bunny Fonts
-add_font_bunny("open-sans")
+# Add a font from Bunny Fonts (downloads all weights and styles by default)
+add_font("open-sans")
+
+# Or use the provider-specific function
+add_font_bunny("roboto")
 
 # Enable showtext for graphics
 showtext_auto()
@@ -57,14 +83,18 @@ plot(1:10, main = "Using Open Sans from Bunny Fonts!")
 
 ### With ggplot2
 
-```{r ggplot2-example, eval = FALSE}
+```{r ggplot2-example}
 library(ggplot2)
 library(AddFonts)
 library(showtext)
 
-# Add custom fonts
-add_font_bunny("roboto", family = "Roboto")
-add_font_bunny("merriweather", family = "Merriweather")
+# Add custom fonts with specific weights
+add_font_bunny(
+  "Advent Pro",
+  family = "main_font",
+  regular_wt = 400,
+  bold_wt = 700
+)
 
 showtext_auto()
 
@@ -74,9 +104,10 @@ ggplot(mtcars, aes(wt, mpg)) +
     title = "Motor Trend Car Road Tests",
     subtitle = "Relationship between weight and fuel efficiency"
   ) +
-  theme_minimal(base_family = "Roboto") +
+  theme_minimal(base_family = "main_font") +
   theme(
-    plot.title = element_text(family = "Merriweather", face = "bold", size = 16)
+    plot.title = element_text(size = 16, face = "bold"),
+    plot.subtitle = element_text(size = 14)
   )
 ```
 
@@ -84,14 +115,19 @@ ggplot(mtcars, aes(wt, mpg)) +
 
 Find fonts by name or browse by category:
 
-```{r search-example, eval = FALSE}
-# Search for fonts by name
+```{r search-example}
+# Search for fonts by name (uses default provider: Bunny)
+font_search("roboto")
+
+# Or use provider-specific function
 font_search_bunny("roboto")
 
+# List all available fonts
+fonts <- font_list()
+head(fonts)
+
 # List all sans-serif fonts
-fonts <- font_list_bunny()
-sans_fonts <- fonts[fonts$category == "sans-serif", ]
-head(sans_fonts)
+sans_fonts <- font_search(category = "sans-serif")
 
 # Browse all available categories
 table(fonts$category)
@@ -99,37 +135,36 @@ table(fonts$category)
 
 ## Advanced Usage
 
-### Custom Font Weights and Variants
+### Custom Font Weights and Styles
 
-```{r advanced-example, eval = FALSE}
-# Use a lighter weight for regular text
-add_font_bunny(
-  "roboto",
-  family = "RobotoLight",
-  regular.wt = 300,
-  bold.wt = 500
-)
+```{r advanced-example}
+# Download all available weights and styles (default)
+add_font("roboto")
 
-# Skip italic variants if not needed
-add_font_bunny(
-  "source-code-pro",
-  family = "SourceCodePro",
-  italic = FALSE
-)
+# Download only specific weights
+add_font("roboto", wt = c(300, 400, 700))
+
+# Download only normal (non-italic) styles
+add_font("roboto", wt = c(400, 700), styles = "normal")
+
+# Download only italic styles with specific weights
+add_font("merriweather", wt = c(400, 700), styles = "italic")
+
+# Download a single weight
+add_font("source-code-pro", wt = 400, styles = "normal")
 
 # Specify a different character subset
-add_font_bunny(
-  "noto-sans",
-  family = "NotoSans",
-  subset = "latin-ext"
-)
+add_font("noto-sans", subset = "latin-ext")
+
+# You can also use provider-specific functions
+add_font_bunny("inter", wt = c(300, 500), styles = "normal")
 ```
 
 ### Custom Cache Directory
 
 By default, fonts are cached in a platform-appropriate directory. You can customize this:
 
-```{r cache-example, eval = FALSE}
+```{r cache-example}
 # Check current cache directory
 get_font_cache_dir()
 
@@ -156,19 +191,6 @@ The database is regenerated monthly using a Python script:
 uv run scripts/create_bunny_font_db.py
 ```
 
-## Comparison with Other Packages
-
-| Feature | AddFonts | showtext | systemfonts |
-|---------|----------|----------|-------------|
-| Google Fonts | ❌ | ✅ | ❌ |
-| Bunny Fonts (Privacy) | ✅ | ❌ | ❌ |
-| Local fonts | ➡️ Use showtext | ✅ | ✅ |
-| Font caching | ✅ | Partial | N/A |
-| Easy search | ✅ | ❌ | ❌ |
-| Offline catalog | ✅ | ❌ | N/A |
-
-AddFonts is designed to complement `showtext` by providing an easy way to add fonts from privacy-focused providers.
-
 ## Why Bunny Fonts?
 
 [Bunny Fonts](https://fonts.bunny.net/) is an open-source, privacy-first alternative to Google Fonts:
@@ -183,24 +205,14 @@ Perfect for users in the EU or anyone concerned about privacy.
 ## How It Works
 
 1. **Search**: Browse the bundled font database (updated monthly)
-2. **Download**: Fetch font files from Bunny's CDN (cached locally)
-3. **Register**: Add fonts to R via `sysfonts`
-4. **Use**: Enable with `showtext_auto()` and use in any graphics device
+2. **Download**: Fetch WOFF2 font files from Bunny's CDN (cached locally)
+3. **Convert**: Automatically convert WOFF2 to TTF format for R compatibility
+4. **Register**: Add fonts to R via `sysfonts`
+5. **Use**: Enable with `showtext_auto()` and use in any graphics device
 
-```{r workflow, echo = FALSE, eval = FALSE}
-# Simplified workflow diagram
-# Search fonts → Download & cache → Register → Use in plots
-```
+**Why the conversion?** Bunny Fonts provides fonts in WOFF2 format (optimized for web use), but R's `sysfonts` doesn't support WOFF2 out-of-the-box. AddFonts automatically converts downloaded fonts to TTF format for maximum compatibility.
 
-## Contributing
-
-Contributions are welcome! Ideas for future development:
-
-- [ ] Support for additional font providers (Fontsource, etc.)
-- [ ] Shiny app for interactive font browsing
-- [ ] Font preview function
-- [ ] Automatic font pairing suggestions
-- [ ] Support for variable fonts
+**Performance**: Conversion happens only once per font file. Subsequent uses of the same font load instantly from the TTF cache.
 
 ## Related Packages
 
@@ -212,13 +224,6 @@ Contributions are welcome! Ideas for future development:
 ## License
 
 GPL (>= 3)
-
-## Acknowledgments
-
-- [Bunny Fonts](https://fonts.bunny.net/) for providing a privacy-focused font CDN
-- [showtext](https://github.com/yixuan/showtext) by Yixuan Qiu for the underlying font rendering
-- Font database updated automatically via GitHub Actions
-
 ---
 
-**Note**: AddFonts is in early development. The API may change. Feedback and contributions welcome!
+**Note**: AddFonts is in early development. Everything may change. Feedback and contributions welcome!

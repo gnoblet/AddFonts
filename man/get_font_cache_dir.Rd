@@ -7,7 +7,7 @@
 get_font_cache_dir()
 }
 \value{
-Character string with absolute path to the fonts cache directory.
+(\verb{: character(1)}) Absolute path to the fonts cache directory.
 }
 \description{
 Returns the directory where fonts are/should be cached.
