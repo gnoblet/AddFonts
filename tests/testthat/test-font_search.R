@@ -73,3 +73,77 @@ test_that("font_search validates category parameter", {
   result <- font_search_bunny(category = "nonexistent_category")
   expect_equal(nrow(result), 0)
 })
+
+test_that("font_search returns correct structure", {
+  result <- font_search("roboto")
+
+  expect_s3_class(result, "data.frame")
+  expect_true(all(c("familyName", "category", "weights") %in% names(result)))
+  expect_type(result$familyName, "character")
+  expect_type(result$category, "character")
+  expect_type(result$weights, "character")
+})
+
+test_that("font_search with invalid provider fails", {
+  expect_error(
+    font_search("roboto", provider = "nonexistent"),
+    regexp = "not supported"
+  )
+})
+
+test_that("font_search validates provider parameter", {
+  expect_error(
+    font_search("roboto", provider = ""),
+    regexp = "not supported"
+  )
+})
+
+test_that("font_search default provider is bunny", {
+  result1 <- font_search("roboto")
+  result2 <- font_search("roboto", provider = "bunny")
+
+  expect_equal(result1, result2)
+})
+
+test_that("font_search with category and query works", {
+  result <- font_search(query = "mono", category = "monospace")
+
+  expect_s3_class(result, "data.frame")
+  expect_true(all(result$category == "monospace"))
+  # Should have matching fonts
+  expect_true(nrow(result) > 0)
+})
+
+test_that("font_search with only category works", {
+  result <- font_search(category = "serif")
+
+  expect_s3_class(result, "data.frame")
+  expect_true(all(result$category == "serif"))
+  expect_true(nrow(result) > 0)
+})
+
+test_that("font_search with NULL query and category returns all fonts", {
+  result <- font_search(query = NULL, category = NULL)
+
+  expect_s3_class(result, "data.frame")
+  expect_true(nrow(result) == nrow(font_list()))
+})
+
+test_that("font_search is case-insensitive for provider", {
+  result1 <- font_search("roboto", provider = "bunny")
+  result2 <- font_search("roboto", provider = "BUNNY")
+  result3 <- font_search("roboto", provider = "BuNnY")
+
+  expect_equal(result1, result2)
+  expect_equal(result2, result3)
+})
+
+test_that("font_search filters correctly by category case-insensitive", {
+  result1 <- font_search(category = "sans-serif")
+  result2 <- font_search(category = "SANS-SERIF")
+  result3 <- font_search(category = "Sans-Serif")
+
+  expect_equal(nrow(result1), nrow(result2))
+  expect_equal(nrow(result2), nrow(result3))
+  expect_true(all(tolower(result1$category) == "sans-serif"))
+})
