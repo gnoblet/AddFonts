@@ -12,6 +12,7 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE, packages = "roxytypes")
 RoxygenNote: 7.3.3
 Config/Needs/documentation: roxytypes
+SystemRequirements: woff2 (>= 1.0.2): woff2-tools (rpm) or woff2 (deb)
 Imports: 
     sysfonts,
     httr2,
