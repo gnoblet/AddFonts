@@ -90,9 +90,9 @@ library(showtext)
 
 # Add custom fonts with specific weights
 add_font_bunny(
-  "Advent Pro",
+  "Cormorant SC",
   family = "main_font",
-  regular_wt = 400,
+  regular_wt = 600,
   bold_wt = 700
 )
 
@@ -115,7 +115,7 @@ ggplot(mtcars, aes(wt, mpg)) +
 
 Find fonts by name or browse by category:
 
-```{r search-example}
+```{r search-example, eval=false}
 # Search for fonts by name (uses default provider: Bunny)
 font_search("roboto")
 
@@ -137,7 +137,7 @@ table(fonts$category)
 
 ### Custom Font Weights and Styles
 
-```{r advanced-example}
+```{r advanced-example, eval=false}
 # Download all available weights and styles (default)
 add_font("roboto")
 
@@ -164,7 +164,7 @@ add_font_bunny("inter", wt = c(300, 500), styles = "normal")
 
 By default, fonts are cached in a platform-appropriate directory. You can customize this:
 
-```{r cache-example}
+```{r cache-example, eval=false}
 # Check current cache directory
 get_font_cache_dir()
 
