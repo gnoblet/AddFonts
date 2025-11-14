@@ -65,9 +65,3 @@ font_list_bunny <- function() {
   fb <- fonts_bunny
   return(fb)
 }
-
-#' Null coalescing operator
-#' @noRd
-`%||%` <- function(x, y) {
-  if (is.null(x)) y else x
-}
