@@ -37,7 +37,7 @@ jobs:
       
       - name: Create R data object
         run: |
-          Rscript data-raw/bunny_fonts.R
+          Rscript data-raw/fonts_bunny.R
         shell: bash
       
       - name: Check for changes
