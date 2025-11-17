@@ -33,7 +33,7 @@ jobs:
         
       - name: Update font database (Python)
         run: |
-          uv run scripts/create_bunny_font_db.py
+          uv run scripts/create_font_db_bunny.py
       
       - name: Create R data object
         run: |
