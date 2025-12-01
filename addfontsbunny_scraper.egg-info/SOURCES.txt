@@ -1,8 +1,0 @@
-LICENSE
-pyproject.toml
-addfontsbunny_scraper.egg-info/PKG-INFO
-addfontsbunny_scraper.egg-info/SOURCES.txt
-addfontsbunny_scraper.egg-info/dependency_links.txt
-addfontsbunny_scraper.egg-info/entry_points.txt
-addfontsbunny_scraper.egg-info/requires.txt
-addfontsbunny_scraper.egg-info/top_level.txt
