@@ -18,7 +18,6 @@
 #' clear_font_cache_dir(confirm = FALSE)
 #' }
 #'
-#' @export
 clear_font_cache_dir <- function(confirm = TRUE) {
   # Validate parameter
   if (!is.logical(confirm) || length(confirm) != 1 || is.na(confirm)) {
