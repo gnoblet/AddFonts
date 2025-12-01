@@ -12,8 +12,6 @@
 #' cache_dir <- get_font_cache_dir()
 #' print(cache_dir)
 #' }
-#'
-#' @export
 get_font_cache_dir <- function() {
   # Use rappdirs to get user-specific cache directory for AddFonts
   cache_dir <- rappdirs::user_cache_dir("AddFonts")
@@ -24,5 +22,5 @@ get_font_cache_dir <- function() {
     message("Created font cache directory at: ", cache_dir)
   }
 
-  cache_dir
+  return(cache_dir)
 }
