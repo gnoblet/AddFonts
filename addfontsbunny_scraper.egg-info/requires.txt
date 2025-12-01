@@ -1,0 +1,7 @@
+playwright<2.0.0,>=1.40.0
+requests>=2.28.0
+
+[dev]
+black
+ruff
+pytest

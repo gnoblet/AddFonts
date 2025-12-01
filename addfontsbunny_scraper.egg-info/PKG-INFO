@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: addfontsbunny-scraper
+Version: 0.1.0
+Summary: Playwright-based scraper for fonts.bunny.net used by the addfontsbunny project.
+Author-email: Your Name <you@example.com>
+License: MIT
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: playwright<2.0.0,>=1.40.0
+Requires-Dist: requests>=2.28.0
+Provides-Extra: dev
+Requires-Dist: black; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Requires-Dist: pytest; extra == "dev"
+Dynamic: license-file

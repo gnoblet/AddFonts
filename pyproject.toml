@@ -1,0 +1,12 @@
+[project]
+name = "addfonts"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "argparse>=1.4.0",
+    "datetime>=5.5",
+    "path>=17.1.1",
+    "requests>=2.32.5",
+]

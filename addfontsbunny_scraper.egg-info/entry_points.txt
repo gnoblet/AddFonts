@@ -1,0 +1,3 @@
+[console_scripts]
+scrape-bunny = scripts.scrape_bunny:main
+simple-font-db = scripts.simple_font_db:main
