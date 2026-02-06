@@ -225,13 +225,13 @@ assert_pattern_with_ext <- function(
     # human-readable allowed set for the error message
     human_parts <- c()
     if (allow_lowercase) {
-      human_parts <- c(human_parts, "lower-case letters a–z")
+      human_parts <- c(human_parts, "lower-case letters a-z")
     }
     if (allow_uppercase) {
-      human_parts <- c(human_parts, "upper-case letters A–Z")
+      human_parts <- c(human_parts, "upper-case letters A-Z")
     }
     if (allow_digits) {
-      human_parts <- c(human_parts, "digits 0–9")
+      human_parts <- c(human_parts, "digits 0-9")
     }
     if (allow_dot) {
       human_parts <- c(human_parts, "dot (.)")
