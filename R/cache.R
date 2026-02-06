@@ -1,7 +1,3 @@
-#' Cache index read/write and helpers
-#'
-#' @details
-#' This file consolidates the [cache_read], [cache_write], [cache_get], and [cache_set] generics and methods for working with the on-disk fonts index.
 #' @importFrom jsonlite read_json write_json
 NULL
 
@@ -406,7 +402,7 @@ S7::method(cache_remove, CacheEntryList) <- function(
 #'   Character vector of family names to remove, or `NULL` to clear the whole cache (default: NULL)
 #' @typed reset: logical(1)
 #'   If TRUE, completely reset and clear the cache (default: FALSE).
-#' @typed ...
+#' @typed ...: anyD
 #'   Additional arguments (currently unused).
 #'
 #' @typedreturn character | NULL
