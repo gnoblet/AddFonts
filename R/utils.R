@@ -134,3 +134,44 @@ get_cache_dir <- function() {
   # Return the absolute path to the cache dir
   return(cache_dir)
 }
+
+## Utilities: get_provider_details
+#' Get provider details from internal data
+#'
+#' Load and return a FontProvider object for the specified provider.
+#' The providers data is stored in the package's internal sysdata.rda.
+#'
+#' @typed provider: character(1)
+#'   Provider id/name (e.g. "bunny").
+#'
+#' @typedreturn FontProvider
+#'   A validated FontProvider object.
+get_provider_details <- function(provider) {
+  #------ Arg check
+  assert_null_or_non_empty_string(provider, allow_null = FALSE)
+
+  #------ Do stuff
+  # Load providers from internal data (created by data-raw/providers.R)
+  # The 'providers' object is stored in R/sysdata.rda
+  if (!exists("providers", mode = "list", envir = asNamespace("AddFonts"))) {
+    cli::cli_abort(c(
+      "!" = "Internal providers data not found.",
+      "i" = "Please rebuild the package or check data-raw/providers.R"
+    ))
+  }
+
+  providers_data <- get("providers", envir = asNamespace("AddFonts"))
+
+  # Check if provider exists in the data
+  if (!provider %in% names(providers_data)) {
+    available <- paste(names(providers_data), collapse = ", ")
+    cli::cli_abort(c(
+      "!" = "Provider {.val {provider}} not found.",
+      "i" = "Available providers: {.val {available}}"
+    ))
+  }
+
+  # Convert to FontProvider object and return
+  provider_obj <- as_FontProvider(providers_data[[provider]])
+  return(provider_obj)
+}
