@@ -65,14 +65,14 @@ delete_files <- function(
     }
   }
 
-  if (quiet %in% c("success", "full") && length(deleted) > 0) {
+  if (quiet %in% c("none", "success") && length(deleted) > 0) {
     cli::cli_alert_success("Deleted {length(deleted)} file{?s}:")
     lapply(deleted, function(x) cli::cli_text("  - {.file {x}}"))
   }
 
   if (
     quiet %in%
-      c("fail", "full") &&
+      c("none", "fail") &&
       (length(failed) > 0 || length(not_found) > 0)
   ) {
     if (length(failed) > 0) {
