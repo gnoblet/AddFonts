@@ -3,40 +3,27 @@ test_that("cache_variant_paths validates provider and returns expected paths", {
   dir.create(tmp)
   on.exit(if (fs::dir_exists(tmp)) fs::dir_delete(tmp))
 
-  # invalid provider object
-  expect_error(cache_variant_paths(
-    "nope",
-    "fam",
-    400,
-    "normal",
-    "latin",
-    cache_dir = tmp
-  ))
-
-  # provider missing source
-  expect_error(cache_variant_paths(
-    list(conversion = NULL, conversion_ext = NULL),
-    "fam",
-    400,
-    "normal",
-    "latin",
-    cache_dir = tmp
-  ))
-
-  # provider missing conversion keys
-  expect_error(cache_variant_paths(
-    list(source = "src"),
-    "fam",
-    400,
-    "normal",
-    "latin",
-    cache_dir = tmp
-  ))
+  # invalid provider object (not FontProvider)
+  expect_error(
+    cache_variant_paths(
+      "nope",
+      "fam",
+      400,
+      "normal",
+      "latin",
+      cache_dir = tmp
+    ),
+    "must be a <FontProvider> object"
+  )
 
   # happy path without conversion
-  pl <- list(source = "src", conversion = NULL, conversion_ext = NULL)
+  provider_no_conv <- new_test_provider(
+    source = "src",
+    conversion = NULL,
+    conversion_ext = NULL
+  )
   paths <- cache_variant_paths(
-    pl,
+    provider_no_conv,
     "My Font",
     400,
     "normal",
@@ -51,13 +38,13 @@ test_that("cache_variant_paths validates provider and returns expected paths", {
   ))
 
   # happy path with conversion specified
-  pl2 <- list(
+  provider_with_conv <- new_test_provider(
     source = "src",
     conversion = "woff2_to_ttf",
     conversion_ext = "woff2"
   )
   paths2 <- cache_variant_paths(
-    pl2,
+    provider_with_conv,
     "My Font",
     700,
     "italic",
