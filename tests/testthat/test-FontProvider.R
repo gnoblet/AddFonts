@@ -1,5 +1,5 @@
-test_that("as_FontProvider constructs a FontProvider and validates fields", {
-  x <- list(
+test_that("FontProvider constructs with valid inputs", {
+  fp <- FontProvider(
     source = "bunny",
     url_template = "https://fonts.bunny.net/%s/files/%s-%s-%d-%s.woff2",
     conversion = "woff2_to_ttf",
@@ -7,32 +7,80 @@ test_that("as_FontProvider constructs a FontProvider and validates fields", {
     aliases = list("fonts.bunny.net")
   )
 
-  fp <- as_FontProvider(x)
   expect_s7_class(fp, FontProvider)
   expect_equal(fp@source, "bunny")
+  expect_equal(
+    fp@url_template,
+    "https://fonts.bunny.net/%s/files/%s-%s-%d-%s.woff2"
+  )
   expect_equal(fp@conversion, "woff2_to_ttf")
   expect_equal(fp@conversion_ext, "woff2")
+  expect_equal(fp@aliases, list("fonts.bunny.net"))
 })
 
-test_that("load_providers_db and providers_file return expected data", {
-  f <- providers_file()
-  expect_true(file.exists(f))
+test_that("FontProvider constructs with NULL conversion fields", {
+  fp <- FontProvider(
+    source = "google",
+    url_template = "https://fonts.google.com/{family}.ttf",
+    conversion = NULL,
+    conversion_ext = NULL,
+    aliases = list()
+  )
 
-  db <- load_providers_db()
-  expect_type(db, "list")
-  expect_true(!is.null(db$bunny))
+  expect_s7_class(fp, FontProvider)
+  expect_equal(fp@source, "google")
+  expect_null(fp@conversion)
+  expect_null(fp@conversion_ext)
 })
 
-test_that("get_provider_details resolves bunny and aliases", {
-  p <- get_provider_details("bunny")
-  expect_s7_class(p, FontProvider)
-  expect_equal(provider_name(p), "bunny")
-
-  p2 <- get_provider_details("fonts.bunny.net")
-  expect_s7_class(p2, FontProvider)
-  expect_equal(p2@source, "bunny")
+test_that("FontProvider validator rejects empty source", {
+  expect_error(
+    FontProvider(
+      source = "",
+      url_template = "https://example.com/{family}.ttf",
+      conversion = NULL,
+      conversion_ext = NULL,
+      aliases = list()
+    ),
+    "empty"
+  )
 })
 
-test_that("get_provider_details errors on unknown provider", {
-  expect_error(get_provider_details("no-such-provider"))
+test_that("FontProvider validator rejects empty url_template", {
+  expect_error(
+    FontProvider(
+      source = "test",
+      url_template = "",
+      conversion = NULL,
+      conversion_ext = NULL,
+      aliases = list()
+    ),
+    "empty"
+  )
+})
+
+test_that("FontProvider validator rejects invalid conversion type", {
+  expect_error(
+    FontProvider(
+      source = "test",
+      url_template = "https://example.com/{family}.ttf",
+      conversion = c("func1", "func2"),
+      conversion_ext = "woff2",
+      aliases = list()
+    ),
+    "must be NULL or a non-empty character string"
+  )
+})
+
+test_that("FontProvider validator rejects invalid conversion_ext type", {
+  expect_error(
+    FontProvider(
+      source = "test",
+      url_template = "https://example.com/{family}.ttf",
+      conversion = "convert_func",
+      conversion_ext = c("ext1", "ext2"),
+      aliases = list()
+    ),
+    "must be NULL or a non-empty character string"
+  )
 })

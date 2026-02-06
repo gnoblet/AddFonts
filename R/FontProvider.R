@@ -63,29 +63,3 @@ FontProvider <- S7::new_class(
     NULL
   }
 )
-
-#' Construct a `FontProvider` from a named list
-#'
-as_FontProvider <- function(x) {
-  # x: list or named list from JSON
-  aliases <- NULL
-  if (!is.null(x$aliases)) {
-    aliases <- as.list(x$aliases)
-  }
-
-  FontProvider(
-    source = as.character(x$source),
-    url_template = as.character(x$url_template),
-    conversion = if (!is.null(x$conversion)) {
-      as.character(x$conversion)
-    } else {
-      NULL
-    },
-    conversion_ext = if (!is.null(x$conversion_ext)) {
-      as.character(x$conversion_ext)
-    } else {
-      NULL
-    },
-    aliases = aliases
-  )
-}
