@@ -17,7 +17,9 @@ Imports:
     rappdirs,
     cli,
     jsonlite,
-    S7
+    S7,
+    glue,
+    rlang
 Suggests:
     testthat (>= 3.3.0),
     usethis,
