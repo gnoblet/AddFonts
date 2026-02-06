@@ -10,8 +10,9 @@
 #' @typed files: list(1+)
 #'  A non-empty named list of file paths. Each element is a character(1) path to the local font files.
 #'
-#' @typed added: getter-only character(1)
-#'  Timestamp when the meta was added using `Sys.time()`.
+#' @details
+#' The `added` property is a getter-only field that returns the current timestamp
+#' as a character string when accessed. It cannot be set during construction.
 #'
 #' @typedreturn S7_object
 #'  A validated S7 `CacheMeta` object.
