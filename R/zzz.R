@@ -1,4 +1,36 @@
 .onAttach <- function(libname, pkgname) {
+  #------ Database
+
+  # create database default file if it does not exist
+  cache_dir <- get_cache_dir()
+  cache_file <- fs::path(cache_dir, "fonts_db.json")
+
+  # alert user about cache location
+  # if cache file exists, inform user
+  # else, create empty cache and inform user
+  if (fs::file_exists(cache_file)) {
+    packageStartupMessage(
+      "Font cache located at: ",
+      cache_file
+    )
+  } else {
+    cache_write(as_CacheEntryList(list()), cache_dir, quiet = TRUE)
+    if (fs::file_exists(cache_file)) {
+      packageStartupMessage(
+        "Font cache created at: ",
+        cache_file
+      )
+    } else {
+      packageStartupMessage(
+        "Warning: Could not create font cache at: ",
+        cache_file,
+        "\nYou may want to use other cache_dir options while using the package."
+      )
+    }
+  }
+
+  #------ woff2
+
   # Check if woff2_decompress is available
   woff2_cmd <- Sys.which("woff2_decompress")
 
@@ -11,7 +43,7 @@
       "  - Debian/Ubuntu:       sudo apt install woff2\n",
       "  - Fedora/RHEL:         sudo dnf install woff2-tools\n",
       "  - Arch Linux:          sudo pacman -S woff2\n",
-      "  - Windows:             https://github.com/google/woff2"
+      "  - Windows or else:     Compile from: https://github.com/google/woff2"
     )
   } else {
     packageStartupMessage(
@@ -20,3 +52,15 @@
     )
   }
 }
+
+.onLoad <- function(...) {
+  S7::methods_register()
+}
+
+## Package startup helper
+##
+## @typed libname: character(1)
+##   Installation library path (passed by R).
+## @typed pkgname: character(1)
+##   Package name (passed by R).
+## @noRd

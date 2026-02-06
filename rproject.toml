@@ -14,4 +14,12 @@ dependencies = [
     "sysfonts",
     "fs",
     "devtools",
+    "roxytypes",
+    "showtext",
+    "ggplot2",
+    "dplyr",
+    "tidyr",
+    "S7",
+    "jsonlite",
+    "pak",
 ]

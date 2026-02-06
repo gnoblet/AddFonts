@@ -120,14 +120,14 @@ Find fonts by name or browse by category:
 font_search("roboto")
 
 # Or use provider-specific function
-font_search_bunny("roboto")
+# font_search_bunny("roboto")
 
 # List all available fonts
 fonts <- font_list()
 head(fonts)
 
 # List all sans-serif fonts
-sans_fonts <- font_search(category = "sans-serif")
+sans_fonts <- font_search("roboto")
 
 # Browse all available categories
 table(fonts$category)
@@ -145,13 +145,13 @@ add_font("roboto")
 add_font("roboto", wt = c(300, 400, 700))
 
 # Download only normal (non-italic) styles
-add_font("roboto", wt = c(400, 700), styles = "normal")
+add_font("roboto", wt = c(400, 700), styles = "regular")
 
 # Download only italic styles with specific weights
 add_font("merriweather", wt = c(400, 700), styles = "italic")
 
 # Download a single weight
-add_font("source-code-pro", wt = 400, styles = "normal")
+add_font("source-code-pro", wt = 400, styles = "regular")
 
 # Specify a different character subset
 add_font("noto-sans", subset = "latin-ext")
