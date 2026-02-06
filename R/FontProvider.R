@@ -24,13 +24,15 @@ FontProvider <- S7::new_class(
   properties = list(
     source = S7::class_character,
     url_template = S7::class_character,
-    conversion = S7::class_character,
-    conversion_ext = S7::class_character,
+    conversion = S7::class_any,
+    conversion_ext = S7::class_any,
     aliases = S7::class_list
   ),
   validator = function(self) {
     assert_null_or_non_empty_string(self@source, allow_null = FALSE)
     assert_null_or_non_empty_string(self@url_template, allow_null = FALSE)
+    assert_null_or_non_empty_string(self@conversion)
+    assert_null_or_non_empty_string(self@conversion_ext)
 
     if (
       !is.null(self@conversion) &&
