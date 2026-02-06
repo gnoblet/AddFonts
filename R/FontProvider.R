@@ -13,7 +13,10 @@
 #'   Original extension handled by the provider (e.g. "woff2").
 #'
 #' @typed aliases: list | NULL
-#'   Optional list of alias names to match (e.g. ["fonts.bunny.net"]).
+#'   Optional list of alias names to match (e.g. "fonts.bunny.net").
+#'
+#' @typedreturn FontProviders
+#'
 #'
 #' @export
 FontProvider <- S7::new_class(
