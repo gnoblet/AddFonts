@@ -1,11 +1,11 @@
 ## Helper: register_from_download
 ##'
-##' Download necessary variants for a font, write a registry entry and
+##' Download necessary variants for a font, write a cache entry and
 ##' register the font with `sysfonts`. Returns the prepared `files` list
 ##' on success, or `NULL` if a regular font could not be obtained.
 ##'
-##' @typed provider: list
-##'   Provider details structure used for downloads.
+##' @typed provider: FontProvider
+##'   Provider object used for downloads.
 ##' @typed name: character(1)
 ##'   Font name at the provider.
 ##' @typed font_id: character(1)
@@ -32,93 +32,101 @@ register_from_download <- function(
   subset = "latin",
   cache_dir = NULL
 ) {
+  #------ Arg check
+  if (!S7::S7_inherits(provider, FontProvider)) {
+    cli::cli_abort("{.arg provider} must be a <FontProvider> object.")
+  }
+
   if (is.null(cache_dir)) {
     cache_dir <- get_cache_dir()
   }
 
-  # Fetch primary weight (regular) with visible warnings, rest quiet
-  res <- list(
-    normal = download_variant_generic(
-      provider,
-      name,
-      regular.wt,
-      "normal",
-      subset,
-      cache_dir,
-      quiet = FALSE
-    ),
-    italic = download_variant_generic(
-      provider,
-      name,
-      regular.wt,
-      "italic",
-      subset,
-      cache_dir,
-      quiet = TRUE
-    ),
-    bold = download_variant_generic(
-      provider,
-      name,
-      regular.wt,
-      "bold",
-      subset,
-      cache_dir,
-      quiet = TRUE
-    ),
-    bolditalic = download_variant_generic(
-      provider,
-      name,
-      regular.wt,
-      "bolditalic",
-      subset,
-      cache_dir,
-      quiet = TRUE
-    )
+  #------ Download variants (regular with warnings, others silent)
+  regular_normal <- download_variant_generic(
+    provider,
+    name,
+    regular.wt,
+    "normal",
+    subset,
+    cache_dir,
+    quiet = FALSE
   )
-  if (is.null(res$italic) && !is.null(res$normal)) {
-    res$italic <- res$normal
-  }
-  if (is.null(res$bold) && !is.null(res$normal)) {
-    res$bold <- res$normal
-  }
-  if (is.null(res$bolditalic) && !is.null(res$italic)) {
-    res$bolditalic <- res$italic
-  } else if (is.null(res$bolditalic) && !is.null(res$bold)) {
-    res$bolditalic <- res$bold
-  }
 
-  if (is.null(res$normal)) {
+  # If regular font not available, cannot proceed
+  if (is.null(regular_normal)) {
     return(NULL)
   }
 
-  # write registry entry
+  # Download other variants quietly (fallback if not available)
+  regular_italic <- download_variant_generic(
+    provider,
+    name,
+    regular.wt,
+    "italic",
+    subset,
+    cache_dir,
+    quiet = TRUE
+  )
+  bold_normal <- download_variant_generic(
+    provider,
+    name,
+    bold.wt,
+    "normal",
+    subset,
+    cache_dir,
+    quiet = TRUE
+  )
+  bold_italic <- download_variant_generic(
+    provider,
+    name,
+    bold.wt,
+    "italic",
+    subset,
+    cache_dir,
+    quiet = TRUE
+  )
+
+  #------ Apply fallbacks
   files_entry <- list(
-    regular = res$normal,
-    italic = res$italic,
-    bold = res$bold,
-    bolditalic = res$bolditalic
+    regular = regular_normal,
+    italic = if (!is.null(regular_italic)) regular_italic else regular_normal,
+    bold = if (!is.null(bold_normal)) bold_normal else regular_normal,
+    bolditalic = if (!is.null(bold_italic)) {
+      bold_italic
+    } else if (!is.null(bold_normal)) {
+      bold_normal
+    } else if (!is.null(regular_italic)) {
+      regular_italic
+    } else {
+      regular_normal
+    }
   )
-  meta <- list(
-    source = provider$source,
+
+  #------ Create cache entry
+  meta <- CacheMeta(
+    source = provider@source,
     family_id = font_id,
-    files = files_entry,
-    added = as.character(Sys.time())
+    files = files_entry
   )
 
-  # create a validated cache entry and persist
-  entry <- new_cache_entry(family_name, meta)
-  cache_set(cache_dir, entry$family, entry$meta)
+  # Read current cache and update it
+  cel <- tryCatch(
+    cache_read(cache_dir = cache_dir),
+    error = function(e) as_CacheEntryList(list())
+  )
 
-  # register with sysfonts
+  cel <- cache_set(cel, family_name, meta)
+  cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
+
+  #------ Register with sysfonts
   sysfonts::font_add(
     family = family_name,
-    regular = res$normal,
-    italic = res$italic,
-    bold = res$bold,
-    bolditalic = res$bolditalic
+    regular = files_entry$regular,
+    italic = files_entry$italic,
+    bold = files_entry$bold,
+    bolditalic = files_entry$bolditalic
   )
 
-  # notify user for success
   cli::cli_alert_success(
     "Font {.val {family_name}} registered and added to cache."
   )
