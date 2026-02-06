@@ -9,7 +9,10 @@
 #' @export
 as_FontProvider <- S7::new_generic(
   "as_FontProvider",
-  "x"
+  "x",
+  function(x) {
+    S7::S7_dispatch()
+  }
 )
 
 #' @rdname as_FontProvider
