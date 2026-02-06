@@ -29,15 +29,30 @@ FontProvider <- S7::new_class(
     assert_null_or_non_empty_string(self@source, allow_null = FALSE)
     assert_null_or_non_empty_string(self@url_template, allow_null = FALSE)
 
-    if (!is.null(self@conversion) && (!is.character(self@conversion) || length(self@conversion) != 1)) {
-      cli::cli_abort("`conversion` must be NULL or a character(1) function name.")
+    if (
+      !is.null(self@conversion) &&
+        (!is.character(self@conversion) || length(self@conversion) != 1)
+    ) {
+      cli::cli_abort(
+        "`conversion` must be NULL or a character(1) function name."
+      )
     }
-    if (!is.null(self@conversion_ext) && (!is.character(self@conversion_ext) || length(self@conversion_ext) != 1)) {
-      cli::cli_abort("`conversion_ext` must be NULL or a character(1) file extension.")
+    if (
+      !is.null(self@conversion_ext) &&
+        (!is.character(self@conversion_ext) || length(self@conversion_ext) != 1)
+    ) {
+      cli::cli_abort(
+        "`conversion_ext` must be NULL or a character(1) file extension."
+      )
     }
 
-    if (!is.null(self@aliases) && (!is.list(self@aliases) && !is.character(self@aliases))) {
-      cli::cli_abort("`aliases` must be NULL, a list or character vector of aliases.")
+    if (
+      !is.null(self@aliases) &&
+        (!is.list(self@aliases) && !is.character(self@aliases))
+    ) {
+      cli::cli_abort(
+        "`aliases` must be NULL, a list or character vector of aliases."
+      )
     }
 
     NULL
@@ -56,8 +71,16 @@ as_FontProvider <- function(x) {
   FontProvider(
     source = as.character(x$source),
     url_template = as.character(x$url_template),
-    conversion = if (!is.null(x$conversion)) as.character(x$conversion) else NULL,
-    conversion_ext = if (!is.null(x$conversion_ext)) as.character(x$conversion_ext) else NULL,
+    conversion = if (!is.null(x$conversion)) {
+      as.character(x$conversion)
+    } else {
+      NULL
+    },
+    conversion_ext = if (!is.null(x$conversion_ext)) {
+      as.character(x$conversion_ext)
+    } else {
+      NULL
+    },
     aliases = aliases
   )
 }

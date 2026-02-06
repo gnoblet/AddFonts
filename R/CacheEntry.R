@@ -14,34 +14,34 @@ NULL
 #'
 #' @export
 CacheEntry <- S7::new_class(
-    "CacheEntry",
-    properties = list(
-        family = S7::class_character,
-        meta = CacheMeta
-    ),
-    validator = function(self) {
-        # family is a non-empty string
-        assert_null_or_non_empty_string(self@family, allow_null = FALSE)
+  "CacheEntry",
+  properties = list(
+    family = S7::class_character,
+    meta = CacheMeta
+  ),
+  validator = function(self) {
+    # family is a non-empty string
+    assert_null_or_non_empty_string(self@family, allow_null = FALSE)
 
-        # assert family is only made of safe chars
-        assert_pattern_with_ext(
-            self@family,
-            ext = NULL,
-            allow_dot = FALSE,
-            allow_underscore = FALSE,
-            allow_forward_slash = FALSE,
-            allow_backslash = FALSE,
-            allow_colon = FALSE,
-            allow_tilde = FALSE
-        )
+    # assert family is only made of safe chars
+    assert_pattern_with_ext(
+      self@family,
+      ext = NULL,
+      allow_dot = FALSE,
+      allow_underscore = FALSE,
+      allow_forward_slash = FALSE,
+      allow_backslash = FALSE,
+      allow_colon = FALSE,
+      allow_tilde = FALSE
+    )
 
-        # family is different from meta@family_id
-        if (self@family != self@meta@family_id) {
-            cli::cli_warn(
-                "self@family is different from self@family_id."
-            )
-        }
-
-        NULL
+    # family is different from meta@family_id
+    if (self@family != self@meta@family_id) {
+      cli::cli_warn(
+        "self@family is different from self@family_id."
+      )
     }
+
+    NULL
+  }
 )

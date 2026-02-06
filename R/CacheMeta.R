@@ -18,53 +18,53 @@
 #'
 #' @export
 CacheMeta <- S7::new_class(
-    "CacheMeta",
-    properties = list(
-        family_id = S7::class_character,
-        source = S7::class_character,
-        files = S7::class_list,
-        added = S7::new_property(S7::class_character, getter = function(self) {
-            as.character(Sys.time())
-        })
-    ),
-    validator = function(self) {
-        # familiy id is a safe_id (non-empty string with allowed chars)
-        assert_null_or_non_empty_string(self@family_id, allow_null = FALSE)
+  "CacheMeta",
+  properties = list(
+    family_id = S7::class_character,
+    source = S7::class_character,
+    files = S7::class_list,
+    added = S7::new_property(S7::class_character, getter = function(self) {
+      as.character(Sys.time())
+    })
+  ),
+  validator = function(self) {
+    # familiy id is a safe_id (non-empty string with allowed chars)
+    assert_null_or_non_empty_string(self@family_id, allow_null = FALSE)
 
-        # family id has safe chars
-        assert_pattern_with_ext(
-            self@family_id,
-            ext = NULL,
-            allow_dot = FALSE,
-            allow_uppercase = FALSE,
-            allow_forward_slash = FALSE,
-            allow_backslash = FALSE,
-            allow_colon = FALSE,
-            allow_tilde = FALSE
-        )
+    # family id has safe chars
+    assert_pattern_with_ext(
+      self@family_id,
+      ext = NULL,
+      allow_dot = FALSE,
+      allow_uppercase = FALSE,
+      allow_forward_slash = FALSE,
+      allow_backslash = FALSE,
+      allow_colon = FALSE,
+      allow_tilde = FALSE
+    )
 
-        # source is a non-empty string
-        assert_null_or_non_empty_string(self@source, allow_null = FALSE)
+    # source is a non-empty string
+    assert_null_or_non_empty_string(self@source, allow_null = FALSE)
 
-        files <- self@files
-        # - non-empty list of non-empty character strings
-        if (!is.list(files) || length(files) == 0) {
-            cli::cli_abort(
-                "self@files must be a non-empty list."
-            )
-        }
-        for (f in files) {
-            if (!is.character(f) || length(f) < 1 || !nzchar(f[1])) {
-                cli::cli_abort(
-                    "self@files must be a list of non-empty character strings."
-                )
-            }
-        }
-        # = right path pattern
-        lapply(files, function(f) {
-            assert_pattern_with_ext(f, ext = ".ttf")
-        })
-
-        NULL
+    files <- self@files
+    # - non-empty list of non-empty character strings
+    if (!is.list(files) || length(files) == 0) {
+      cli::cli_abort(
+        "self@files must be a non-empty list."
+      )
     }
+    for (f in files) {
+      if (!is.character(f) || length(f) < 1 || !nzchar(f[1])) {
+        cli::cli_abort(
+          "self@files must be a list of non-empty character strings."
+        )
+      }
+    }
+    # = right path pattern
+    lapply(files, function(f) {
+      assert_pattern_with_ext(f, ext = ".ttf")
+    })
+
+    NULL
+  }
 )
