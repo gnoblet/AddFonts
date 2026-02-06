@@ -1,9 +1,9 @@
 Package: AddFonts
-Title: Download and Register Fonts from GDPR-Compliant Providers
+Title: Download and Register Fonts from GDPR-Compliant Providers To Use R graphics.
 Version: 0.1.0
 Authors@R: 
     person("Guillaume", "Noblet", , "gnoblet@zaclys.net", role = c("aut", "cre"))
-Description: Download and register fonts from GDPR-compliant providers for use in R graphics. Currently supports Bunny Fonts (<https://fonts.bunny.net/>), a privacy-first. Extensible architecture allows for easy additions of font providers.
+Description: Download and register fonts from GDPR-compliant providers for use in R graphics. Currently supports Bunny Fonts (<https://fonts.bunny.net/>/ Extensible architecture allows for easy additions of font providers.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE, packages = "roxytypes")
