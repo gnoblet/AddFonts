@@ -1,6 +1,6 @@
 #' Add a font to the local cache and register it for use
 #'
-#' Ensure a font is available locally: try the registry, otherwise
+#' Ensure a font is available locally: try the cache first, otherwise
 #' download/convert and register the font so it can be used by plotting
 #' devices. Returns (invisibly) the list of local file paths.
 #'
@@ -28,69 +28,59 @@ add_font <- function(
   bold.wt = 700,
   subset = "latin"
 ) {
-  # Basic validation (keep concise; helpers exist for heavy checks)
-  if (!is.character(name) || length(name) != 1 || !nzchar(name)) {
-    cli::cli_abort("{.arg name} must be a non-empty string.")
-  }
-  if (!is.character(provider) || length(provider) != 1 || !nzchar(provider)) {
-    cli::cli_abort("{.arg provider} must be a non-empty string.")
-  }
-  if (
-    !is.null(family) &&
-      (!is.character(family) || length(family) != 1 || !nzchar(family))
-  ) {
-    cli::cli_abort("{.arg family} must be NULL or a non-empty string.")
-  }
+  #------ Arg check
+  assert_null_or_non_empty_string(name, allow_null = FALSE)
+  assert_null_or_non_empty_string(provider, allow_null = FALSE)
+  assert_null_or_non_empty_string(family, allow_null = TRUE)
+
   if (!is.numeric(regular.wt) || length(regular.wt) != 1) {
     cli::cli_abort("{.arg regular.wt} must be a single numeric weight.")
   }
   if (!is.numeric(bold.wt) || length(bold.wt) != 1) {
     cli::cli_abort("{.arg bold.wt} must be a single numeric weight.")
   }
-  if (!is.character(subset) || length(subset) != 1 || !nzchar(subset)) {
-    cli::cli_abort("{.arg subset} must be a non-empty string.")
-  }
+  assert_null_or_non_empty_string(subset, allow_null = FALSE)
 
-  # Prepare identifiers and provider object
+  #------ Prepare identifiers and provider
   provider_obj <- get_provider_details(provider)
   font_id <- safe_id(name)
   family_name <- if (is.null(family)) name else family
   cache_dir <- get_cache_dir()
 
-  # Try to read cache index (proceed if cache missing/corrupt)
-  cel <- cache_read(cache_dir = cache_dir, quiet = TRUE)
+  #------ Try to use cached version
+  # Attempt to read cache (handle errors gracefully)
+  cel <- cache_read(cache_dir = cache_dir)
 
-  # if cel is not an empty list, check for existing entry
-  if (!length(cel@entries) == 0) {
-    got <- cache_get(cel, families = family_name)
+  # Look for existing cache entry
+  ceexisting_entry <- NULL
+  if (length(cel@entries) > 0) {
+    got <- cache_get(cel, families = family_name, quiet = TRUE)
     if (!is.null(got) && length(got) >= 1) {
       existing_entry <- got[[1]]
     }
   }
 
-  # If cached, try register from cache; the helper returns file list or NULL
+  # If found, try to register from cache
   if (!is.null(existing_entry)) {
-    files <- register_from_cache(existing_entry, family_name)
+    files <- register_from_cache(existing_entry)
     if (!is.null(files)) {
       return(invisible(files))
     }
 
-    # Stale cache entry: remove entry (but keep files on disk), then continue
+    # Stale cache entry: remove and continue to re-download
     cli::cli_warn(
-      "Stale cache entry for {.val {family_name}} — removing index entry and re-downloading."
+      "Stale cache entry for {.val {family_name}} — re-downloading."
     )
-    if (!is.null(cel)) {
-      cel_new <- cache_remove(
-        cel,
-        families = family_name,
-        remove_files = FALSE,
-        cache_dir = cache_dir
-      )
-      cache_write(cel_new, cache_dir = cache_dir, quiet = TRUE)
-    }
+    cel <- cache_remove(
+      cel,
+      families = family_name,
+      remove_files = FALSE,
+      cache_dir = cache_dir
+    )
+    cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
   }
 
-  # Delegate download + conversion + registration to helper which will update cache
+  #------ Download, convert, and register
   files_entry <- register_from_download(
     provider = provider_obj,
     name = name,
@@ -104,7 +94,7 @@ add_font <- function(
 
   if (is.null(files_entry)) {
     cli::cli_abort(
-      "No font available for {.val {name}} from provider {.val {provider}}."
+      "Failed to obtain font {.val {name}} from provider {.val {provider}}."
     )
   }
 
