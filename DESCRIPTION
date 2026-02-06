@@ -47,6 +47,7 @@ Collate:
     'conv_fun.R'
     'download_variant_generic.R'
     'preview_font.R'
+    'register_from_cache.R'
     'register_from_download.R'
     'utils.R'
     'woff2_to_ttf.R'
