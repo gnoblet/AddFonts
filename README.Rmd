@@ -34,7 +34,7 @@ Download and register fonts from GDPR-compliant providers for use in R graphics.
 
 Install from GitHub:
 
-```{r}
+```{r, eval=F}
 # install.packages("pak")
 pak::pak("gnoblet/AddFonts")
 ```
