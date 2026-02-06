@@ -22,6 +22,7 @@
 #'   Bold weight to display (default: 700)
 #' @typedreturn list
 #'   Invisibly returns the list of paths produced by `add_font()`.
+#' @importFrom graphics par plot.new text
 #' @export
 preview_font <- function(
     name,
@@ -110,7 +111,7 @@ preview_font <- function(
     #------ Draw preview grid
     # Regular weight, normal
     draw_cell(
-        paste0(regular.wt, " — Regular"),
+        paste0(regular.wt, " - Regular"),
         sample,
         family_name,
         cex_val,
@@ -120,7 +121,7 @@ preview_font <- function(
     # Regular weight, italic
     if (has_italic) {
         draw_cell(
-            paste0(regular.wt, " — Italic"),
+            paste0(regular.wt, " - Italic"),
             sample,
             family_name,
             cex_val,
@@ -128,7 +129,7 @@ preview_font <- function(
         )
     } else {
         draw_cell(
-            paste0(regular.wt, " — Italic (fallback)"),
+            paste0(regular.wt, " - Italic (fallback)"),
             sample,
             family_name,
             cex_val,
@@ -139,7 +140,7 @@ preview_font <- function(
     # Bold weight, normal
     if (has_bold) {
         draw_cell(
-            paste0(bold.wt, " — Regular"),
+            paste0(bold.wt, " - Regular"),
             sample,
             family_name,
             cex_val,
@@ -147,7 +148,7 @@ preview_font <- function(
         )
     } else {
         draw_cell(
-            paste0(bold.wt, " — Regular (fallback)"),
+            paste0(bold.wt, " - Regular (fallback)"),
             sample,
             family_name,
             cex_val,
@@ -158,7 +159,7 @@ preview_font <- function(
     # Bold weight, italic
     if (has_bolditalic) {
         draw_cell(
-            paste0(bold.wt, " — Italic"),
+            paste0(bold.wt, " - Italic"),
             sample,
             family_name,
             cex_val,
@@ -166,7 +167,7 @@ preview_font <- function(
         )
     } else if (has_bold) {
         draw_cell(
-            paste0(bold.wt, " — Italic (fallback)"),
+            paste0(bold.wt, " - Italic (fallback)"),
             sample,
             family_name,
             cex_val,
@@ -174,7 +175,7 @@ preview_font <- function(
         )
     } else {
         draw_cell(
-            paste0(bold.wt, " — Italic (fallback)"),
+            paste0(bold.wt, " - Italic (fallback)"),
             sample,
             family_name,
             cex_val,
