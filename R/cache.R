@@ -2,6 +2,8 @@
 #'
 #' @details
 #' This file consolidates the [cache_read], [cache_write], [cache_get], and [cache_set] generics and methods for working with the on-disk fonts index.
+#' @importFrom jsonlite read_json write_json
+NULL
 
 #' Write CacheEntryList to disk as JSON
 #'
@@ -102,7 +104,10 @@ S7::method(cache_write, CacheEntryList) <- function(
 #' @export
 cache_read <- S7::new_generic(
   "cache_read",
-  "cache_dir"
+  "cache_dir",
+  function(cache_dir) {
+    S7::S7_dispatch()
+  }
 )
 
 #' @rdname cache_read
@@ -152,6 +157,8 @@ S7::method(cache_read, S7::class_character | NULL) <- function(
 #'   The CacheEntryList object to query.
 #' @typed families: character vector
 #'   The family names to retrieve.
+#' @typed quiet: logical(1)
+#'   If TRUE, suppress informational messages (default: TRUE).
 #'
 #' @typedreturn list
 #'  A list of CacheEntry objects matching the specified families. If no families
@@ -294,8 +301,8 @@ S7::method(cache_set, CacheEntryList) <- function(
 
 #' Delete entry from cache
 #'
-#' @typed cache_dir: character(1)
-#'   The cache directory to delete from.
+#' @typed x: CacheEntryList
+#'   The CacheEntryList object to modify.
 #' @typed families: character | NULL
 #'   The font families to delete. If NULL, all entries are deleted.
 #' @typed remove_files: logical(1)
@@ -393,10 +400,14 @@ S7::method(cache_remove, CacheEntryList) <- function(
 #'
 #' Remove entries from the cache, optionally unlinking referenced files.
 #'
-#' @typed families: character | NULL
-#'   Character vector of family names to remove, or `NULL` to clear the whole cache (default: NULL)
 #' @typed cache_dir: NULL | character(1)
 #'   Cache directory to use (default: NULL)
+#' @typed families: character | NULL
+#'   Character vector of family names to remove, or `NULL` to clear the whole cache (default: NULL)
+#' @typed reset: logical(1)
+#'   If TRUE, completely reset and clear the cache (default: FALSE).
+#' @typed ...
+#'   Additional arguments (currently unused).
 #'
 #' @typedreturn character | NULL
 #'   Invisibly returns character vector of removed family names when deleting specific entries, or `NULL` when nothing changed. Remove files by default.
