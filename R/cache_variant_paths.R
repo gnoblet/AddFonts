@@ -3,8 +3,8 @@
 #' Compute paths used for caching provider artifacts and any conversion
 #' intermediate files.
 #'
-#' @typed provider_l: list
-#'   Provider details list (must include `source` and optional conversion info).
+#' @typed provider: FontProvider
+#'   Provider object with source and optional conversion info.
 #' @typed family: character(1)
 #'   Family identifier.
 #' @typed weight: integer(1)
@@ -20,7 +20,7 @@
 #'   A list with elements `to_convert` (path or NULL) and `ttf` (path).
 #'
 cache_variant_paths <- function(
-  provider_l,
+  provider,
   family,
   weight,
   style,
@@ -29,39 +29,26 @@ cache_variant_paths <- function(
 ) {
   #------ Arg check
 
-  # all args are checked in cache_ttf_path()
-  # but provider_l
-
-  # provider_l is a liset with at least a source item
-  assert_list_with_elements(
-    provider_l,
-    required_elements = c("source", "conversion", "conversion_ext")
-  )
-
-  # source  is not null and is a non-empty string
-  assert_null_or_non_empty_string(provider_l$source, allow_null = FALSE)
-
-  # conversion is NULL or a non-empty string
-  assert_null_or_non_empty_string(provider_l$conversion, allow_null = TRUE)
-
-  # conversion_ext is NULL or a non-empty string
-  assert_null_or_non_empty_string(provider_l$conversion_ext, allow_null = TRUE)
+  # Ensure provider is a FontProvider object
+  if (!S7::S7_inherits(provider, FontProvider)) {
+    cli::cli_abort("{.arg provider} must be a <FontProvider> object.")
+  }
 
   #------ Do stuff
 
-  # get cache dir path if NULL
+  # Compute TTF path
   ttf_path <- cache_ttf_path(
-    provider_l$source,
+    provider@source,
     family,
     subset,
     weight,
     style,
     cache_dir
   )
-  # allow provider_l to specify the source extension to convert from
-  if (!is.null(provider_l$conversion) && !is.null(provider_l$conversion_ext)) {
-    ext <- provider_l$conversion_ext
-    to_convert_path <- fs::path_ext_set(ttf_path, ext)
+
+  # Determine conversion path if needed
+  if (!is.null(provider@conversion) && !is.null(provider@conversion_ext)) {
+    to_convert_path <- fs::path_ext_set(ttf_path, provider@conversion_ext)
   } else {
     to_convert_path <- NULL
   }
