@@ -52,7 +52,7 @@ add_font <- function(
   cel <- cache_read(cache_dir = cache_dir)
 
   # Look for existing cache entry
-  ceexisting_entry <- NULL
+  existing_entry <- NULL
   if (length(cel@entries) > 0) {
     got <- cache_get(cel, families = family_name, quiet = TRUE)
     if (!is.null(got) && length(got) >= 1) {
@@ -69,7 +69,7 @@ add_font <- function(
 
     # Stale cache entry: remove and continue to re-download
     cli::cli_warn(
-      "Stale cache entry for {.val {family_name}} — re-downloading."
+      "Stale cache entry for {.val {family_name}} - re-downloading."
     )
     cel <- cache_remove(
       cel,
