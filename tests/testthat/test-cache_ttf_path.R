@@ -13,3 +13,8 @@ test_that("cache_ttf_path returns a path inside cache dir (mocked)", {
   )
   if (fs::dir_exists(tmp)) fs::dir_delete(tmp)
 })
+
+test_that("cache_ttf_filename composes expected filename", {
+  fn <- cache_ttf_filename("src", "My Font", "latin", 400, "normal")
+  expect_true(grepl("^src-my-font-latin-400-normal\\.ttf$", fn))
+})
