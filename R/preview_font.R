@@ -45,7 +45,11 @@ preview_font <- function(
     family_name <- if (is.null(family)) name else family
 
     #------ Setup graphics
-    # Enable showtext for better font rendering if available
+
+    if (!requireNamespace("showtext", quietly = TRUE)) {
+        rlang::check_installed("showtext", reason = "to use preview_font()")
+    }
+
     if (requireNamespace("showtext", quietly = TRUE)) {
         showtext::showtext_auto()
     }
