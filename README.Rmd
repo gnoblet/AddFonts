@@ -13,12 +13,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-# AddFonts
+# AddFonts <a href="http://guillaume-noblet.com/AddFonts/"><img src="man/figures/logo.png" align="right" height="139" alt="AddFonts website" /></a>
+
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/gnoblet/AddFonts/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gnoblet/AddFonts/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/gnoblet/AddFonts/graph/badge.svg)](https://app.codecov.io/gh/gnoblet/AddFonts)
+[![r-universe version](https://gnoblet.r-universe.dev/AddFonts/badges/version)](https://gnoblet.r-universe.dev/AddFonts)
+[![r-universe status](https://gnoblet.r-universe.dev/AddFonts/badges/checks)](https://gnoblet.r-universe.dev/AddFonts)
+
+
 <!-- badges: end -->
 
 Download and register fonts from GDPR-compliant providers for use in R graphics. Currently supports [Bunny Fonts](https://fonts.bunny.net/), a privacy-first alternative to Google Fonts.
@@ -32,10 +37,7 @@ Download and register fonts from GDPR-compliant providers for use in R graphics.
 
 ## Installation
 
-Install from GitHub:
-
 ```{r, eval=F}
-# install.packages("pak")
 pak::pak("gnoblet/AddFonts")
 ```
 
@@ -63,30 +65,69 @@ brew install woff2
 ## Quick Start
 
 
-### Example 1. Basic Usage with ggplot2
+### Preview Fonts With
 
-```{r ggplot2-example, eval=FALSE}
+
+So, let's start by going to https://fonts.bunny.net/ and picking a font. For example, let's pick "Merriweather". We can see that it has 4 variants: regular, bold, italic, and bold-italic. We can use the `preview_font()` function to see what they look like.
+
+```{r preview, message=FALSE, warning=FALSE}
+library(AddFonts)
+preview_font("merriweather", regular.wt = 400, bold.wt = 700)
+```
+
+
+### Add Fonts And Use With ggplot2
+
+Let’s make a simple plot using the registered fonts. First, we register the fonts thanks to the marvelous `add_font()` function.
+
+```{r ggplot2-example, eval=TRUE, warning=FALSE, message=FALSE, collapse=TRUE}
 library(AddFonts)
 library(showtext)
 library(ggplot2)
 
-# Download and register a font
-add_font("oswald")
+fonts <- c(
+  "oswald",
+  "blaka-ink",
+  "barrio",
+  "major-mono-display",
+  "merriweather",
+  "montserrat",
+  "sixtyfour",
+  "playfair-display",
+  "inter",
+  "aboreto",
+  "aclonica",
+  "akronim",
+  "babylonica"
+)
 
-# Enable showtext
-showtext_auto()
-
-ggplot(mtcars, aes(wt, mpg)) +
-  geom_point() +
-  labs(title = "Motor Trend Car Road Tests") +
-  theme_minimal(base_family = "oswald")
+for (font in fonts) {
+  add_font(font)
+}
 ```
 
-### Preview Fonts With 
+Now that fonts have been registered, we can use them in a plot.
 
-```{r preview, eval=FALSE}
-# Preview before using in plots
-preview_font("merriweather", regular.wt = 400, bold.wt = 700)
+```{r}
+showtext_auto()
+
+font_data <- data.frame(
+  x = 0.5,
+  y = seq(0.95, 0.1, length.out = length(fonts)),
+  label = paste(tools::toTitleCase(gsub("-", " ", fonts)), "Font"),
+  family = fonts,
+  size = c(9, 8, 8, 6, 8, 8, 7, 8, 8, 8, 8, 8, 9)
+)
+
+ggplot(
+  font_data,
+  aes(x = x, y = y, label = label, family = family, size = size)
+) +
+  geom_text(hjust = 0.5) +
+  scale_size_identity() +
+  xlim(0, 1) +
+  ylim(0, 1) +
+  theme_void()
 ```
 
 ### Cache Management
