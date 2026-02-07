@@ -56,11 +56,3 @@
 .onLoad <- function(...) {
   S7::methods_register()
 }
-
-## Package startup helper
-##
-## @typed libname: character(1)
-##   Installation library path (passed by R).
-## @typed pkgname: character(1)
-##   Package name (passed by R).
-## @noRd

@@ -15,7 +15,6 @@ NULL
 #' @typedreturn NULL
 #'  Invisibly returns NULL.
 #'
-#' @export
 cache_write <- S7::new_generic(
   "cache_write",
   "x",
@@ -97,7 +96,6 @@ S7::method(cache_write, CacheEntryList) <- function(
 #'
 #' @family cache
 #'
-#' @export
 cache_read <- S7::new_generic(
   "cache_read",
   "cache_dir",
@@ -108,7 +106,6 @@ cache_read <- S7::new_generic(
 
 #' @rdname cache_read
 #' @name cache_read
-#' @export
 S7::method(cache_read, S7::class_character | NULL) <- function(
   cache_dir
 ) {
@@ -161,7 +158,6 @@ S7::method(cache_read, S7::class_character | NULL) <- function(
 #'
 #' @family cache
 #'
-#' @export
 cache_get <- S7::new_generic(
   "cache_get",
   "x",
@@ -172,7 +168,6 @@ cache_get <- S7::new_generic(
 
 #' @rdname cache_get
 #' @name cache_get
-#' @export
 S7::method(cache_get, CacheEntryList) <- function(
   x,
   families = NULL,
@@ -244,6 +239,7 @@ S7::method(cache_get, CacheEntryList) <- function(
 #'
 #' @typedreturn CacheEntryList
 #'  The modified CacheEntryList with the updated entry.
+#'
 cache_set <- S7::new_generic(
   "cache_set",
   "x",
@@ -254,7 +250,6 @@ cache_set <- S7::new_generic(
 
 #' @rdname cache_set
 #' @name cache_set
-#' @export
 S7::method(cache_set, CacheEntryList) <- function(
   x,
   family,
@@ -311,7 +306,6 @@ S7::method(cache_set, CacheEntryList) <- function(
 #' @typedreturn CacheEntryList
 #'  The modified CacheEntryList with the specified entries removed.
 #'
-#' @export
 cache_remove <- S7::new_generic(
   "cache_remove",
   "x",
@@ -322,7 +316,6 @@ cache_remove <- S7::new_generic(
 
 #' @rdname cache_remove
 #' @name cache_remove
-#' @export
 S7::method(cache_remove, CacheEntryList) <- function(
   x,
   families = NULL,

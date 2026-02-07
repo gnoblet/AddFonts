@@ -1,7 +1,4 @@
-## Generic downloader + converter for providers
-#'
-#' Download and (if needed) convert a provider artifact to a local TTF
-#' file for a given family/weight/style and return the local path.
+#' Download and (if needed) convert a provider artifact to a local TTF  file for a given family/weight/style and return the local path.
 #'
 #' @typed provider: FontProvider
 #'   Provider object with url_template and source.
@@ -17,8 +14,10 @@
 #'   Cache directory to use (default: NULL)
 #' @typed quiet: logical(1)
 #'   Suppress warnings/messages (default: FALSE)
+#'
 #' @typedreturn character | NULL
 #'   Path to the local `.ttf` file on success, or `NULL` on failure.
+#'
 download_variant_generic <- function(
   provider,
   family,

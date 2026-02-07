@@ -1,7 +1,4 @@
-# Helper — compute canonical cache paths for a provider/family/variant
-#'
-#' Compute paths used for caching provider artifacts and any conversion
-#' intermediate files.
+#' Compute paths used for caching provider artifacts and any conversion intermediate files.
 #'
 #' @typed provider: FontProvider
 #'   Provider object with source and optional conversion info.

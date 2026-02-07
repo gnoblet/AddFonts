@@ -6,7 +6,6 @@
 #' @typedreturn list
 #'   The list representation of the CacheEntryList.
 #'
-#' @export
 as_list <- S7::new_generic(
   "as_list",
   "x",

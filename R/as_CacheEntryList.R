@@ -5,7 +5,7 @@
 #'
 #' @typedreturn CacheEntryList
 #'   The CacheEntryList object created from the list.
-#' @export
+#'
 as_CacheEntryList <- S7::new_generic(
   "as_CacheEntryList",
   "l",

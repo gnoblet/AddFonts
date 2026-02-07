@@ -16,9 +16,10 @@
 #'   Bold weight to request (default: 700).
 #' @typed subset: character(1)
 #'   Glyph subset to request (default: "latin").
+#'
 #' @typedreturn list
-#'   Invisibly returns a list with paths for `regular`, `italic`, `bold`
-#'   and `bolditalic` variants, or throws an error on failure.
+#'   Invisibly returns a list with paths for `regular`, `italic`, `bold` and `bolditalic` variants, or throws an error on failure.
+#'
 #' @export
 add_font <- function(
   name,

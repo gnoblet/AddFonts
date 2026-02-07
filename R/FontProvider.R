@@ -16,9 +16,8 @@
 #'   Optional list of alias names to match (e.g. "fonts.bunny.net").
 #'
 #' @typedreturn FontProviders
+#'  S7 class representing a font provider specification.
 #'
-#'
-#' @export
 FontProvider <- S7::new_class(
   "FontProvider",
   properties = list(

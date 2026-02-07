@@ -23,6 +23,7 @@
 #' @typedreturn list
 #'   Invisibly returns the list of paths produced by `add_font()`.
 #' @importFrom graphics par plot.new text
+#'
 #' @export
 preview_font <- function(
     name,

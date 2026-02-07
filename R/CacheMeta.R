@@ -11,8 +11,7 @@
 #'  A non-empty named list of file paths. Each element is a character(1) path to the local font files.
 #'
 #' @details
-#' The `added` property is a getter-only field that returns the current timestamp
-#' as a character string when accessed. It cannot be set during construction.
+#' The `added` property is a getter-only field that returns the current timestamp as a character string when accessed. It cannot be set during construction.
 #'
 #' @typedreturn S7_object
 #'  A validated S7 `CacheMeta` object.

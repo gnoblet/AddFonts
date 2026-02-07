@@ -1,4 +1,3 @@
-# Filename helper: cache_ttf_path
 #' Compute canonical cache path for a TTF file
 #'
 #' @typed source: character(1)
@@ -82,7 +81,6 @@ cache_ttf_path <- function(
   return(fp)
 }
 
-# Filename helper: cache_ttf_filename
 #' Compose canonical filename for a cached TTF
 #'
 #' @typed source: character(1)
@@ -95,8 +93,10 @@ cache_ttf_path <- function(
 #'   Font weight.
 #' @typed style: character(1)
 #'   Style string (e.g. "normal", "italic").
+#'
 #' @typedreturn character(1)
 #'   Filename (not including the cache directory) for the cached TTF.
+#'
 cache_ttf_filename <- function(source, font_id, subset, weight, style) {
   # ----- Arg check
 

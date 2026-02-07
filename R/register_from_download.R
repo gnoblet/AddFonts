@@ -1,27 +1,27 @@
-## Helper: register_from_download
-##'
-##' Download necessary variants for a font, write a cache entry and
-##' register the font with `sysfonts`. Returns the prepared `files` list
-##' on success, or `NULL` if a regular font could not be obtained.
-##'
-##' @typed provider: FontProvider
-##'   Provider object used for downloads.
-##' @typed name: character(1)
-##'   Font name at the provider.
-##' @typed font_id: character(1)
-##'   Filesystem-safe font id.
-##' @typed family_name: character(1)
-##'   Family name to register the font under.
-##' @typed regular.wt: integer(1)
-##'   Regular weight to fetch (default: 400)
-##' @typed bold.wt: integer(1)
-##'   Bold weight to fetch (default: 700)
-##' @typed subset: character(1)
-##'   Glyph subset to request (default: "latin")
-##' @typed cache_dir: character | NULL
-##'   Cache directory to use (default: NULL)
-##' @typedreturn list | NULL
-##'   List of local file paths for variants, or `NULL` on failure.
+#' Download necessary variants for a font, write a cache entry and
+#' register the font with `sysfonts`. Returns the prepared `files` list
+#' on success, or `NULL` if a regular font could not be obtained.
+#'
+#' @typed provider: FontProvider
+#'   Provider object used for downloads.
+#' @typed name: character(1)
+#'   Font name at the provider.
+#' @typed font_id: character(1)
+#'   Filesystem-safe font id.
+#' @typed family_name: character(1)
+#'   Family name to register the font under.
+#' @typed regular.wt: integer(1)
+#'   Regular weight to fetch (default: 400)
+#' @typed bold.wt: integer(1)
+#'   Bold weight to fetch (default: 700)
+#' @typed subset: character(1)
+#'   Glyph subset to request (default: "latin")
+#' @typed cache_dir: character | NULL
+#'   Cache directory to use (default: NULL)
+#'
+#' @typedreturn list | NULL
+#'   List of local file paths for variants, or `NULL` on failure.
+#'
 register_from_download <- function(
   provider,
   name,

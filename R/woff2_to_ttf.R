@@ -17,7 +17,7 @@
 #'
 #' @typedreturn character(1)
 #'   Invisibly returns the path to the `.ttf` file on success.
-#' @noRd
+#'
 woff2_to_ttf <- function(
   font_file,
   overwrite = FALSE,

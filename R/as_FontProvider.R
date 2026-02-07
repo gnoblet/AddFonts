@@ -6,7 +6,6 @@
 #' @typedreturn FontProvider
 #'  The corresponding `FontProvider` object.
 #'
-#' @export
 as_FontProvider <- S7::new_generic(
   "as_FontProvider",
   "x",
