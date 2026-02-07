@@ -12,3 +12,4 @@
 ^README\.Rmd$
 ^_pkgdown\.yml$
 ^cran-comments\.md$
+^hex-sticker\.R$
