@@ -1,0 +1,11 @@
+{
+    "bunny": {
+        "source": "bunny",
+        "url_template": "https://fonts.bunny.net/%s/files/%s-%s-%d-%s.woff2",
+        "conversion": "woff2_to_ttf",
+        "conversion_ext": "woff2",
+        "aliases": [
+            "fonts.bunny.net"
+        ]
+    }
+}

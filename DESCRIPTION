@@ -1,32 +1,54 @@
 Package: AddFonts
-Title: Add Fonts from Several Providers to 'showtext'
+Title: Download and Register Fonts from GDPR-Compliant Providers To Use R graphics
 Version: 0.1.0
 Authors@R: 
-    person("Guillaume", "Noblet", , "gnoblet@zaclys.net", role = c("aut", "cre"))
-Description: Download and register fonts from several providers for use in R graphics 
-    with the 'showtext' package. Currently supports Bunny Fonts (<https://fonts.bunny.net/>), 
-    a privacy-focused alternative to Google Fonts. Functions are designed similar to 
-    'font_add_google()' with extensible architecture for additional font providers.
+    person("Guillaume", "Noblet", , "gnoblet@zaclys.net", role = c("aut", "cre", "cph"))
+Description: Download and register fonts from GDPR-compliant providers for use in R graphics. Currently supports Bunny Fonts (<https://fonts.bunny.net/>/). Extensible architecture allows for easy additions of font providers.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE, packages = "roxytypes")
 RoxygenNote: 7.3.3
 Config/Needs/documentation: roxytypes
-SystemRequirements: woff2 (>= 1.0.2): woff2-tools (rpm) or woff2 (deb)
+SystemRequirements: woff2 (>= 1.0.2): woff2-tools (rpm) or woff2 (deb) or woff2 (arch)
 Imports: 
     sysfonts,
     httr2,
     fs,
     rappdirs,
-    cli
+    cli,
+    jsonlite,
+    S7,
+    glue,
+    rlang
 Suggests:
-    testthat (>= 3.0.0),
+    testthat (>= 3.3.0),
     usethis,
-    ggplot2,
-    showtext
+    showtext,
+    withr
 Config/testthat/edition: 3
 LazyData: true
 Depends: 
-    R (>= 4.1.0)
-URL: https://github.com/gnoblet/AddFonts, http://guillaume-noblet.com/AddFonts/
-BugReports: https://github.com/gnoblet/AddFonts/issues
+    R (>= 4.5.0)
+URL: https://codeberg.org/gnoblet/AddFonts, http://guillaume-noblet.com/AddFonts/
+BugReports: https://codeberg.org/gnoblet/AddFonts/issues
+Collate:
+    'CacheMeta.R'
+    'CacheEntry.R'
+    'CacheEntryList.R'
+    'FontProvider.R'
+    'add_font.R'
+    'as_CacheEntryList.R'
+    'as_FontProvider.R'
+    'as_list.R'
+    'assert.R'
+    'cache.R'
+    'cache_ttf_path.R'
+    'cache_variant_paths.R'
+    'conv_fun.R'
+    'download_variant_generic.R'
+    'preview_font.R'
+    'register_from_cache.R'
+    'register_from_download.R'
+    'utils.R'
+    'woff2_to_ttf.R'
+    'zzz.R'

@@ -2,61 +2,35 @@
 % Please edit documentation in R/add_font.R
 \name{add_font}
 \alias{add_font}
-\title{Add Fonts from Multiple Providers}
+\title{Add a font to the local cache and register it for use}
 \usage{
 add_font(
   name,
   provider = "bunny",
   family = NULL,
-  wt = NULL,
-  styles = "both",
-  ...
+  regular.wt = 400,
+  bold.wt = 700,
+  subset = "latin"
 )
 }
 \arguments{
-\item{name}{(\code{character(1)}) The font name as listed by the provider.}
+\item{name}{(\code{character(1)}) Name of the font as known to the provider.}
 
-\item{provider}{(\code{character(1)}) Font provider to use. Currently supports "bunny" for Bunny Fonts,
-a privacy-focused Google Fonts alternative (default: \code{"bunny"}).}
+\item{provider}{(\code{character(1)}) Provider id/name (default: "bunny").}
 
-\item{family}{(\verb{character(1) or NULL}) The family name to register in R (default: \code{NULL}, uses \code{name}).}
+\item{family}{(\code{character | NULL}) Optional family name to register the font under (default: NULL).}
 
-\item{wt}{(\verb{numeric or NULL}) Font weights to download (e.g., c(400, 700)).
-Use a vector to specify only certain weights (e.g., c(300, 500, 700))
-(default: \code{NULL}, downloads all available weights).}
+\item{regular.wt}{(\code{numeric(1)}) Regular weight to request (default: 400).}
 
-\item{styles}{(\code{character(1)}) Which styles to download: "normal", "italic", or "both".
-Set to "normal" for regular styles only, "italic" for italic only,
-or "both" for all available styles (default: \code{"both"}).}
+\item{bold.wt}{(\code{numeric(1)}) Bold weight to request (default: 700).}
 
-\item{...}{Additional provider-specific arguments.}
+\item{subset}{(\code{character(1)}) Glyph subset to request (default: "latin").}
 }
 \value{
-(\verb{: list}) Invisibly returns a list of paths to the registered font files.
+(\code{list}) Invisibly returns a list with paths for \code{regular}, \code{italic}, \code{bold} and \code{bolditalic} variants, or throws an error on failure.
 }
 \description{
-A general function to download and register fonts from various providers.
-Currently supports Bunny Fonts, with more providers planned for the future.
-}
-\examples{
-\dontrun{
-# Add a font from Bunny Fonts (default provider) with all weights/styles
-add_font("roboto")
-
-# Add only specific weights
-add_font("open-sans", wt = c(400, 700))
-
-# Add only normal (non-italic) styles
-add_font("inter", wt = c(300, 400, 700), styles = "normal")
-
-# Add italic styles only with custom family name
-add_font("merriweather", family = "Merri", wt = c(400, 700), styles = "italic")
-
-# Explicitly specify provider
-add_font("source-code-pro", provider = "bunny", wt = 400)
-
-# Enable showtext and use the font
-showtext::showtext_auto()
-plot(1:10, main = "Using fonts from multiple providers!")
-}
+Ensure a font is available locally: try the cache first, otherwise
+download/convert and register the font so it can be used by plotting
+devices. Returns (invisibly) the list of local file paths.
 }
