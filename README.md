@@ -1,0 +1,218 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# AddFonts <a href="http://guillaume-noblet.com/AddFonts/"><img src="man/figures/logo.png" align="right" height="139" alt="AddFonts website" /></a>
+
+<!-- badges: start -->
+
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![R-CMD-check](https://github.com/gnoblet/AddFonts/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gnoblet/AddFonts/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/gnoblet/AddFonts/graph/badge.svg)](https://app.codecov.io/gh/gnoblet/AddFonts)
+[![r-universe
+version](https://gnoblet.r-universe.dev/AddFonts/badges/version)](https://gnoblet.r-universe.dev/AddFonts)
+[![r-universe
+status](https://gnoblet.r-universe.dev/AddFonts/badges/checks)](https://gnoblet.r-universe.dev/AddFonts)
+
+<!-- badges: end -->
+
+Download and register fonts from GDPR-compliant providers for use in R
+graphics. Currently supports [Bunny Fonts](https://fonts.bunny.net/), a
+privacy-first alternative to Google Fonts.
+
+## Features
+
+- 🔒 **GDPR-compliant**: Uses Bunny Fonts (no tracking, no data
+  collection)
+- 📦 **Simple API**: One function to download and register fonts
+- 💾 **Smart caching**: Downloads once, reuses forever
+- 🎨 **Full variants**: Regular, bold, italic, and bold-italic support
+
+## Installation
+
+``` r
+# From r-universe
+install.packages("AddFonts", repos = "https://gnoblet.r-universe.dev")
+```
+
+### System Requirements
+
+Requires `woff2` command-line tool to convert fonts:
+
+<details>
+
+<summary>
+
+Click to see installation instructions
+</summary>
+
+``` bash
+# Debian/Ubuntu
+sudo apt install woff2
+
+# Fedora/RHEL
+sudo dnf install woff2-tools
+
+# Arch Linux
+sudo pacman -S woff2
+
+# macOS
+brew install woff2
+
+# Windows or else
+# Compile from: https://github.com/google/woff2
+```
+
+</details>
+
+## Quick Start
+
+### Add Fonts With One Core Function
+
+To add a font to R, simply call `add_font()` with the font family name
+retrieved from the [Bunny Fonts](https://fonts.bunny.net/) website. For
+example, to add the “Oswald” font:
+
+``` r
+library(AddFonts)
+# Download and register Oswald font
+add_font("oswald")
+#> ✔ Downloaded variant: 'bunny-oswald-latin-400-normal.ttf'
+#> ✔ Downloaded variant: 'bunny-oswald-latin-700-normal.ttf'
+#> ✔ Font "oswald" registered and added to cache.
+```
+
+### Preview Fonts
+
+The `preview_font()` function plots all downloaded and registered
+variants of a font family in one go. Once you have picked a font, for
+instance “Merriweather”, calling the `preview_font()` function will show
+you all its variants, and “Merriweather” has 4: regular, bold, italic,
+and bold-italic.
+
+``` r
+library(AddFonts)
+preview_font("merriweather", regular.wt = 400, bold.wt = 700)
+```
+
+<img src="man/figures/README-preview-1.png" width="90%" />
+
+### Add Fonts And Use With ggplot2
+
+Let’s imagine we want to use several fonts in a simple plot. First, we
+loop over a vector of font family names and call `add_font()` for each
+one to download and register them with R.
+
+``` r
+library(AddFonts)
+library(showtext)
+library(ggplot2)
+
+fonts <- c(
+  "oswald",
+  "blaka-ink",
+  "barrio",
+  "major-mono-display",
+  "merriweather",
+  "montserrat",
+  "sixtyfour",
+  "playfair-display",
+  "inter",
+  "aboreto",
+  "aclonica",
+  "akronim",
+  "babylonica"
+)
+
+for (font in fonts) {
+  add_font(font)
+}
+```
+
+Now that fonts have been registered, we can use them in a `ggplot` for
+instance.
+
+``` r
+showtext_auto()
+
+font_data <- data.frame(
+  x = 0.5,
+  y = seq(0.95, 0.1, length.out = length(fonts)),
+  label = paste(tools::toTitleCase(gsub("-", " ", fonts)), "Font"),
+  family = fonts,
+  size = c(9, 8, 8, 6, 8, 8, 7, 8, 8, 8, 8, 8, 9)
+)
+
+ggplot(
+  font_data,
+  aes(x = x, y = y, label = label, family = family, size = size)
+) +
+  geom_text(hjust = 0.5) +
+  scale_size_identity() +
+  xlim(0, 1) +
+  ylim(0, 1) +
+  theme_void()
+```
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="90%" />
+
+### Cache Management
+
+``` r
+# Get cache location
+get_cache_dir()
+
+# Clear specific fonts
+cache_clean(families = c("roboto", "open-sans"))
+
+# Clear all fonts
+cache_clean(reset = TRUE)
+```
+
+## Why Bunny Fonts?
+
+[Bunny Fonts](https://fonts.bunny.net/) is a privacy-focused,
+GDPR-compliant alternative to Google Fonts:
+
+- 🔒 No tracking or data collection
+- 🚀 Fast global CDN
+- 🆓 Free and open-source
+- 🎨 Includes most popular Google Fonts
+
+Perfect for EU users or anyone prioritizing privacy.
+
+After a period of testing on real world projects using Bunny Fonts as
+the only-and-default font provider, `AddFonts` is meant to integrate
+other providers.
+
+## How AddFont Works
+
+1.  Downloads WOFF2 files from Bunny Fonts CDN
+2.  Converts to TTF format using `woff2_decompress`
+3.  Caches locally for reuse
+4.  Registers with R via `sysfonts` package
+
+**Why convert?** Bunny Fonts serves WOFF2 (web-optimized), but R’s
+`sysfonts` needs TTF format. Conversion happens once; subsequent uses
+load instantly from cache.
+
+In the background, `S7` classes manage font metadata and caching logic,
+while `sysfonts` handles registration with R’s graphics system.
+
+## Related Packages
+
+- [showtext](https://github.com/yixuan/showtext) - Using fonts in R
+  graphics
+- [sysfonts](https://github.com/yixuan/sysfonts) - Loading fonts into R
+- [S7](https://github.com/RConsortium/S7) - a new OO system for R
+- see also [pyfonts](https://y-sunflower.github.io/pyfonts/) for
+  registering fonts in Python (made by Joseph Barbier).
+
+## License
+
+GPL (\>= 3)
+
+------------------------------------------------------------------------
+
+**Note**: AddFonts is experimental. API may change. Feedback welcome!

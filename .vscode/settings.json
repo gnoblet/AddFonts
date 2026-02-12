@@ -1,0 +1,12 @@
+{
+    "inlineChat.lineNaturalLanguageHint": false,
+    "files.associations": {
+        "renv.lock": "json"
+    },
+    "editor.guides.bracketPairs": true,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.copyWithSyntaxHighlighting": false,
+    "workbench.settings.showAISearchToggle": false,
+    "pastum.defaultConvention": "snake_case",
+    "git.autofetch": true
+}

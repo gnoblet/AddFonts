@@ -1,0 +1,15 @@
+^rv$
+^rv/.*
+^.github/
+^data-raw$
+^\.github$
+^\.vscode$
+^.*\.Rproj$
+^rproject\.toml$
+^rv\.lock$
+^test\.R$
+^LICENSE\.md$
+^README\.Rmd$
+^_pkgdown\.yml$
+^cran-comments\.md$
+^hex-sticker\.R$
