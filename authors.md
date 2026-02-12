@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://codeberg.org/gnoblet/AddFonts/src/branch/main/DESCRIPTION)
+[`DESCRIPTION`](https://codeberg.org/gnoblet/AddFonts/src/branch/v0.2.0/DESCRIPTION)
 
 Noblet G (2026). *AddFonts: Download and Register Fonts from
 GDPR-Compliant Providers For Use In R graphics*. R package version
