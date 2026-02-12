@@ -1,0 +1,315 @@
+# AddFonts
+
+Download and register fonts from GDPR-compliant providers for use in R
+graphics. Currently supports [Bunny Fonts](https://fonts.bunny.net/), a
+privacy-first alternative to Google Fonts.
+
+## Features
+
+- 🔒 **GDPR-compliant**: Uses Bunny Fonts (no tracking, no data
+  collection)
+- 📦 **Simple API**: One function to download and register fonts
+- 💾 **Smart caching**: Downloads once, reuses forever
+- 🎨 **Full variants**: Regular, bold, italic, and bold-italic support
+
+## Installation
+
+``` r
+# From r-universe
+install.packages("AddFonts", repos = "https://gnoblet.r-universe.dev")
+```
+
+### System Requirements
+
+Requires `woff2` command-line tool to convert fonts:
+
+Click to see installation instructions
+
+``` bash
+# Debian/Ubuntu
+sudo apt install woff2
+
+# Fedora/RHEL
+sudo dnf install woff2-tools
+
+# Arch Linux
+sudo pacman -S woff2
+
+# macOS
+brew install woff2
+
+# Windows or else
+# Compile from: https://github.com/google/woff2
+```
+
+## Quick Start
+
+### Add Fonts With One Core Function
+
+To add a font to R, simply call
+[`add_font()`](http://guillaume-noblet.com/AddFonts/reference/add_font.md)
+with the font family name retrieved from the [Bunny
+Fonts](https://fonts.bunny.net/) website. For example, to add the
+“Oswald” font:
+
+``` r
+library(AddFonts)
+# Download and register Oswald font
+add_font("oswald")
+#> ✔ Downloaded variant: 'bunny-oswald-latin-400-normal.ttf'
+#> ✔ Downloaded variant: 'bunny-oswald-latin-700-normal.ttf'
+#> ✔ Font "oswald" registered and added to cache.
+```
+
+### Preview Fonts
+
+The
+[`preview_font()`](http://guillaume-noblet.com/AddFonts/reference/preview_font.md)
+function plots all downloaded and registered variants of a font family
+in one go. Once you have picked a font, for instance “Merriweather”,
+calling the
+[`preview_font()`](http://guillaume-noblet.com/AddFonts/reference/preview_font.md)
+function will show you all its variants, and “Merriweather” has 4:
+regular, bold, italic, and bold-italic.
+
+``` r
+library(AddFonts)
+preview_font("merriweather", regular.wt = 400, bold.wt = 700)
+```
+
+![](reference/figures/README-preview-1.png)
+
+### Add Fonts And Use With ggplot2
+
+Let’s imagine we want to use several fonts in a simple plot. First, we
+loop over a vector of font family names and call
+[`add_font()`](http://guillaume-noblet.com/AddFonts/reference/add_font.md)
+for each one to download and register them with R.
+
+``` r
+library(AddFonts)
+library(showtext)
+library(ggplot2)
+
+fonts <- c(
+  "oswald",
+  "blaka-ink",
+  "barrio",
+  "major-mono-display",
+  "merriweather",
+  "montserrat",
+  "sixtyfour",
+  "playfair-display",
+  "inter",
+  "aboreto",
+  "aclonica",
+  "akronim",
+  "babylonica"
+)
+
+for (font in fonts) {
+  add_font(font)
+}
+```
+
+Now that fonts have been registered, we can use them in a `ggplot` for
+instance.
+
+``` r
+showtext_auto()
+
+font_data <- data.frame(
+  x = 0.5,
+  y = seq(0.95, 0.1, length.out = length(fonts)),
+  label = paste(tools::toTitleCase(gsub("-", " ", fonts)), "Font"),
+  family = fonts,
+  size = c(9, 8, 8, 6, 8, 8, 7, 8, 8, 8, 8, 8, 9)
+)
+
+ggplot(
+  font_data,
+  aes(x = x, y = y, label = label, family = family, size = size)
+) +
+  geom_text(hjust = 0.5) +
+  scale_size_identity() +
+  xlim(0, 1) +
+  ylim(0, 1) +
+  theme_void()
+```
+
+![](reference/figures/README-unnamed-chunk-4-1.png)
+
+### Cache Management
+
+``` r
+# Get cache location
+get_cache_dir()
+
+# Clear specific fonts
+cache_clean(families = c("roboto", "open-sans"))
+
+# Clear all fonts
+cache_clean(reset = TRUE)
+```
+
+## Why Bunny Fonts?
+
+[Bunny Fonts](https://fonts.bunny.net/) is a privacy-focused,
+GDPR-compliant alternative to Google Fonts:
+
+- 🔒 No tracking or data collection
+- 🚀 Fast global CDN
+- 🆓 Free and open-source
+- 🎨 Includes most popular Google Fonts
+
+Perfect for EU users or anyone prioritizing privacy.
+
+After a period of testing on real world projects using Bunny Fonts as
+the only-and-default font provider, `AddFonts` is meant to integrate
+other providers.
+
+## How AddFont Works
+
+1.  Downloads WOFF2 files from Bunny Fonts CDN
+2.  Converts to TTF format using `woff2_decompress`
+3.  Caches locally for reuse
+4.  Registers with R via `sysfonts` package
+
+**Why convert?** Bunny Fonts serves WOFF2 (web-optimized), but R’s
+`sysfonts` needs TTF format. Conversion happens once; subsequent uses
+load instantly from cache.
+
+In the background, `S7` classes manage font metadata and caching logic,
+while `sysfonts` handles registration with R’s graphics system.
+
+## Related Packages
+
+- [showtext](https://github.com/yixuan/showtext) - Using fonts in R
+  graphics
+- [sysfonts](https://github.com/yixuan/sysfonts) - Loading fonts into R
+- [S7](https://github.com/RConsortium/S7) - a new OO system for R
+- see also [pyfonts](https://y-sunflower.github.io/pyfonts/) for
+  registering fonts in Python (made by Joseph Barbier).
+
+## License
+
+GPL (\>= 3)
+
+------------------------------------------------------------------------
+
+**Note**: AddFonts is experimental. API may change. Feedback welcome!
+
+# Package index
+
+## All functions
+
+- [`CacheEntry()`](http://guillaume-noblet.com/AddFonts/reference/CacheEntry.md)
+  : S7-backed cache entry (CacheEntry)
+
+- [`CacheEntryList()`](http://guillaume-noblet.com/AddFonts/reference/CacheEntryList.md)
+  : S7 list of cache entries (CacheEntryList)
+
+- [`CacheMeta()`](http://guillaume-noblet.com/AddFonts/reference/CacheMeta.md)
+  : S7-backed cache metadata (CacheMeta)
+
+- [`FontProvider()`](http://guillaume-noblet.com/AddFonts/reference/FontProvider.md)
+  : Font provider specification (FontProvider)
+
+- [`add_font()`](http://guillaume-noblet.com/AddFonts/reference/add_font.md)
+  : Add a font to the local cache and register it for use
+
+- [`as_CacheEntryList()`](http://guillaume-noblet.com/AddFonts/reference/as_CacheEntryList.md)
+  : Read from list
+
+- [`as_FontProvider()`](http://guillaume-noblet.com/AddFonts/reference/as_FontProvider.md)
+  :
+
+  Construct a `FontProvider` from a named list
+
+- [`as_list()`](http://guillaume-noblet.com/AddFonts/reference/as_list.md)
+  : As list
+
+- [`cache_clean()`](http://guillaume-noblet.com/AddFonts/reference/cache_clean.md)
+  : Clean cache entries
+
+- [`cache_get()`](http://guillaume-noblet.com/AddFonts/reference/cache_get.md)
+  : Get certain families from CacheEntryList
+
+- [`cache_get_weights()`](http://guillaume-noblet.com/AddFonts/reference/cache_get_weights.md)
+  : Check which weights are available in a cache entry
+
+- [`cache_read()`](http://guillaume-noblet.com/AddFonts/reference/cache_read.md)
+  : Read cache entry from disk
+
+- [`cache_remove()`](http://guillaume-noblet.com/AddFonts/reference/cache_remove.md)
+  : Delete entry from cache
+
+- [`cache_set()`](http://guillaume-noblet.com/AddFonts/reference/cache_set.md)
+  : Set cache entries
+
+- [`cache_ttf_filename()`](http://guillaume-noblet.com/AddFonts/reference/cache_ttf_filename.md)
+  : Compose canonical filename for a cached TTF
+
+- [`cache_ttf_path()`](http://guillaume-noblet.com/AddFonts/reference/cache_ttf_path.md)
+  : Compute canonical cache path for a TTF file
+
+- [`cache_variant_paths()`](http://guillaume-noblet.com/AddFonts/reference/cache_variant_paths.md)
+  : Compute paths used for caching provider artifacts and any conversion
+  intermediate files.
+
+- [`cache_write()`](http://guillaume-noblet.com/AddFonts/reference/cache_write.md)
+  : Write CacheEntryList to disk as JSON
+
+- [`conv_fun()`](http://guillaume-noblet.com/AddFonts/reference/conv_fun.md)
+  :
+
+  Resolve a conversion name to the converter function used by the
+  package (currently only `woff2_to_ttf`).
+
+- [`delete_files()`](http://guillaume-noblet.com/AddFonts/reference/delete_files.md)
+  : Delete files
+
+- [`download_and_cache()`](http://guillaume-noblet.com/AddFonts/reference/download_and_cache.md)
+  : Download font variants and add to cache
+
+- [`download_variant_generic()`](http://guillaume-noblet.com/AddFonts/reference/download_variant_generic.md)
+  : Download and (if needed) convert a provider artifact to a local TTF
+  file for a given family/weight/style and return the local path.
+
+- [`download_weights()`](http://guillaume-noblet.com/AddFonts/reference/download_weights.md)
+  : Download font files for specified weights
+
+- [`get_cache_dir()`](http://guillaume-noblet.com/AddFonts/reference/get_cache_dir.md)
+  : Get the package cache directory for fonts
+
+- [`get_provider_details()`](http://guillaume-noblet.com/AddFonts/reference/get_provider_details.md)
+  : Get provider details from internal data
+
+- [`preview_font()`](http://guillaume-noblet.com/AddFonts/reference/preview_font.md)
+  : Preview a font by ensuring it's installed and drawing a sample
+  string
+
+- [`register_from_cache()`](http://guillaume-noblet.com/AddFonts/reference/register_from_cache.md)
+  :
+
+  Validate a cache entry and register the font with sysfonts if the
+  required files exist. Returns the prepared `files` list or `NULL` when
+  registration cannot proceed.
+
+- [`register_from_download()`](http://guillaume-noblet.com/AddFonts/reference/register_from_download.md)
+  :
+
+  Download necessary variants for a font, write a cache entry and
+  register the font with `sysfonts`. Returns the prepared `files` list
+  on success, or `NULL` if a regular font could not be obtained.
+
+- [`safe_id()`](http://guillaume-noblet.com/AddFonts/reference/safe_id.md)
+  : Create a filesystem-safe id from a name
+
+- [`update_download_and_cache()`](http://guillaume-noblet.com/AddFonts/reference/update_download_and_cache.md)
+  : Download missing weights and update an existing cache entry
+
+- [`woff2_to_ttf()`](http://guillaume-noblet.com/AddFonts/reference/woff2_to_ttf.md)
+  : Convert a .woff2 font to .ttf using the system 'woff2_decompress'
+  tool
+
