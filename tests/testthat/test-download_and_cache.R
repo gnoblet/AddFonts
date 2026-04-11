@@ -68,7 +68,7 @@ test_that("download_and_cache creates CacheEntry and writes to cache", {
     result <- fn(
         provider = provider,
         name = "test-font",
-        font_id = "test-font-id",
+        font_id = "test",
         family_name = "test",
         regular.wt = 400,
         bold.wt = 700,
@@ -79,7 +79,7 @@ test_that("download_and_cache creates CacheEntry and writes to cache", {
     # Should return a CacheEntry
     expect_s7_class(result, CacheEntry)
     expect_equal(result@family, "test")
-    expect_equal(result@meta@family_id, "test-font-id")
+    expect_equal(result@meta@family_id, "test")
     expect_equal(result@meta@source, "bunny")
     expect_equal(length(result@meta@files), 4)
 
@@ -113,7 +113,7 @@ test_that("download_and_cache handles partial weight downloads", {
     result <- fn(
         provider = provider,
         name = "test-font",
-        font_id = "test-font-id",
+        font_id = "test",
         family_name = "test",
         regular.wt = 400,
         bold.wt = 700,
@@ -146,7 +146,7 @@ test_that("download_and_cache uses default cache_dir when NULL", {
     result <- fn(
         provider = provider,
         name = "test-font",
-        font_id = "test-font-id",
+        font_id = "test",
         family_name = "test",
         regular.wt = 400,
         bold.wt = 700,

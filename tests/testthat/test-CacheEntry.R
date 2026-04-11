@@ -36,12 +36,13 @@ test_that("CacheEntry validation works correctly", {
     )
   )
 
-  # invalid family (different from meta@family_id)
-  expect_warning(
+  # family safe_id must match meta@family_id
+  expect_error(
     CacheEntry(
       family = "different-fid",
       meta = meta
-    )
+    ),
+    "refer to different fonts"
   )
 
   # meta is not CacheMeta

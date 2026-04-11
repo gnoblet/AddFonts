@@ -112,7 +112,7 @@ test_that("CacheMeta validation works correctly", {
       source = "bunny",
       files = list(regular = "r.ttf")
     ),
-    "File names must follow the pattern '<weight>' or '<weight>italic'."
+    "must follow"
   )
 
   # invalid file names (unnamed)
