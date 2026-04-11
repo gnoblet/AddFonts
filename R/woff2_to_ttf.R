@@ -10,10 +10,9 @@
 #'   If `TRUE`, overwrite an existing `.ttf` conversion.
 #' @typed remove_old: logical(1)
 #'   If `TRUE`, remove the original `.woff2` file after conversion try.
-#' @typed quiet: "full" | "success" | "fail" | "none"
-#'   If "full", capture all output and suppress console messages; if "success",
-#'   only show success messages; if "fail", only show error messages; if "none",
-#'   show all messages (default: "none").
+#' @typed quiet: logical(1)
+#'   If `TRUE`, suppress the success message. Errors always abort regardless
+#'   of this setting (default: `FALSE`).
 #'
 #' @typedreturn character(1)
 #'   Invisibly returns the path to the `.ttf` file on success.
@@ -22,7 +21,7 @@ woff2_to_ttf <- function(
   font_file,
   overwrite = FALSE,
   remove_old = TRUE,
-  quiet = "fail"
+  quiet = FALSE
 ) {
   #------ Arg check
 
@@ -42,8 +41,9 @@ woff2_to_ttf <- function(
     cli::cli_abort("Expected a .woff2 file but got: {.file {font_file}}")
   }
 
-  # quiet is one of allowed values
-  assert_string_in_set(quiet, choices = c("full", "success", "fail", "none"))
+  if (!is.logical(quiet) || length(quiet) != 1) {
+    cli::cli_abort("{.arg quiet} must be a logical scalar.")
+  }
 
   # locate woff2_decompress command
   woff2_cmd <- Sys.which("woff2_decompress")
@@ -81,8 +81,8 @@ woff2_to_ttf <- function(
     try(fs::file_delete(font_file), silent = TRUE)
   }
 
-  # abort if errored status — shown when "none" (all) or "fail" (errors only)
-  if (quiet %in% c("none", "fail") && !is.null(status) && status != 0) {
+  # abort if errored status — always, regardless of quiet
+  if (!is.null(status) && status != 0) {
     cli::cli_abort(c(
       "Error during conversion of {.file {font_file}} to TTF using {.val woff2_decompress}.",
       "x" = paste(res, collapse = "\n")
@@ -96,8 +96,7 @@ woff2_to_ttf <- function(
     )
   }
 
-  # success alert — shown when "none" (all) or "success" (success only)
-  if (quiet %in% c("none", "success")) {
+  if (!quiet) {
     cli::cli_alert_success(
       "Converted {.file {font_file}} to TTF: {.file {out}}"
     )

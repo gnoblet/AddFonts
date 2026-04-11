@@ -49,7 +49,7 @@ test_that("delete_files() deletes existing files", {
     expect_true(fs::file_exists(file2))
 
     # Delete files
-    result <- delete_files(c(file1, file2), quiet = "full")
+    result <- delete_files(c(file1, file2), quiet = TRUE)
 
     expect_false(fs::file_exists(file1))
     expect_false(fs::file_exists(file2))
@@ -62,7 +62,7 @@ test_that("delete_files() handles non-existent files", {
     temp_dir <- withr::local_tempdir()
     nonexistent <- fs::path(temp_dir, "does_not_exist.txt")
 
-    result <- delete_files(nonexistent, quiet = "full")
+    result <- delete_files(nonexistent, quiet = TRUE)
 
     expect_equal(result$deleted, character(0))
     expect_equal(result$failed, character(0))
@@ -76,7 +76,7 @@ test_that("delete_files() handles mixed scenarios", {
 
     fs::file_create(file1)
 
-    result <- delete_files(c(file1, file2), quiet = "full")
+    result <- delete_files(c(file1, file2), quiet = TRUE)
 
     expect_equal(result$deleted, as.character(file1))
     expect_equal(result$failed, character(0))
@@ -88,24 +88,24 @@ test_that("delete_files() quiet parameter works correctly", {
     file1 <- fs::path(temp_dir, "test.txt")
     fs::file_create(file1)
 
-    # quiet = "full" should suppress all messages
-    expect_silent(delete_files(file1, quiet = "full"))
+    # quiet = TRUE should suppress all messages
+    expect_silent(delete_files(file1, quiet = TRUE))
 
     # Create another file for testing
     file2 <- fs::path(temp_dir, "test2.txt")
     fs::file_create(file2)
 
-    # quiet = "success" should show success messages
-    expect_message(delete_files(file2, quiet = "success"), "Deleted")
+    # quiet = FALSE should show success messages
+    expect_message(delete_files(file2, quiet = FALSE), "Deleted")
 
-    # quiet = "fail" with non-existent file should show info
+    # quiet = FALSE with non-existent file should show info
     file3 <- fs::path(temp_dir, "missing.txt")
-    expect_message(delete_files(file3, quiet = "fail"), "not found")
+    expect_message(delete_files(file3, quiet = FALSE), "not found")
 })
 
 test_that("delete_files() validates arguments", {
-    # Invalid quiet value
-    expect_error(delete_files("file.txt", quiet = "invalid"), "must be one of")
+    # Non-logical quiet value
+    expect_error(delete_files("file.txt", quiet = "invalid"), "must be a logical")
 
     # NULL entries should be handled by assert
     expect_error(delete_files(NULL))

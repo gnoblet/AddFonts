@@ -369,7 +369,7 @@ S7::method(cache_remove, CacheEntryList) <- function(
     for (fam in fams_to_remove) {
       files <- cache_get(x, families = fam)[[1]]@meta@files |> unlist()
       if (!is.null(files) && length(files) > 0) {
-        delete_files(fs::path(cache_dir, files), quiet = "none")
+        delete_files(fs::path(cache_dir, files), quiet = FALSE)
       } else {
         cli::cli_alert_info(
           "No files to remove for family {.val {fam}}."
