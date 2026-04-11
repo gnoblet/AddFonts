@@ -309,3 +309,65 @@ test_that("cache_get_weights validates arguments", {
     "must be a non-empty numeric vector"
   )
 })
+
+test_that("cache_read errors on valid JSON with wrong structure", {
+  tmp <- withr::local_tempdir()
+  # Valid JSON but unrecognisable as a CacheEntryList
+  writeLines('[{"not_a_family": true}]', fs::path(tmp, "fonts_db.json"))
+  expect_error(cache_read(tmp), "corrupted or unreadable")
+})
+
+test_that("cache_read_safe returns empty CacheEntryList when cache is missing", {
+  fn <- getFromNamespace("cache_read_safe", "AddFonts")
+  tmp <- withr::local_tempdir()
+  result <- fn(tmp)
+  expect_s7_class(result, CacheEntryList)
+  expect_equal(length(result@entries), 0)
+})
+
+test_that("cache_write errors when cache_dir does not exist", {
+  expect_error(
+    cache_write(cel, cache_dir = "/nonexistent/path/xyz_addfonts"),
+    "does not exist"
+  )
+})
+
+test_that("cache_get with quiet=FALSE messages when no family found", {
+  local_cel <- CacheEntryList(entries = list(CacheEntry(
+    family = "fam1",
+    meta = CacheMeta(source = "s", files = list("400" = "f.ttf"))
+  )))
+  expect_message(
+    result <- cache_get(local_cel, families = "missing", quiet = FALSE),
+    "No matching families"
+  )
+  expect_null(result)
+})
+
+test_that("cache_get with quiet=FALSE messages when some families not found", {
+  local_cel <- CacheEntryList(entries = list(CacheEntry(
+    family = "fam1",
+    meta = CacheMeta(source = "s", files = list("400" = "f.ttf"))
+  )))
+  expect_message(
+    result <- cache_get(local_cel, families = c("fam1", "missing"), quiet = FALSE),
+    "not found"
+  )
+  expect_equal(length(result), 1)
+})
+
+test_that("cache_clean on already-empty cache informs user", {
+  tmp <- withr::local_tempdir()
+  cache_write(CacheEntryList(entries = list()), cache_dir = tmp, quiet = TRUE)
+  expect_message(cache_clean(cache_dir = tmp), "already empty")
+})
+
+test_that("cache_clean with reset=TRUE on non-existent dir creates fresh cache", {
+  tmp <- withr::local_tempdir()
+  missing_dir <- fs::path(tmp, "sub")
+  expect_message(
+    cache_clean(cache_dir = missing_dir, reset = TRUE),
+    "Cache reset"
+  )
+  expect_true(fs::file_exists(fs::path(missing_dir, "fonts_db.json")))
+})

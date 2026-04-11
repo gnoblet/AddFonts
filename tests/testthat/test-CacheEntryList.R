@@ -52,4 +52,10 @@ test_that("CacheEntryList validation works correctly", {
     ),
     "All elements of self@entries must be <CacheEntry>"
   )
+
+  # duplicate family names
+  expect_error(
+    CacheEntryList(entries = list(entry, entry)),
+    "unique family names"
+  )
 })
