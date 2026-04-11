@@ -1,15 +1,8 @@
-meta <- CacheMeta(
-  source = "s",
-  files = list("400" = "cw.ttf")
-)
-entry <- CacheEntry(family = "cw", meta = meta)
-cel <- CacheEntryList(entries = list(entry))
-
-
 test_that("cache_write and cache_read work with a real directory", {
-  tmp <- tempfile("addfonts_cache_")
-  dir.create(tmp)
-  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  meta <- CacheMeta(source = "s", files = list("400" = "cw.ttf"))
+  entry <- CacheEntry(family = "cw", meta = meta)
+  cel <- CacheEntryList(entries = list(entry))
+  tmp <- withr::local_tempdir()
 
   cache_write(cel, cache_dir = tmp)
   cache_file <- fs::path(tmp, "fonts_db.json")
@@ -33,9 +26,10 @@ test_that("cache_write errors on invalid input", {
 })
 
 test_that("cache_write quietly (or not) writes cache index", {
-  tmp <- tempfile("quiet_cache_")
-  dir.create(tmp)
-  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  meta <- CacheMeta(source = "s", files = list("400" = "cw.ttf"))
+  entry <- CacheEntry(family = "cw", meta = meta)
+  cel <- CacheEntryList(entries = list(entry))
+  tmp <- withr::local_tempdir()
 
   # write with quiet = TRUE
   expect_silent(cache_write(cel, cache_dir = tmp, quiet = TRUE))
@@ -49,10 +43,8 @@ test_that("cache_write quietly (or not) writes cache index", {
 })
 
 test_that("cache_read errors when index missing", {
-  tmp <- tempfile("no_cache_")
-  dir.create(tmp)
-  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
-  expect_error(cache_read(tmp))
+  tmp <- withr::local_tempdir()
+  expect_error(cache_read(tmp), "does not exist")
 })
 
 test_that("cache_get and cache_set behave as expected", {
@@ -100,9 +92,7 @@ test_that("cache_get and cache_set behave as expected", {
 #######################
 
 test_that("cache_remove works as expected both in-memory and on-disk", {
-  tmp <- tempfile("af-cache-")
-  dir.create(tmp)
-  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  tmp <- withr::local_tempdir()
 
   # create CacheEntryList with two entries
   cm1 <- CacheMeta(
@@ -167,9 +157,7 @@ test_that("cache_remove works with empty CacheEntryList", {
 ########################
 
 test_that("cache_clean on-disk empties the cache and removes files", {
-  tmp <- tempfile("af-cache-")
-  dir.create(tmp)
-  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  tmp <- withr::local_tempdir()
 
   # create CacheEntryList with two entries
   cm1 <- CacheMeta(
@@ -321,6 +309,10 @@ test_that("cache_read_safe returns empty CacheEntryList when cache is missing", 
 })
 
 test_that("cache_write errors when cache_dir does not exist", {
+  cel <- CacheEntryList(entries = list(CacheEntry(
+    family = "cw",
+    meta = CacheMeta(source = "s", files = list("400" = "cw.ttf"))
+  )))
   expect_error(
     cache_write(cel, cache_dir = "/nonexistent/path/xyz_addfonts"),
     "does not exist"

@@ -1,7 +1,5 @@
 test_that("cache_variant_paths validates provider and returns expected paths", {
-  tmp <- fs::file_temp()
-  dir.create(tmp)
-  on.exit(if (fs::dir_exists(tmp)) fs::dir_delete(tmp))
+  tmp <- withr::local_tempdir()
 
   # invalid provider object (not FontProvider)
   expect_error(

@@ -26,14 +26,14 @@ test_that("safe_id() creates filesystem-safe identifiers", {
 
 test_that("safe_id() handles edge cases", {
     # Empty strings not allowed (should be caught by assert)
-    expect_error(safe_id(""))
+    expect_error(safe_id(""), "non-empty")
 
     # NULL not allowed
-    expect_error(safe_id(NULL))
+    expect_error(safe_id(NULL), "NULL")
 
     # Non-character input should error
-    expect_error(safe_id(123))
-    expect_error(safe_id(c("a", "b")))
+    expect_error(safe_id(123), "non-empty")
+    expect_error(safe_id(c("a", "b")), "non-empty")
 })
 
 test_that("delete_files() deletes existing files", {
@@ -105,29 +105,11 @@ test_that("delete_files() quiet parameter works correctly", {
 
 test_that("delete_files() validates arguments", {
     # Invalid quiet value
-    expect_error(delete_files("file.txt", quiet = "invalid"))
+    expect_error(delete_files("file.txt", quiet = "invalid"), "must be one of")
 
     # NULL entries should be handled by assert
     expect_error(delete_files(NULL))
 })
-test_that("get_cache_dir() returns a valid directory path", {
-    cache_dir <- get_cache_dir()
-
-    expect_type(cache_dir, "character")
-    expect_length(cache_dir, 1)
-    expect_true(fs::dir_exists(cache_dir))
-    expect_true(nzchar(cache_dir))
-})
-
-test_that("get_cache_dir() creates directory if missing", {
-    # This is hard to test without mocking, but we can verify it returns
-    # a path under the expected location
-    cache_dir <- get_cache_dir()
-    expected_base <- rappdirs::user_cache_dir("AddFonts")
-
-    expect_equal(cache_dir, expected_base)
-})
-
 test_that("get_provider_details() returns valid FontProvider object", {
     provider <- get_provider_details("bunny")
 

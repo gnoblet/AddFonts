@@ -6,7 +6,7 @@ test_that("download_weights validates provider argument", {
             name = "test-font",
             weights = c(400),
             subset = "latin",
-            cache_dir = tempdir(),
+            cache_dir = withr::local_tempdir(),
             quiet = TRUE
         ),
         "must be a <FontProvider> object"
@@ -22,7 +22,7 @@ test_that("download_weights validates name argument", {
             name = "",
             weights = c(400),
             subset = "latin",
-            cache_dir = tempdir(),
+            cache_dir = withr::local_tempdir(),
             quiet = TRUE
         ),
         "must be"
@@ -38,7 +38,7 @@ test_that("download_weights validates weights argument", {
             name = "test-font",
             weights = numeric(0),
             subset = "latin",
-            cache_dir = tempdir(),
+            cache_dir = withr::local_tempdir(),
             quiet = TRUE
         ),
         "must be a non-empty numeric vector"
@@ -50,7 +50,7 @@ test_that("download_weights validates weights argument", {
             name = "test-font",
             weights = "not numeric",
             subset = "latin",
-            cache_dir = tempdir(),
+            cache_dir = withr::local_tempdir(),
             quiet = TRUE
         ),
         "must be a non-empty numeric vector"
@@ -66,7 +66,7 @@ test_that("download_weights validates quiet argument", {
             name = "test-font",
             weights = c(400),
             subset = "latin",
-            cache_dir = tempdir(),
+            cache_dir = withr::local_tempdir(),
             quiet = "not logical"
         ),
         "must be a logical scalar"
@@ -180,7 +180,8 @@ test_that("download_weights handles multiple weights correctly", {
     provider <- new_bunny_provider()
 
     # Track which weights were requested
-    requested_weights <- c()
+    tracker <- new.env(parent = emptyenv())
+    tracker$requested_weights <- c()
     local_mocked_bindings(
         download_variant_generic = function(
             provider,
@@ -191,7 +192,7 @@ test_that("download_weights handles multiple weights correctly", {
             cache_dir,
             quiet
         ) {
-            requested_weights <<- c(requested_weights, weight)
+            tracker$requested_weights <- c(tracker$requested_weights, weight)
             if (style == "normal") {
                 return(paste0("/tmp/fake-", weight, ".ttf"))
             }
@@ -204,12 +205,12 @@ test_that("download_weights handles multiple weights correctly", {
         name = "test-font",
         weights = c(300, 400, 700),
         subset = "latin",
-        cache_dir = tempdir(),
+        cache_dir = withr::local_tempdir(),
         quiet = TRUE
     )
 
     # Should have tried all three weights
-    expect_true(all(c(300, 400, 700) %in% requested_weights))
+    expect_true(all(c(300, 400, 700) %in% tracker$requested_weights))
 
     # Should have all three in result (normal variants)
     expect_true("300" %in% names(result))

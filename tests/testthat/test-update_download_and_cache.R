@@ -16,7 +16,7 @@ test_that("update_download_and_cache validates arguments", {
             family_name = "Test",
             missing_weights = c(700),
             subset = "latin",
-            cache_dir = tempdir()
+            cache_dir = withr::local_tempdir()
         ),
         "must be a <CacheEntry> object"
     )
@@ -30,7 +30,7 @@ test_that("update_download_and_cache validates arguments", {
             family_name = "Test",
             missing_weights = c(700),
             subset = "latin",
-            cache_dir = tempdir()
+            cache_dir = withr::local_tempdir()
         ),
         "must be a <FontProvider> object"
     )
@@ -44,7 +44,7 @@ test_that("update_download_and_cache validates arguments", {
             family_name = "Test",
             missing_weights = numeric(0),
             subset = "latin",
-            cache_dir = tempdir()
+            cache_dir = withr::local_tempdir()
         ),
         "must be a non-empty numeric vector"
     )
@@ -59,9 +59,7 @@ test_that("update_download_and_cache returns NULL when no files downloaded", {
     )
     entry <- CacheEntry(family = "Test", meta = meta)
 
-    tmp <- tempfile("cache_")
-    dir.create(tmp)
-    on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+    tmp <- withr::local_tempdir()
 
     # Mock download_weights to return empty list
     local_mocked_bindings(
@@ -97,9 +95,7 @@ test_that("update_download_and_cache merges new files with existing", {
     )
     entry <- CacheEntry(family = "Test", meta = meta)
 
-    tmp <- tempfile("cache_")
-    dir.create(tmp)
-    on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+    tmp <- withr::local_tempdir()
 
     # Mock download_weights to return weight 700
     local_mocked_bindings(
@@ -140,9 +136,7 @@ test_that("update_download_and_cache merges new files with existing", {
 test_that("update_download_and_cache updates cache when cel provided", {
     provider <- new_bunny_provider()
 
-    tmp <- tempfile("cache_")
-    dir.create(tmp)
-    on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+    tmp <- withr::local_tempdir()
 
     # Create and write initial cache
     meta <- CacheMeta(
@@ -188,9 +182,7 @@ test_that("update_download_and_cache handles multiple missing weights", {
     )
     entry <- CacheEntry(family = "Test", meta = meta)
 
-    tmp <- tempfile("cache_")
-    dir.create(tmp)
-    on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+    tmp <- withr::local_tempdir()
 
     # Mock download_weights to return multiple weights
     local_mocked_bindings(
@@ -230,9 +222,7 @@ test_that("update_download_and_cache uses default cache_dir when NULL", {
     )
     entry <- CacheEntry(family = "Test", meta = meta)
 
-    mock_cache_dir <- tempfile("mock_cache_")
-    dir.create(mock_cache_dir)
-    on.exit(unlink(mock_cache_dir, recursive = TRUE), add = TRUE)
+    mock_cache_dir <- withr::local_tempdir()
 
     local_mocked_bindings(
         get_cache_dir = function() mock_cache_dir,

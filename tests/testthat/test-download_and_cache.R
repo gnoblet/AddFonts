@@ -8,7 +8,7 @@ test_that("download_and_cache validates provider argument", {
             regular.wt = 400,
             bold.wt = 700,
             subset = "latin",
-            cache_dir = tempdir()
+            cache_dir = withr::local_tempdir()
         ),
         "must be a <FontProvider> object"
     )
@@ -17,9 +17,7 @@ test_that("download_and_cache validates provider argument", {
 test_that("download_and_cache returns NULL when regular weight unavailable", {
     provider <- new_bunny_provider()
 
-    tmp <- tempfile("cache_")
-    dir.create(tmp)
-    on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+    tmp <- withr::local_tempdir()
 
     # Mock download_weights to return empty list (no regular weight)
     local_mocked_bindings(
@@ -44,9 +42,7 @@ test_that("download_and_cache returns NULL when regular weight unavailable", {
 test_that("download_and_cache creates CacheEntry and writes to cache", {
     provider <- new_bunny_provider()
 
-    tmp <- tempfile("cache_")
-    dir.create(tmp)
-    on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+    tmp <- withr::local_tempdir()
 
     # Mock download_weights to return files
     local_mocked_bindings(
@@ -89,9 +85,7 @@ test_that("download_and_cache creates CacheEntry and writes to cache", {
 test_that("download_and_cache handles partial weight downloads", {
     provider <- new_bunny_provider()
 
-    tmp <- tempfile("cache_")
-    dir.create(tmp)
-    on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+    tmp <- withr::local_tempdir()
 
     # Mock download_weights to return only regular weight
     local_mocked_bindings(
@@ -121,10 +115,7 @@ test_that("download_and_cache handles partial weight downloads", {
 test_that("download_and_cache uses default cache_dir when NULL", {
     provider <- new_bunny_provider()
 
-    # Mock get_cache_dir and download_weights
-    mock_cache_dir <- tempfile("mock_cache_")
-    dir.create(mock_cache_dir)
-    on.exit(unlink(mock_cache_dir, recursive = TRUE), add = TRUE)
+    mock_cache_dir <- withr::local_tempdir()
 
     local_mocked_bindings(
         get_cache_dir = function() mock_cache_dir,

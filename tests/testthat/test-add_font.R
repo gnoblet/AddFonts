@@ -23,20 +23,17 @@ test_that("add_font uses cache when available (mocked)", {
   # Create a mock CacheEntryList with our entry
   fake_cache <- CacheEntryList(entries = list(fake_entry))
 
-  with_mocked_bindings(
+  local_mocked_bindings(
     cache_read = function(...) fake_cache,
     register_from_cache = function(entry, ...) fake_files,
-    .package = "AddFonts",
-    {
-      res <- add_font(
-        "somefont",
-        provider = "bunny",
-        family = "somefont"
-      )
-      expect_true(!is.null(res))
-      expect_equal(res, fake_files)
-    }
+    .package = "AddFonts"
   )
+  res <- add_font(
+    "somefont",
+    provider = "bunny",
+    family = "somefont"
+  )
+  expect_equal(res, fake_files)
 })
 
 
@@ -73,7 +70,8 @@ test_that("add_font re-downloads when weights don't match cached weights", {
   fake_cache <- CacheEntryList(entries = list(fake_entry))
 
   # Track if download_and_cache was called (it should be)
-  download_called <- FALSE
+  tracker <- new.env(parent = emptyenv())
+  tracker$download_called <- FALSE
 
   # Create a fake new cache entry for download_and_cache to return
   fake_new_entry <- CacheEntry(
@@ -89,31 +87,28 @@ test_that("add_font re-downloads when weights don't match cached weights", {
     )
   )
 
-  with_mocked_bindings(
+  local_mocked_bindings(
     cache_read = function(...) fake_cache,
     cache_remove = function(cel, ...) cel,
     cache_write = function(...) NULL,
     download_and_cache = function(...) {
-      download_called <<- TRUE
+      tracker$download_called <- TRUE
       fake_new_entry
     },
     register_from_cache = function(entry, ...) {
-      if (download_called) fake_files_new else fake_files_old
+      if (tracker$download_called) fake_files_new else fake_files_old
     },
-    .package = "AddFonts",
-    {
-      res <- add_font(
-        "somefont",
-        provider = "bunny",
-        family = "somefont",
-        regular.wt = 400,
-        bold.wt = 700
-      )
-      expect_true(download_called)
-      expect_true(!is.null(res))
-      expect_equal(res, fake_files_new)
-    }
+    .package = "AddFonts"
   )
+  res <- add_font(
+    "somefont",
+    provider = "bunny",
+    family = "somefont",
+    regular.wt = 400,
+    bold.wt = 700
+  )
+  expect_true(tracker$download_called)
+  expect_equal(res, fake_files_new)
 })
 
 test_that("add_font re-downloads when cached weights are missing", {
@@ -147,7 +142,8 @@ test_that("add_font re-downloads when cached weights are missing", {
   fake_cache <- CacheEntryList(entries = list(fake_entry))
 
   # Track if download_and_cache was called (it should be)
-  download_called <- FALSE
+  tracker <- new.env(parent = emptyenv())
+  tracker$download_called <- FALSE
 
   # Create a fake new cache entry for download_and_cache to return
   fake_new_entry <- CacheEntry(
@@ -163,31 +159,28 @@ test_that("add_font re-downloads when cached weights are missing", {
     )
   )
 
-  with_mocked_bindings(
+  local_mocked_bindings(
     cache_read = function(...) fake_cache,
     cache_remove = function(cel, ...) cel,
     cache_write = function(...) NULL,
     download_and_cache = function(...) {
-      download_called <<- TRUE
+      tracker$download_called <- TRUE
       fake_new_entry
     },
     register_from_cache = function(entry, ...) {
-      if (download_called) fake_files_new else fake_files_old
+      if (tracker$download_called) fake_files_new else fake_files_old
     },
-    .package = "AddFonts",
-    {
-      res <- add_font(
-        "somefont",
-        provider = "bunny",
-        family = "somefont",
-        regular.wt = 400,
-        bold.wt = 700
-      )
-      expect_true(download_called)
-      expect_true(!is.null(res))
-      expect_equal(res, fake_files_new)
-    }
+    .package = "AddFonts"
   )
+  res <- add_font(
+    "somefont",
+    provider = "bunny",
+    family = "somefont",
+    regular.wt = 400,
+    bold.wt = 700
+  )
+  expect_true(tracker$download_called)
+  expect_equal(res, fake_files_new)
 })
 
 test_that("add_font validates input arguments", {
@@ -211,20 +204,19 @@ test_that("add_font re-downloads when register_from_cache returns NULL (stale en
     family = "somefont",
     meta = CacheMeta(source = "bunny", files = list("400" = "c.ttf", "700" = "d.ttf"))
   )
-  download_called <- FALSE
+  tracker <- new.env(parent = emptyenv())
+  tracker$download_called <- FALSE
 
-  with_mocked_bindings(
+  local_mocked_bindings(
     cache_read = function(...) fake_cache,
     register_from_cache = function(...) NULL,
     cache_remove = function(cel, ...) cel,
     cache_write = function(...) NULL,
-    download_and_cache = function(...) { download_called <<- TRUE; fake_new_entry },
-    .package = "AddFonts",
-    {
-      add_font("somefont", family = "somefont")
-      expect_true(download_called)
-    }
+    download_and_cache = function(...) { tracker$download_called <- TRUE; fake_new_entry },
+    .package = "AddFonts"
   )
+  add_font("somefont", family = "somefont")
+  expect_true(tracker$download_called)
 })
 
 test_that("add_font downloads missing bold and registers from updated entry", {
@@ -239,16 +231,14 @@ test_that("add_font downloads missing bold and registers from updated entry", {
   )
   fake_files <- list(regular = "a.ttf", italic = "a.ttf", bold = "b.ttf", bolditalic = "b.ttf")
 
-  with_mocked_bindings(
+  local_mocked_bindings(
     cache_read = function(...) fake_cache,
     update_download_and_cache = function(...) fake_updated_entry,
     register_from_cache = function(entry, ...) fake_files,
-    .package = "AddFonts",
-    {
-      res <- add_font("somefont", family = "somefont")
-      expect_equal(res, fake_files)
-    }
+    .package = "AddFonts"
   )
+  res <- add_font("somefont", family = "somefont")
+  expect_equal(res, fake_files)
 })
 
 test_that("add_font falls back to full re-download when update_download_and_cache fails", {
@@ -262,31 +252,28 @@ test_that("add_font falls back to full re-download when update_download_and_cach
     meta = CacheMeta(source = "bunny", files = list("400" = "e.ttf", "700" = "f.ttf"))
   )
   fake_files <- list(regular = "e.ttf", italic = "e.ttf", bold = "f.ttf", bolditalic = "f.ttf")
-  download_called <- FALSE
+  tracker <- new.env(parent = emptyenv())
+  tracker$download_called <- FALSE
 
-  with_mocked_bindings(
+  local_mocked_bindings(
     cache_read = function(...) fake_cache,
     update_download_and_cache = function(...) NULL,
     cache_remove = function(cel, ...) cel,
     cache_write = function(...) NULL,
-    download_and_cache = function(...) { download_called <<- TRUE; fake_new_entry },
+    download_and_cache = function(...) { tracker$download_called <- TRUE; fake_new_entry },
     register_from_cache = function(...) fake_files,
-    .package = "AddFonts",
-    {
-      res <- add_font("somefont", family = "somefont")
-      expect_true(download_called)
-      expect_equal(res, fake_files)
-    }
+    .package = "AddFonts"
   )
+  res <- add_font("somefont", family = "somefont")
+  expect_true(tracker$download_called)
+  expect_equal(res, fake_files)
 })
 
 test_that("add_font aborts when download_and_cache returns NULL", {
-  with_mocked_bindings(
+  local_mocked_bindings(
     cache_read = function(...) CacheEntryList(entries = list()),
     download_and_cache = function(...) NULL,
-    .package = "AddFonts",
-    {
-      expect_error(add_font("nonexistent"), "Failed to obtain font")
-    }
+    .package = "AddFonts"
   )
+  expect_error(add_font("nonexistent"), "Failed to obtain font")
 })

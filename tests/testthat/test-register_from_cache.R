@@ -63,10 +63,7 @@ test_that("register_from_cache returns NULL when regular file does not exist", {
 
 test_that("register_from_cache registers with sysfonts and applies fallbacks", {
 
-    # Create temporary files
-    tmp_dir <- tempfile("fonts_")
-    dir.create(tmp_dir)
-    on.exit(unlink(tmp_dir, recursive = TRUE), add = TRUE)
+    tmp_dir <- withr::local_tempdir()
 
     regular_file <- fs::path(tmp_dir, "test-400.ttf")
     fs::file_create(regular_file)
@@ -78,10 +75,11 @@ test_that("register_from_cache registers with sysfonts and applies fallbacks", {
     entry <- CacheEntry(family = "test", meta = meta)
 
     # Mock sysfonts::font_add
-    font_add_calls <- list()
+    tracker <- new.env(parent = emptyenv())
+    tracker$font_add_calls <- list()
     local_mocked_bindings(
         font_add = function(family, regular, italic, bold, bolditalic) {
-            font_add_calls <<- list(
+            tracker$font_add_calls <- list(
                 family = family,
                 regular = regular,
                 italic = italic,
@@ -106,16 +104,13 @@ test_that("register_from_cache registers with sysfonts and applies fallbacks", {
     expect_equal(result$bolditalic, as.character(regular_file))
 
     # Verify sysfonts::font_add was called correctly
-    expect_equal(font_add_calls$family, "test")
-    expect_equal(font_add_calls$regular, as.character(regular_file))
+    expect_equal(tracker$font_add_calls$family, "test")
+    expect_equal(tracker$font_add_calls$regular, as.character(regular_file))
 })
 
 test_that("register_from_cache uses available variants when present", {
 
-    # Create temporary files
-    tmp_dir <- tempfile("fonts_")
-    dir.create(tmp_dir)
-    on.exit(unlink(tmp_dir, recursive = TRUE), add = TRUE)
+    tmp_dir <- withr::local_tempdir()
 
     regular_file <- fs::path(tmp_dir, "test-400.ttf")
     italic_file <- fs::path(tmp_dir, "test-400italic.ttf")
@@ -136,10 +131,11 @@ test_that("register_from_cache uses available variants when present", {
     entry <- CacheEntry(family = "test", meta = meta)
 
     # Mock sysfonts::font_add
-    font_add_calls <- list()
+    tracker <- new.env(parent = emptyenv())
+    tracker$font_add_calls <- list()
     local_mocked_bindings(
         font_add = function(family, regular, italic, bold, bolditalic) {
-            font_add_calls <<- list(
+            tracker$font_add_calls <- list(
                 family = family,
                 regular = regular,
                 italic = italic,
@@ -160,18 +156,15 @@ test_that("register_from_cache uses available variants when present", {
     expect_equal(result$bolditalic, as.character(bolditalic_file))
 
     # Verify sysfonts::font_add received correct paths
-    expect_equal(font_add_calls$regular, as.character(regular_file))
-    expect_equal(font_add_calls$italic, as.character(italic_file))
-    expect_equal(font_add_calls$bold, as.character(bold_file))
-    expect_equal(font_add_calls$bolditalic, as.character(bolditalic_file))
+    expect_equal(tracker$font_add_calls$regular, as.character(regular_file))
+    expect_equal(tracker$font_add_calls$italic, as.character(italic_file))
+    expect_equal(tracker$font_add_calls$bold, as.character(bold_file))
+    expect_equal(tracker$font_add_calls$bolditalic, as.character(bolditalic_file))
 })
 
 test_that("register_from_cache applies partial fallbacks correctly", {
 
-    # Create temporary files
-    tmp_dir <- tempfile("fonts_")
-    dir.create(tmp_dir)
-    on.exit(unlink(tmp_dir, recursive = TRUE), add = TRUE)
+    tmp_dir <- withr::local_tempdir()
 
     regular_file <- fs::path(tmp_dir, "test-400.ttf")
     bold_file <- fs::path(tmp_dir, "test-700.ttf")
@@ -188,10 +181,11 @@ test_that("register_from_cache applies partial fallbacks correctly", {
     entry <- CacheEntry(family = "test", meta = meta)
 
     # Mock sysfonts::font_add
-    font_add_calls <- list()
+    tracker <- new.env(parent = emptyenv())
+    tracker$font_add_calls <- list()
     local_mocked_bindings(
         font_add = function(family, regular, italic, bold, bolditalic) {
-            font_add_calls <<- list(
+            tracker$font_add_calls <- list(
                 family = family,
                 regular = regular,
                 italic = italic,
@@ -214,10 +208,7 @@ test_that("register_from_cache applies partial fallbacks correctly", {
 
 test_that("register_from_cache works with non-standard weights", {
 
-    # Create temporary files
-    tmp_dir <- tempfile("fonts_")
-    dir.create(tmp_dir)
-    on.exit(unlink(tmp_dir, recursive = TRUE), add = TRUE)
+    tmp_dir <- withr::local_tempdir()
 
     light_file <- fs::path(tmp_dir, "test-300.ttf")
     black_file <- fs::path(tmp_dir, "test-900.ttf")
@@ -234,10 +225,11 @@ test_that("register_from_cache works with non-standard weights", {
     entry <- CacheEntry(family = "test", meta = meta)
 
     # Mock sysfonts::font_add
-    font_add_calls <- list()
+    tracker <- new.env(parent = emptyenv())
+    tracker$font_add_calls <- list()
     local_mocked_bindings(
         font_add = function(family, regular, italic, bold, bolditalic) {
-            font_add_calls <<- list(
+            tracker$font_add_calls <- list(
                 family = family,
                 regular = regular,
                 italic = italic,
@@ -254,6 +246,6 @@ test_that("register_from_cache works with non-standard weights", {
 
     expect_equal(result$regular, as.character(light_file))
     expect_equal(result$bold, as.character(black_file))
-    expect_equal(font_add_calls$regular, as.character(light_file))
-    expect_equal(font_add_calls$bold, as.character(black_file))
+    expect_equal(tracker$font_add_calls$regular, as.character(light_file))
+    expect_equal(tracker$font_add_calls$bold, as.character(black_file))
 })
