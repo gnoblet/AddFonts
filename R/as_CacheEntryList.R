@@ -27,7 +27,6 @@ S7::method(as_CacheEntryList, S7::class_list) <- function(l) {
 
     # construct CacheMeta and CacheEntry (S7 constructors will validate)
     cm <- CacheMeta(
-      family_id = meta_raw$family_id,
       source = meta_raw$source,
       files = files
     )
