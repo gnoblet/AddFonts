@@ -86,14 +86,11 @@ CacheMeta <- S7::new_class(
     )
     if (!all(valid_pattern)) {
       invalid_names <- file_names[!valid_pattern]
-      cli::cli_abort(
-        paste0(
-          "File names must follow the pattern '<weight>' or '<weight>italic', ",
-          "where weight is 100, 200, 300, 400, 500, 600, 700, 800, or 900. ",
-          "Invalid names: ",
-          paste(invalid_names, collapse = ", ")
-        )
-      )
+      cli::cli_abort(c(
+        "File names in {.arg self@files} must follow {.val <weight>} or {.val <weight>italic}.",
+        "i" = "Valid weights: 100, 200, 300, 400, 500, 600, 700, 800, 900.",
+        "x" = "Invalid name{?s}: {.val {invalid_names}}"
+      ))
     }
 
     NULL
