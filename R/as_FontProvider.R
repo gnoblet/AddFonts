@@ -18,12 +18,11 @@ as_FontProvider <- S7::new_generic(
 #' @name as_FontProvider
 #' @export
 S7::method(as_FontProvider, S7::class_list) <- function(x) {
-  fp <- FontProvider(
+  FontProvider(
     source = x$source,
     url_template = x$url_template,
     conversion = x$conversion,
     conversion_ext = x$conversion_ext,
     aliases = x$aliases
   )
-  return(fp)
 }

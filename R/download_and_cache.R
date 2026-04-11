@@ -72,10 +72,8 @@ download_and_cache <- function(
   cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
 
   #------ Return CacheEntry for caller to register
-  cache_entry <- CacheEntry(
+  CacheEntry(
     family = family_name,
     meta = meta
   )
-
-  return(cache_entry)
 }

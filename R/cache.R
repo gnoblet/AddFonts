@@ -141,7 +141,7 @@ S7::method(cache_read, S7::class_character | NULL) <- function(
     }
   )
 
-  return(cel)
+  cel
 }
 
 #' Get certain families from CacheEntryList
@@ -225,7 +225,7 @@ S7::method(cache_get, CacheEntryList) <- function(
     return(NULL)
   }
 
-  return(res)
+  res
 }
 
 #' Set cache entries
@@ -287,7 +287,7 @@ S7::method(cache_set, CacheEntryList) <- function(
     x@entries <- c(x@entries, list(ce))
   }
 
-  return(x)
+  x
 }
 
 #' Delete entry from cache
@@ -381,7 +381,7 @@ S7::method(cache_remove, CacheEntryList) <- function(
   # set entries to remaining entries
   x@entries <- res
 
-  return(x)
+  x
 }
 
 
@@ -505,9 +505,7 @@ S7::method(cache_get_weights, CacheEntry) <- function(entry, weights) {
   weight_keys <- as.character(weights)
 
   # Check which weights are available
-  available <- weight_keys %in% cached_weight_keys
-
-  return(available)
+  weight_keys %in% cached_weight_keys
 }
 
 # Read cache from disk, returning an empty CacheEntryList on any error.

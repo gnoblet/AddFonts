@@ -86,5 +86,5 @@ update_download_and_cache <- function(
     cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
   }
 
-  return(updated_entry)
+  updated_entry
 }

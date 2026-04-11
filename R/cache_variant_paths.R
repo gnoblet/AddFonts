@@ -50,5 +50,5 @@ cache_variant_paths <- function(
     to_convert_path <- NULL
   }
 
-  return(list(to_convert = to_convert_path, ttf = ttf_path))
+  list(to_convert = to_convert_path, ttf = ttf_path)
 }

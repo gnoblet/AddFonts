@@ -31,12 +31,10 @@ S7::method(as_CacheEntryList, S7::class_list) <- function(l) {
       source = meta_raw$source,
       files = files
     )
-    ce <- CacheEntry(
+    CacheEntry(
       family = ent$family,
       meta = cm
     )
-    return(ce)
   })
-  cel <- CacheEntryList(entries = el)
-  return(cel)
+  CacheEntryList(entries = el)
 }

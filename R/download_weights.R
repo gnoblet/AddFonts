@@ -81,5 +81,5 @@ download_weights <- function(
     }
   }
 
-  return(files)
+  files
 }

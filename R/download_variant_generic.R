@@ -129,5 +129,5 @@ download_variant_generic <- function(
     )
   }
 
-  return(paths$ttf)
+  paths$ttf
 }

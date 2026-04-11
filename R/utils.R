@@ -104,9 +104,7 @@ safe_id <- function(name) {
   assert_null_or_non_empty_string(name, allow_null = FALSE)
 
   #------ Do stuff
-  str <- gsub("[^a-z0-9-]", "-", tolower(name))
-
-  return(str)
+  gsub("[^a-z0-9-]", "-", tolower(name))
 }
 
 ## Utilities: get_cache_dir
@@ -131,8 +129,7 @@ get_cache_dir <- function() {
     cli::cli_alert_info("Created font cache directory: {.file {cache_dir}}")
   }
 
-  # Return the absolute path to the cache dir
-  return(cache_dir)
+  cache_dir
 }
 
 ## Utilities: get_provider_details
@@ -172,6 +169,5 @@ get_provider_details <- function(provider) {
   }
 
   # Convert to FontProvider object and return
-  provider_obj <- as_FontProvider(providers_data[[provider]])
-  return(provider_obj)
+  as_FontProvider(providers_data[[provider]])
 }

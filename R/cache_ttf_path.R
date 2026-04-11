@@ -50,12 +50,10 @@ cache_ttf_path <- function(
   }
 
   # compose full path
-  fp <- fs::path(
+  fs::path(
     cache_dir,
     cache_ttf_filename(source, font_id, subset, weight, style)
   )
-
-  return(fp)
 }
 
 #' Compose canonical filename for a cached TTF
@@ -98,7 +96,7 @@ cache_ttf_filename <- function(source, font_id, subset, weight, style) {
   sid <- safe_id(font_id)
 
   # compose filename
-  fn <- sprintf(
+  sprintf(
     "%s-%s-%s-%d-%s.ttf",
     source,
     sid,
@@ -106,6 +104,4 @@ cache_ttf_filename <- function(source, font_id, subset, weight, style) {
     as.integer(weight),
     style
   )
-
-  return(fn)
 }
