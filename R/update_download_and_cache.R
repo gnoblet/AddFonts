@@ -71,7 +71,6 @@ update_download_and_cache <- function(
   #------ Create updated cache entry
   updated_meta <- CacheMeta(
     source = entry@meta@source,
-    family_id = entry@meta@family_id,
     files = updated_files
   )
 

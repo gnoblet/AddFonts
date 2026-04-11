@@ -44,7 +44,6 @@ add_font <- function(
 
   #------ Prepare identifiers and provider
   provider_obj <- get_provider_details(provider)
-  font_id <- safe_id(name)
   family_name <- if (is.null(family)) name else family
   cache_dir <- get_cache_dir()
 
@@ -161,7 +160,6 @@ add_font <- function(
   cache_entry <- download_and_cache(
     provider = provider_obj,
     name = name,
-    font_id = font_id,
     family_name = family_name,
     regular.wt = regular.wt,
     bold.wt = bold.wt,

@@ -8,8 +8,6 @@
 #'   Provider object used for downloads.
 #' @typed name: character(1)
 #'   Font name at the provider.
-#' @typed font_id: character(1)
-#'   Filesystem-safe font id.
 #' @typed family_name: character(1)
 #'   Family name for the font.
 #' @typed regular.wt: integer(1)
@@ -27,7 +25,6 @@
 download_and_cache <- function(
   provider,
   name,
-  font_id,
   family_name,
   regular.wt = 400,
   bold.wt = 700,
@@ -61,7 +58,6 @@ download_and_cache <- function(
   #------ Create cache entry
   meta <- CacheMeta(
     source = provider@source,
-    family_id = font_id,
     files = files_entry
   )
 
