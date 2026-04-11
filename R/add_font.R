@@ -49,7 +49,7 @@ add_font <- function(
 
   #------ Try to use cached version
   # Attempt to read cache (handle errors gracefully)
-  cel <- cache_read(cache_dir = cache_dir)
+  cel <- cache_read_safe(cache_dir = cache_dir)
 
   # Look for existing cache entry
   existing_entry <- NULL

@@ -79,11 +79,12 @@ update_download_and_cache <- function(
     meta = updated_meta
   )
 
-  #------ Update cache if cel provided
-  if (!is.null(cel)) {
-    cel <- cache_set(cel, family_name, updated_meta)
-    cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
+  #------ Update cache (always persist the new entry)
+  if (is.null(cel)) {
+    cel <- cache_read_safe(cache_dir)
   }
+  cel <- cache_set(cel, family_name, updated_meta)
+  cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
 
   updated_entry
 }
