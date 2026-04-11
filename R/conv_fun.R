@@ -18,8 +18,9 @@ conv_fun <- function(conversion) {
   switch(
     conversion,
     "woff2_to_ttf" = woff2_to_ttf,
-    cli::cli_abort(
-      "Unknown conversion '{conversion}'; expected 'woff2_to_ttf'."
-    )
+    cli::cli_abort(c(
+      "Unknown conversion {.val {conversion}}.",
+      "i" = "Expected {.val woff2_to_ttf}."
+    ))
   )
 }
