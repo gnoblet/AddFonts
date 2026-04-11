@@ -81,23 +81,23 @@ woff2_to_ttf <- function(
     try(fs::file_delete(font_file), silent = TRUE)
   }
 
-  # abort if errored status
-  if (quiet %in% c("fail", "full") && !is.null(status) && status != 0) {
+  # abort if errored status — shown when "none" (all) or "fail" (errors only)
+  if (quiet %in% c("none", "fail") && !is.null(status) && status != 0) {
     cli::cli_abort(c(
       "Error during conversion of {.file {font_file}} to TTF using {.val woff2_decompress}.",
       "x" = paste(res, collapse = "\n")
     ))
   }
 
-  # abort if no error status but output missing
-  if (quiet %in% c("fail", "full") && !fs::file_exists(out)) {
+  # abort if no error status but output missing — always an error
+  if (!fs::file_exists(out)) {
     cli::cli_abort(
       "Conversion finished but output file not found: {.file {out}}"
     )
   }
 
-  # success alert
-  if (quiet %in% c("success", "full")) {
+  # success alert — shown when "none" (all) or "success" (success only)
+  if (quiet %in% c("none", "success")) {
     cli::cli_alert_success(
       "Converted {.file {font_file}} to TTF: {.file {out}}"
     )
