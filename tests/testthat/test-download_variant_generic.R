@@ -1,14 +1,12 @@
 test_that("download_variant_generic validates weight and returns appropriate errors", {
-  fn <- getFromNamespace("download_variant_generic", "AddFonts")
   provider <- new_bunny_provider()
   expect_error(
-    fn(provider, "fam", 50, "normal"),
+    download_variant_generic(provider, "fam", 50, "normal"),
     "must be a single integer"
   )
 })
 
 test_that("download_variant_generic returns TTF path on success without conversion", {
-  fn <- getFromNamespace("download_variant_generic", "AddFonts")
   provider <- FontProvider(
     source = "test",
     url_template = "https://example.com/%s/%s/%s/%d/%s",
@@ -32,13 +30,12 @@ test_that("download_variant_generic returns TTF path on success without conversi
     .package = "httr2"
   )
 
-  result <- fn(provider, "test-fam", 400, "normal", cache_dir = tmp)
+  result <- download_variant_generic(provider, "test-fam", 400, "normal", cache_dir = tmp)
   expect_equal(result, ttf_path)
   expect_true(file.exists(ttf_path))
 })
 
 test_that("download_variant_generic returns TTF path on success with conversion", {
-  fn <- getFromNamespace("download_variant_generic", "AddFonts")
   provider <- new_bunny_provider()
 
   tmp <- withr::local_tempdir()
@@ -65,12 +62,11 @@ test_that("download_variant_generic returns TTF path on success with conversion"
     .package = "AddFonts"
   )
 
-  result <- fn(provider, "test-fam", 400, "normal", cache_dir = tmp)
+  result <- download_variant_generic(provider, "test-fam", 400, "normal", cache_dir = tmp)
   expect_equal(result, ttf_path)
 })
 
 test_that("download_variant_generic returns NULL and warns on download failure", {
-  fn <- getFromNamespace("download_variant_generic", "AddFonts")
   provider <- FontProvider(
     source = "test",
     url_template = "https://example.com/%s/%s/%s/%d/%s",
@@ -92,14 +88,13 @@ test_that("download_variant_generic returns NULL and warns on download failure",
   )
 
   expect_warning(
-    result <- fn(provider, "test-fam", 400, "normal", cache_dir = tmp),
+    result <- download_variant_generic(provider, "test-fam", 400, "normal", cache_dir = tmp),
     "Download failed"
   )
   expect_null(result)
 })
 
 test_that("download_variant_generic returns NULL silently on download failure when quiet", {
-  fn <- getFromNamespace("download_variant_generic", "AddFonts")
   provider <- FontProvider(
     source = "test",
     url_template = "https://example.com/%s/%s/%s/%d/%s",
@@ -121,13 +116,12 @@ test_that("download_variant_generic returns NULL silently on download failure wh
   )
 
   expect_no_warning(
-    result <- fn(provider, "test-fam", 400, "normal", cache_dir = tmp, quiet = TRUE)
+    result <- download_variant_generic(provider, "test-fam", 400, "normal", cache_dir = tmp, quiet = TRUE)
   )
   expect_null(result)
 })
 
 test_that("download_variant_generic returns NULL and warns on conversion failure", {
-  fn <- getFromNamespace("download_variant_generic", "AddFonts")
   provider <- new_bunny_provider()
 
   tmp <- withr::local_tempdir()
@@ -152,7 +146,7 @@ test_that("download_variant_generic returns NULL and warns on conversion failure
   )
 
   expect_warning(
-    result <- fn(provider, "test-fam", 400, "normal", cache_dir = tmp),
+    result <- download_variant_generic(provider, "test-fam", 400, "normal", cache_dir = tmp),
     "Conversion failed"
   )
   expect_null(result)
@@ -162,7 +156,6 @@ test_that("download_variant_generic returns NULL and warns on conversion failure
 
 test_that("download_variant_generic warns when TTF missing after silent conversion failure", {
   # Conversion "succeeds" (no error thrown) but produces no TTF file
-  fn <- getFromNamespace("download_variant_generic", "AddFonts")
   provider <- new_bunny_provider()
 
   tmp <- withr::local_tempdir()
@@ -188,7 +181,7 @@ test_that("download_variant_generic warns when TTF missing after silent conversi
   )
 
   expect_warning(
-    result <- fn(provider, "test-fam", 400, "normal", cache_dir = tmp),
+    result <- download_variant_generic(provider, "test-fam", 400, "normal", cache_dir = tmp),
     "TTF file not found"
   )
   expect_null(result)

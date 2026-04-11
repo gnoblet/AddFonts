@@ -1,8 +1,7 @@
 test_that("download_and_cache validates provider argument", {
-    fn <- getFromNamespace("download_and_cache", "AddFonts")
 
     expect_error(
-        fn(
+        download_and_cache(
             provider = "not a provider",
             name = "test-font",
             family_name = "test",
@@ -16,7 +15,6 @@ test_that("download_and_cache validates provider argument", {
 })
 
 test_that("download_and_cache returns NULL when regular weight unavailable", {
-    fn <- getFromNamespace("download_and_cache", "AddFonts")
     provider <- new_bunny_provider()
 
     tmp <- tempfile("cache_")
@@ -30,7 +28,7 @@ test_that("download_and_cache returns NULL when regular weight unavailable", {
         }
     )
 
-    result <- fn(
+    result <- download_and_cache(
         provider = provider,
         name = "test-font",
         family_name = "test",
@@ -44,7 +42,6 @@ test_that("download_and_cache returns NULL when regular weight unavailable", {
 })
 
 test_that("download_and_cache creates CacheEntry and writes to cache", {
-    fn <- getFromNamespace("download_and_cache", "AddFonts")
     provider <- new_bunny_provider()
 
     tmp <- tempfile("cache_")
@@ -63,7 +60,7 @@ test_that("download_and_cache creates CacheEntry and writes to cache", {
         }
     )
 
-    result <- fn(
+    result <- download_and_cache(
         provider = provider,
         name = "test-font",
         family_name = "test",
@@ -90,7 +87,6 @@ test_that("download_and_cache creates CacheEntry and writes to cache", {
 })
 
 test_that("download_and_cache handles partial weight downloads", {
-    fn <- getFromNamespace("download_and_cache", "AddFonts")
     provider <- new_bunny_provider()
 
     tmp <- tempfile("cache_")
@@ -106,7 +102,7 @@ test_that("download_and_cache handles partial weight downloads", {
         }
     )
 
-    result <- fn(
+    result <- download_and_cache(
         provider = provider,
         name = "test-font",
         family_name = "test",
@@ -123,7 +119,6 @@ test_that("download_and_cache handles partial weight downloads", {
 })
 
 test_that("download_and_cache uses default cache_dir when NULL", {
-    fn <- getFromNamespace("download_and_cache", "AddFonts")
     provider <- new_bunny_provider()
 
     # Mock get_cache_dir and download_weights
@@ -138,7 +133,7 @@ test_that("download_and_cache uses default cache_dir when NULL", {
         }
     )
 
-    result <- fn(
+    result <- download_and_cache(
         provider = provider,
         name = "test-font",
         family_name = "test",

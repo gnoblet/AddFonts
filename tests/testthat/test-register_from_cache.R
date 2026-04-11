@@ -1,9 +1,8 @@
 test_that("register_from_cache validates arguments", {
-    fn <- getFromNamespace("register_from_cache", "AddFonts")
 
     # Invalid entry
     expect_error(
-        fn(
+        register_from_cache(
             entry = "not an entry",
             regular.wt = 400,
             bold.wt = 700
@@ -19,25 +18,24 @@ test_that("register_from_cache validates arguments", {
     entry <- CacheEntry(family = "Test", meta = meta)
 
     expect_error(
-        fn(entry = entry, regular.wt = "not numeric", bold.wt = 700),
+        register_from_cache(entry = entry, regular.wt = "not numeric", bold.wt = 700),
         "must be a single numeric weight"
     )
 
     expect_error(
-        fn(entry = entry, regular.wt = c(400, 500), bold.wt = 700),
+        register_from_cache(entry = entry, regular.wt = c(400, 500), bold.wt = 700),
         "must be a single numeric weight"
     )
 
     # Invalid bold.wt
     expect_error(
-        fn(entry = entry, regular.wt = 400, bold.wt = "not numeric"),
+        register_from_cache(entry = entry, regular.wt = 400, bold.wt = "not numeric"),
         "must be a single numeric weight"
     )
 })
 
 
 test_that("register_from_cache returns NULL when regular file missing", {
-    fn <- getFromNamespace("register_from_cache", "AddFonts")
 
     # Entry with only weight 700
     meta <- CacheMeta(
@@ -46,12 +44,11 @@ test_that("register_from_cache returns NULL when regular file missing", {
     )
     entry <- CacheEntry(family = "Test", meta = meta)
 
-    result <- fn(entry = entry, regular.wt = 400, bold.wt = 700)
+    result <- register_from_cache(entry = entry, regular.wt = 400, bold.wt = 700)
     expect_null(result)
 })
 
 test_that("register_from_cache returns NULL when regular file does not exist", {
-    fn <- getFromNamespace("register_from_cache", "AddFonts")
 
     # Entry with non-existent file
     meta <- CacheMeta(
@@ -60,12 +57,11 @@ test_that("register_from_cache returns NULL when regular file does not exist", {
     )
     entry <- CacheEntry(family = "Test", meta = meta)
 
-    result <- fn(entry = entry, regular.wt = 400, bold.wt = 700)
+    result <- register_from_cache(entry = entry, regular.wt = 400, bold.wt = 700)
     expect_null(result)
 })
 
 test_that("register_from_cache registers with sysfonts and applies fallbacks", {
-    fn <- getFromNamespace("register_from_cache", "AddFonts")
 
     # Create temporary files
     tmp_dir <- tempfile("fonts_")
@@ -97,7 +93,7 @@ test_that("register_from_cache registers with sysfonts and applies fallbacks", {
         .package = "sysfonts"
     )
 
-    result <- fn(entry = entry, regular.wt = 400, bold.wt = 700)
+    result <- register_from_cache(entry = entry, regular.wt = 400, bold.wt = 700)
 
     # Should return files list
     expect_type(result, "list")
@@ -115,7 +111,6 @@ test_that("register_from_cache registers with sysfonts and applies fallbacks", {
 })
 
 test_that("register_from_cache uses available variants when present", {
-    fn <- getFromNamespace("register_from_cache", "AddFonts")
 
     # Create temporary files
     tmp_dir <- tempfile("fonts_")
@@ -156,7 +151,7 @@ test_that("register_from_cache uses available variants when present", {
         .package = "sysfonts"
     )
 
-    result <- fn(entry = entry, regular.wt = 400, bold.wt = 700)
+    result <- register_from_cache(entry = entry, regular.wt = 400, bold.wt = 700)
 
     # Should use all specific variants
     expect_equal(result$regular, as.character(regular_file))
@@ -172,7 +167,6 @@ test_that("register_from_cache uses available variants when present", {
 })
 
 test_that("register_from_cache applies partial fallbacks correctly", {
-    fn <- getFromNamespace("register_from_cache", "AddFonts")
 
     # Create temporary files
     tmp_dir <- tempfile("fonts_")
@@ -209,7 +203,7 @@ test_that("register_from_cache applies partial fallbacks correctly", {
         .package = "sysfonts"
     )
 
-    result <- fn(entry = entry, regular.wt = 400, bold.wt = 700)
+    result <- register_from_cache(entry = entry, regular.wt = 400, bold.wt = 700)
 
     # italic should fall back to regular
     expect_equal(result$italic, as.character(regular_file))
@@ -219,7 +213,6 @@ test_that("register_from_cache applies partial fallbacks correctly", {
 })
 
 test_that("register_from_cache works with non-standard weights", {
-    fn <- getFromNamespace("register_from_cache", "AddFonts")
 
     # Create temporary files
     tmp_dir <- tempfile("fonts_")
@@ -257,7 +250,7 @@ test_that("register_from_cache works with non-standard weights", {
     )
 
     # Request weight 300 as regular and 900 as bold
-    result <- fn(entry = entry, regular.wt = 300, bold.wt = 900)
+    result <- register_from_cache(entry = entry, regular.wt = 300, bold.wt = 900)
 
     expect_equal(result$regular, as.character(light_file))
     expect_equal(result$bold, as.character(black_file))

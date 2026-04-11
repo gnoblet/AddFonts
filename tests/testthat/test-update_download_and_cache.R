@@ -1,5 +1,4 @@
 test_that("update_download_and_cache validates arguments", {
-    fn <- getFromNamespace("update_download_and_cache", "AddFonts")
     provider <- new_bunny_provider()
 
     meta <- CacheMeta(
@@ -10,7 +9,7 @@ test_that("update_download_and_cache validates arguments", {
 
     # Invalid entry
     expect_error(
-        fn(
+        update_download_and_cache(
             entry = "not an entry",
             provider = provider,
             name = "test",
@@ -24,7 +23,7 @@ test_that("update_download_and_cache validates arguments", {
 
     # Invalid provider
     expect_error(
-        fn(
+        update_download_and_cache(
             entry = entry,
             provider = "not a provider",
             name = "test",
@@ -38,7 +37,7 @@ test_that("update_download_and_cache validates arguments", {
 
     # Invalid missing_weights
     expect_error(
-        fn(
+        update_download_and_cache(
             entry = entry,
             provider = provider,
             name = "test",
@@ -52,7 +51,6 @@ test_that("update_download_and_cache validates arguments", {
 })
 
 test_that("update_download_and_cache returns NULL when no files downloaded", {
-    fn <- getFromNamespace("update_download_and_cache", "AddFonts")
     provider <- new_bunny_provider()
 
     meta <- CacheMeta(
@@ -72,7 +70,7 @@ test_that("update_download_and_cache returns NULL when no files downloaded", {
         }
     )
 
-    result <- fn(
+    result <- update_download_and_cache(
         entry = entry,
         provider = provider,
         name = "test",
@@ -87,7 +85,6 @@ test_that("update_download_and_cache returns NULL when no files downloaded", {
 })
 
 test_that("update_download_and_cache merges new files with existing", {
-    fn <- getFromNamespace("update_download_and_cache", "AddFonts")
     provider <- new_bunny_provider()
 
     # Create existing entry with weight 400
@@ -114,7 +111,7 @@ test_that("update_download_and_cache merges new files with existing", {
         }
     )
 
-    result <- fn(
+    result <- update_download_and_cache(
         entry = entry,
         provider = provider,
         name = "test",
@@ -141,7 +138,6 @@ test_that("update_download_and_cache merges new files with existing", {
 })
 
 test_that("update_download_and_cache updates cache when cel provided", {
-    fn <- getFromNamespace("update_download_and_cache", "AddFonts")
     provider <- new_bunny_provider()
 
     tmp <- tempfile("cache_")
@@ -164,7 +160,7 @@ test_that("update_download_and_cache updates cache when cel provided", {
         }
     )
 
-    result <- fn(
+    result <- update_download_and_cache(
         entry = entry,
         provider = provider,
         name = "test",
@@ -184,7 +180,6 @@ test_that("update_download_and_cache updates cache when cel provided", {
 })
 
 test_that("update_download_and_cache handles multiple missing weights", {
-    fn <- getFromNamespace("update_download_and_cache", "AddFonts")
     provider <- new_bunny_provider()
 
     meta <- CacheMeta(
@@ -208,7 +203,7 @@ test_that("update_download_and_cache handles multiple missing weights", {
         }
     )
 
-    result <- fn(
+    result <- update_download_and_cache(
         entry = entry,
         provider = provider,
         name = "test",
@@ -227,7 +222,6 @@ test_that("update_download_and_cache handles multiple missing weights", {
 })
 
 test_that("update_download_and_cache uses default cache_dir when NULL", {
-    fn <- getFromNamespace("update_download_and_cache", "AddFonts")
     provider <- new_bunny_provider()
 
     meta <- CacheMeta(
@@ -247,7 +241,7 @@ test_that("update_download_and_cache uses default cache_dir when NULL", {
         }
     )
 
-    result <- fn(
+    result <- update_download_and_cache(
         entry = entry,
         provider = provider,
         name = "test",

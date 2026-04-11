@@ -1,8 +1,7 @@
 test_that("download_weights validates provider argument", {
-    fn <- getFromNamespace("download_weights", "AddFonts")
 
     expect_error(
-        fn(
+        download_weights(
             provider = "not a provider",
             name = "test-font",
             weights = c(400),
@@ -15,11 +14,10 @@ test_that("download_weights validates provider argument", {
 })
 
 test_that("download_weights validates name argument", {
-    fn <- getFromNamespace("download_weights", "AddFonts")
     provider <- new_bunny_provider()
 
     expect_error(
-        fn(
+        download_weights(
             provider = provider,
             name = "",
             weights = c(400),
@@ -32,11 +30,10 @@ test_that("download_weights validates name argument", {
 })
 
 test_that("download_weights validates weights argument", {
-    fn <- getFromNamespace("download_weights", "AddFonts")
     provider <- new_bunny_provider()
 
     expect_error(
-        fn(
+        download_weights(
             provider = provider,
             name = "test-font",
             weights = numeric(0),
@@ -48,7 +45,7 @@ test_that("download_weights validates weights argument", {
     )
 
     expect_error(
-        fn(
+        download_weights(
             provider = provider,
             name = "test-font",
             weights = "not numeric",
@@ -61,11 +58,10 @@ test_that("download_weights validates weights argument", {
 })
 
 test_that("download_weights validates quiet argument", {
-    fn <- getFromNamespace("download_weights", "AddFonts")
     provider <- new_bunny_provider()
 
     expect_error(
-        fn(
+        download_weights(
             provider = provider,
             name = "test-font",
             weights = c(400),
@@ -78,7 +74,6 @@ test_that("download_weights validates quiet argument", {
 })
 
 test_that("download_weights returns a named list with weight keys", {
-    fn <- getFromNamespace("download_weights", "AddFonts")
     provider <- new_bunny_provider()
 
     # Mock download_variant_generic to avoid real downloads
@@ -100,7 +95,7 @@ test_that("download_weights returns a named list with weight keys", {
         }
     )
 
-    result <- fn(
+    result <- download_weights(
         provider = provider,
         name = "test-font",
         weights = c(400, 700),
@@ -118,7 +113,6 @@ test_that("download_weights returns a named list with weight keys", {
 })
 
 test_that("download_weights includes italic variants when available", {
-    fn <- getFromNamespace("download_weights", "AddFonts")
     provider <- new_bunny_provider()
 
     # Mock to return both normal and italic
@@ -136,7 +130,7 @@ test_that("download_weights includes italic variants when available", {
         }
     )
 
-    result <- fn(
+    result <- download_weights(
         provider = provider,
         name = "test-font",
         weights = c(400),
@@ -151,7 +145,6 @@ test_that("download_weights includes italic variants when available", {
 })
 
 test_that("download_weights skips unavailable variants", {
-    fn <- getFromNamespace("download_weights", "AddFonts")
     provider <- new_bunny_provider()
 
     # Mock to return NULL (unavailable)
@@ -169,7 +162,7 @@ test_that("download_weights skips unavailable variants", {
         }
     )
 
-    result <- fn(
+    result <- download_weights(
         provider = provider,
         name = "test-font",
         weights = c(400, 700),
@@ -184,7 +177,6 @@ test_that("download_weights skips unavailable variants", {
 })
 
 test_that("download_weights handles multiple weights correctly", {
-    fn <- getFromNamespace("download_weights", "AddFonts")
     provider <- new_bunny_provider()
 
     # Track which weights were requested
@@ -207,7 +199,7 @@ test_that("download_weights handles multiple weights correctly", {
         }
     )
 
-    result <- fn(
+    result <- download_weights(
         provider = provider,
         name = "test-font",
         weights = c(300, 400, 700),

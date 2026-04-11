@@ -234,7 +234,6 @@ test_that("cache_clean on-disk empties the cache and removes files", {
 ###########################
 
 test_that("cache_get_weights returns available and missing weights", {
-  fn <- getFromNamespace("cache_get_weights", "AddFonts")
 
   # Create entry with weights 400 and 700
   meta <- CacheMeta(
@@ -248,13 +247,12 @@ test_that("cache_get_weights returns available and missing weights", {
   entry <- CacheEntry(family = "Test", meta = meta)
 
   # Check for weights that exist
-  result <- fn(entry, c(400, 700))
+  result <- cache_get_weights(entry, c(400, 700))
   expect_type(result, "logical")
   expect_equal(result, c(TRUE, TRUE))
 })
 
 test_that("cache_get_weights identifies missing weights", {
-  fn <- getFromNamespace("cache_get_weights", "AddFonts")
 
   # Create entry with only weight 400
   meta <- CacheMeta(
@@ -264,12 +262,11 @@ test_that("cache_get_weights identifies missing weights", {
   entry <- CacheEntry(family = "Test", meta = meta)
 
   # Check for weights 400 and 700
-  result <- fn(entry, c(400, 700))
+  result <- cache_get_weights(entry, c(400, 700))
   expect_equal(result, c(TRUE, FALSE))
 })
 
 test_that("cache_get_weights handles all missing weights", {
-  fn <- getFromNamespace("cache_get_weights", "AddFonts")
 
   # Create entry with weight 300
   meta <- CacheMeta(
@@ -279,12 +276,11 @@ test_that("cache_get_weights handles all missing weights", {
   entry <- CacheEntry(family = "Test", meta = meta)
 
   # Check for weights 400 and 700 (both missing)
-  result <- fn(entry, c(400, 700))
+  result <- cache_get_weights(entry, c(400, 700))
   expect_equal(result, c(FALSE, FALSE))
 })
 
 test_that("cache_get_weights validates arguments", {
-  fn <- getFromNamespace("cache_get_weights", "AddFonts")
 
   meta <- CacheMeta(
     source = "bunny",
@@ -294,18 +290,18 @@ test_that("cache_get_weights validates arguments", {
 
   # Invalid entry
   expect_error(
-    fn("not an entry", c(400)),
+    cache_get_weights("not an entry", c(400)),
     "Can't find method for"
   )
 
   # Invalid weights
   expect_error(
-    fn(entry, numeric(0)),
+    cache_get_weights(entry, numeric(0)),
     "must be a non-empty numeric vector"
   )
 
   expect_error(
-    fn(entry, "not numeric"),
+    cache_get_weights(entry, "not numeric"),
     "must be a non-empty numeric vector"
   )
 })
@@ -318,9 +314,8 @@ test_that("cache_read errors on valid JSON with wrong structure", {
 })
 
 test_that("cache_read_safe returns empty CacheEntryList when cache is missing", {
-  fn <- getFromNamespace("cache_read_safe", "AddFonts")
   tmp <- withr::local_tempdir()
-  result <- fn(tmp)
+  result <- cache_read_safe(tmp)
   expect_s7_class(result, CacheEntryList)
   expect_equal(length(result@entries), 0)
 })
