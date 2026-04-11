@@ -3,7 +3,6 @@ test_that("as_CacheEntryList converts native list to CacheEntryList", {
     list(
       family = "roboto",
       meta = list(
-        family_id = "roboto",
         source = "google_fonts",
         files = list("400" = "roboto-regular.ttf")
       )
@@ -11,7 +10,6 @@ test_that("as_CacheEntryList converts native list to CacheEntryList", {
     list(
       family = "open-sans",
       meta = list(
-        family_id = "open-sans",
         source = "google_fonts",
         files = list("400" = "open-sans-regular.ttf")
       )

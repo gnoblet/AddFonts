@@ -13,7 +13,6 @@ test_that("register_from_cache validates arguments", {
 
     # Invalid regular.wt
     meta <- CacheMeta(
-        family_id = "test",
         source = "bunny",
         files = list("400" = "/tmp/test-400.ttf")
     )
@@ -42,7 +41,6 @@ test_that("register_from_cache returns NULL when regular file missing", {
 
     # Entry with only weight 700
     meta <- CacheMeta(
-        family_id = "test",
         source = "bunny",
         files = list("700" = "/tmp/test-700.ttf")
     )
@@ -57,7 +55,6 @@ test_that("register_from_cache returns NULL when regular file does not exist", {
 
     # Entry with non-existent file
     meta <- CacheMeta(
-        family_id = "test",
         source = "bunny",
         files = list("400" = "/tmp/nonexistent-test-400.ttf")
     )
@@ -79,7 +76,6 @@ test_that("register_from_cache registers with sysfonts and applies fallbacks", {
     fs::file_create(regular_file)
 
     meta <- CacheMeta(
-        family_id = "test",
         source = "bunny",
         files = list("400" = as.character(regular_file))
     )
@@ -134,7 +130,6 @@ test_that("register_from_cache uses available variants when present", {
     fs::file_create(c(regular_file, italic_file, bold_file, bolditalic_file))
 
     meta <- CacheMeta(
-        family_id = "test",
         source = "bunny",
         files = list(
             "400" = as.character(regular_file),
@@ -190,7 +185,6 @@ test_that("register_from_cache applies partial fallbacks correctly", {
     fs::file_create(c(regular_file, bold_file))
 
     meta <- CacheMeta(
-        family_id = "test",
         source = "bunny",
         files = list(
             "400" = as.character(regular_file),
@@ -238,7 +232,6 @@ test_that("register_from_cache works with non-standard weights", {
     fs::file_create(c(light_file, black_file))
 
     meta <- CacheMeta(
-        family_id = "test",
         source = "bunny",
         files = list(
             "300" = as.character(light_file),

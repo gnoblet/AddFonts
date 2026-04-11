@@ -1,6 +1,5 @@
 test_that("CacheEntryList S7 class basics works correctly", {
   meta1 <- CacheMeta(
-    family_id = "fid1",
     source = "bunny",
     files = list("400" = "r1.ttf")
   )
@@ -10,7 +9,6 @@ test_that("CacheEntryList S7 class basics works correctly", {
   )
 
   meta2 <- CacheMeta(
-    family_id = "fid2",
     source = "fox",
     files = list("400" = "r2.ttf")
   )
@@ -31,7 +29,6 @@ test_that("CacheEntryList S7 class basics works correctly", {
 
 test_that("CacheEntryList validation works correctly", {
   meta <- CacheMeta(
-    family_id = "fid",
     source = "bunny",
     files = list("400" = "r.ttf")
   )

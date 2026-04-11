@@ -1,13 +1,11 @@
 test_that("as_list returns native lists for classes", {
   meta1 <- CacheMeta(
-    family_id = "f1",
     source = "prov",
     files = list("400" = "f1-regular.ttf")
   )
   entry1 <- CacheEntry(family = "f1", meta = meta1)
 
   meta2 <- CacheMeta(
-    family_id = "f2",
     source = "prov2",
     files = list("400" = "f2-regular.ttf")
   )

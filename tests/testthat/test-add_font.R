@@ -11,7 +11,6 @@ test_that("add_font uses cache when available (mocked)", {
     family = "somefont",
     meta = CacheMeta(
       source = "bunny",
-      family_id = "somefont",
       files = list(
         "400" = "a.ttf",
         "400italic" = "b.ttf",
@@ -61,7 +60,6 @@ test_that("add_font re-downloads when weights don't match cached weights", {
     family = "somefont",
     meta = CacheMeta(
       source = "bunny",
-      family_id = "somefont",
       files = list(
         "300" = "a.ttf",
         "300italic" = "b.ttf",
@@ -82,7 +80,6 @@ test_that("add_font re-downloads when weights don't match cached weights", {
     family = "somefont",
     meta = CacheMeta(
       source = "bunny",
-      family_id = "somefont",
       files = list(
         "400" = "e.ttf",
         "400italic" = "f.ttf",
@@ -139,7 +136,6 @@ test_that("add_font re-downloads when cached weights are missing", {
     family = "somefont",
     meta = CacheMeta(
       source = "bunny",
-      family_id = "somefont",
       files = list(
         "500" = "a.ttf",
         "500italic" = "b.ttf"
@@ -158,7 +154,6 @@ test_that("add_font re-downloads when cached weights are missing", {
     family = "somefont",
     meta = CacheMeta(
       source = "bunny",
-      family_id = "somefont",
       files = list(
         "400" = "e.ttf",
         "400italic" = "f.ttf",

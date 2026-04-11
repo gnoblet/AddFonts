@@ -3,7 +3,6 @@ test_that("update_download_and_cache validates arguments", {
     provider <- new_bunny_provider()
 
     meta <- CacheMeta(
-        family_id = "test",
         source = "bunny",
         files = list("400" = "/tmp/test-400.ttf")
     )
@@ -57,7 +56,6 @@ test_that("update_download_and_cache returns NULL when no files downloaded", {
     provider <- new_bunny_provider()
 
     meta <- CacheMeta(
-        family_id = "test",
         source = "bunny",
         files = list("400" = "/tmp/test-400.ttf")
     )
@@ -94,7 +92,6 @@ test_that("update_download_and_cache merges new files with existing", {
 
     # Create existing entry with weight 400
     meta <- CacheMeta(
-        family_id = "test",
         source = "bunny",
         files = list(
             "400" = "/tmp/test-400.ttf",
@@ -139,9 +136,8 @@ test_that("update_download_and_cache merges new files with existing", {
     expect_true("700" %in% names(result@meta@files))
     expect_true("700italic" %in% names(result@meta@files))
 
-    # Should preserve original source and family_id
+    # Should preserve original source
     expect_equal(result@meta@source, "bunny")
-    expect_equal(result@meta@family_id, "test")
 })
 
 test_that("update_download_and_cache updates cache when cel provided", {
@@ -154,7 +150,6 @@ test_that("update_download_and_cache updates cache when cel provided", {
 
     # Create and write initial cache
     meta <- CacheMeta(
-        family_id = "test",
         source = "bunny",
         files = list("400" = "/tmp/test-400.ttf")
     )
@@ -193,7 +188,6 @@ test_that("update_download_and_cache handles multiple missing weights", {
     provider <- new_bunny_provider()
 
     meta <- CacheMeta(
-        family_id = "test",
         source = "bunny",
         files = list("400" = "/tmp/test-400.ttf")
     )
@@ -237,7 +231,6 @@ test_that("update_download_and_cache uses default cache_dir when NULL", {
     provider <- new_bunny_provider()
 
     meta <- CacheMeta(
-        family_id = "test",
         source = "bunny",
         files = list("400" = "/tmp/test-400.ttf")
     )

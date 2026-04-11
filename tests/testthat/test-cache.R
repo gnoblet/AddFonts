@@ -1,5 +1,4 @@
 meta <- CacheMeta(
-  family_id = "cw",
   source = "s",
   files = list("400" = "cw.ttf")
 )
@@ -58,13 +57,11 @@ test_that("cache_read errors when index missing", {
 
 test_that("cache_get and cache_set behave as expected", {
   m1 <- CacheMeta(
-    family_id = "g1",
     source = "s",
     files = list("400" = "g1.ttf")
   )
   e1 <- CacheEntry(family = "g1", meta = m1)
   m2 <- CacheMeta(
-    family_id = "g2",
     source = "s2",
     files = list("400" = "g2.ttf")
   )
@@ -87,7 +84,6 @@ test_that("cache_get and cache_set behave as expected", {
 
   # replace existing
   m1b <- CacheMeta(
-    family_id = "g1",
     source = "x",
     files = list("400" = "g1b.ttf")
   )
@@ -110,12 +106,10 @@ test_that("cache_remove works as expected both in-memory and on-disk", {
 
   # create CacheEntryList with two entries
   cm1 <- CacheMeta(
-    family_id = "fid1",
     source = "bunny",
     files = list("400" = "FamilyA-Regular.ttf")
   )
   cm2 <- CacheMeta(
-    family_id = "fid2",
     source = "bunny",
     files = list("400" = "FamilyB-Regular.ttf")
   )
@@ -179,12 +173,10 @@ test_that("cache_clean on-disk empties the cache and removes files", {
 
   # create CacheEntryList with two entries
   cm1 <- CacheMeta(
-    family_id = "fid1",
     source = "bunny",
     files = list("400" = "FamilyA-Regular.ttf")
   )
   cm2 <- CacheMeta(
-    family_id = "fid2",
     source = "bunny",
     files = list("400" = "FamilyB-Regular.ttf")
   )
@@ -246,7 +238,6 @@ test_that("cache_get_weights returns available and missing weights", {
 
   # Create entry with weights 400 and 700
   meta <- CacheMeta(
-    family_id = "test",
     source = "bunny",
     files = list(
       "400" = "/tmp/test-400.ttf",
@@ -267,7 +258,6 @@ test_that("cache_get_weights identifies missing weights", {
 
   # Create entry with only weight 400
   meta <- CacheMeta(
-    family_id = "test",
     source = "bunny",
     files = list("400" = "/tmp/test-400.ttf")
   )
@@ -283,7 +273,6 @@ test_that("cache_get_weights handles all missing weights", {
 
   # Create entry with weight 300
   meta <- CacheMeta(
-    family_id = "test",
     source = "bunny",
     files = list("300" = "/tmp/test-300.ttf")
   )
@@ -298,7 +287,6 @@ test_that("cache_get_weights validates arguments", {
   fn <- getFromNamespace("cache_get_weights", "AddFonts")
 
   meta <- CacheMeta(
-    family_id = "test",
     source = "bunny",
     files = list("400" = "/tmp/test.ttf")
   )

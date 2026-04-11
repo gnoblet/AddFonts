@@ -1,6 +1,5 @@
 test_that("CacheEntry S7 class basics works correctly", {
   meta <- CacheMeta(
-    family_id = "fid",
     source = "bunny",
     files = list("400" = "r.ttf")
   )
@@ -23,7 +22,6 @@ test_that("CacheEntry S7 class basics works correctly", {
 
 test_that("CacheEntry validation works correctly", {
   meta <- CacheMeta(
-    family_id = "fid",
     source = "bunny",
     files = list("400" = "r.ttf")
   )
@@ -34,15 +32,6 @@ test_that("CacheEntry validation works correctly", {
       family = "",
       meta = meta
     )
-  )
-
-  # family safe_id must match meta@family_id
-  expect_error(
-    CacheEntry(
-      family = "different-fid",
-      meta = meta
-    ),
-    "refer to different fonts"
   )
 
   # meta is not CacheMeta
