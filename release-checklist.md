@@ -2,10 +2,10 @@
 
 ### Coverage improvement sprint (pre-release)
 
-- [ ] Run `covr::package_coverage()` and identify all files below 80% coverage
-- [ ] Run `covr::report()` for an interactive HTML breakdown
-- [ ] Write missing tests for under-covered functions and edge cases
-- [ ] Re-run `covr::package_coverage()` until overall coverage meets target (≥ 80%)
+- [x] Run `covr::package_coverage()` and identify all files below 80% coverage
+- [x] Run `covr::report()` for an interactive HTML breakdown
+- [x] Write missing tests for under-covered functions and edge cases
+- [x] Re-run `covr::package_coverage()` until overall coverage meets target (≥ 80%) — achieved 93.8%
 - [ ] Verify CI is uploading reports to Codecov (check `.woodpecker/` or equivalent CI config)
 - [ ] Check Codecov dashboard to confirm coverage is tracked and badge reflects current state
 - [ ] Add or update the Codecov badge in `README.md` if not present
