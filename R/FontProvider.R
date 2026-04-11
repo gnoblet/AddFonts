@@ -24,8 +24,8 @@ FontProvider <- S7::new_class(
   properties = list(
     source = S7::class_character,
     url_template = S7::class_character,
-    conversion = S7::class_any,
-    conversion_ext = S7::class_any,
+    conversion = S7::class_character | S7::class_null,
+    conversion_ext = S7::class_character | S7::class_null,
     aliases = S7::class_list
   ),
   validator = function(self) {
@@ -35,28 +35,11 @@ FontProvider <- S7::new_class(
     assert_null_or_non_empty_string(self@conversion_ext)
 
     if (
-      !is.null(self@conversion) &&
-        (!is.character(self@conversion) || length(self@conversion) != 1)
-    ) {
-      cli::cli_abort(
-        "`conversion` must be NULL or a character(1) function name."
-      )
-    }
-    if (
-      !is.null(self@conversion_ext) &&
-        (!is.character(self@conversion_ext) || length(self@conversion_ext) != 1)
-    ) {
-      cli::cli_abort(
-        "`conversion_ext` must be NULL or a character(1) file extension."
-      )
-    }
-
-    if (
       !is.null(self@aliases) &&
         (!is.list(self@aliases) && !is.character(self@aliases))
     ) {
       cli::cli_abort(
-        "`aliases` must be NULL, a list or character vector of aliases."
+        "{.arg aliases} must be NULL, a list, or a character vector."
       )
     }
 
