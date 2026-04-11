@@ -24,67 +24,67 @@
 #'   Updated cache entry with new weights (NOT registered), or NULL on failure.
 #'
 update_download_and_cache <- function(
-    entry,
+  entry,
+  provider,
+  name,
+  family_name,
+  missing_weights,
+  subset = "latin",
+  cache_dir = NULL,
+  cel = NULL
+) {
+  #------ Arg check
+  if (!S7::S7_inherits(entry, CacheEntry)) {
+    cli::cli_abort("{.arg entry} must be a <CacheEntry> object.")
+  }
+  if (!S7::S7_inherits(provider, FontProvider)) {
+    cli::cli_abort("{.arg provider} must be a <FontProvider> object.")
+  }
+  if (!is.numeric(missing_weights) || length(missing_weights) == 0) {
+    cli::cli_abort(
+      "{.arg missing_weights} must be a non-empty numeric vector."
+    )
+  }
+
+  if (is.null(cache_dir)) {
+    cache_dir <- get_cache_dir()
+  }
+
+  #------ Download missing weight variants using helper
+  new_files <- download_weights(
     provider,
     name,
-    family_name,
     missing_weights,
-    subset = "latin",
-    cache_dir = NULL,
-    cel = NULL
-) {
-    #------ Arg check
-    if (!S7::S7_inherits(entry, CacheEntry)) {
-        cli::cli_abort("{.arg entry} must be a <CacheEntry> object.")
-    }
-    if (!S7::S7_inherits(provider, FontProvider)) {
-        cli::cli_abort("{.arg provider} must be a <FontProvider> object.")
-    }
-    if (!is.numeric(missing_weights) || length(missing_weights) == 0) {
-        cli::cli_abort(
-            "{.arg missing_weights} must be a non-empty numeric vector."
-        )
-    }
+    subset,
+    cache_dir,
+    quiet = TRUE
+  )
 
-    if (is.null(cache_dir)) {
-        cache_dir <- get_cache_dir()
-    }
+  # Return NULL if no new files were downloaded
+  if (length(new_files) == 0) {
+    return(NULL)
+  }
 
-    #------ Download missing weight variants using helper
-    new_files <- download_weights(
-        provider,
-        name,
-        missing_weights,
-        subset,
-        cache_dir,
-        quiet = TRUE
-    )
+  # Merge with existing files
+  updated_files <- c(entry@meta@files, new_files)
 
-    # Return NULL if no new files were downloaded
-    if (length(new_files) == 0) {
-        return(NULL)
-    }
+  #------ Create updated cache entry
+  updated_meta <- CacheMeta(
+    source = entry@meta@source,
+    family_id = entry@meta@family_id,
+    files = updated_files
+  )
 
-    # Merge with existing files
-    updated_files <- c(entry@meta@files, new_files)
+  updated_entry <- CacheEntry(
+    family = family_name,
+    meta = updated_meta
+  )
 
-    #------ Create updated cache entry
-    updated_meta <- CacheMeta(
-        source = entry@meta@source,
-        family_id = entry@meta@family_id,
-        files = updated_files
-    )
+  #------ Update cache if cel provided
+  if (!is.null(cel)) {
+    cel <- cache_set(cel, family_name, updated_meta)
+    cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
+  }
 
-    updated_entry <- CacheEntry(
-        family = family_name,
-        meta = updated_meta
-    )
-
-    #------ Update cache if cel provided
-    if (!is.null(cel)) {
-        cel <- cache_set(cel, family_name, updated_meta)
-        cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
-    }
-
-    return(updated_entry)
+  return(updated_entry)
 }
