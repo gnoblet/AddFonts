@@ -48,7 +48,6 @@ preview_font <- function(
 
     #------ Setup graphics
 
-    rlang::check_installed("showtext", reason = "to use preview_font()")
     showtext::showtext_auto()
 
     # Save and restore graphics parameters
