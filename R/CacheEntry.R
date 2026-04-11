@@ -35,11 +35,12 @@ CacheEntry <- S7::new_class(
       allow_tilde = FALSE
     )
 
-    # family is different from meta@family_id
+    # family must match meta@family_id to keep cache consistent
     if (self@family != self@meta@family_id) {
-      cli::cli_warn(
-        "self@family is different from self@family_id."
-      )
+      cli::cli_abort(c(
+        "{.arg family} must match {.arg meta@family_id}.",
+        "x" = "{.val {self@family}} != {.val {self@meta@family_id}}"
+      ))
     }
 
     NULL
