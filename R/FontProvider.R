@@ -18,6 +18,7 @@
 #' @typedreturn FontProviders
 #'  S7 class representing a font provider specification.
 #'
+#' @export
 FontProvider <- S7::new_class(
   "FontProvider",
   properties = list(

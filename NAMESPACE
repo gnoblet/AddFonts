@@ -3,6 +3,7 @@
 export(CacheEntry)
 export(CacheEntryList)
 export(CacheMeta)
+export(FontProvider)
 export(add_font)
 export(as_CacheEntryList)
 export(as_FontProvider)
