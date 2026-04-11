@@ -32,7 +32,7 @@ CacheMeta <- S7::new_class(
 
     files <- self@files
     # - non-empty list of non-empty character strings
-    if (!is.list(files) || length(files) == 0) {
+    if (length(files) == 0) {
       cli::cli_abort("self@files must be a non-empty list.")
     }
     for (f in files) {

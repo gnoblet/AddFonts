@@ -34,11 +34,6 @@ register_from_cache <- function(entry, regular.wt = 400, bold.wt = 700) {
   meta <- entry@meta
   files <- meta@files
 
-  # Ensure we have files metadata
-  if (is.null(files) || length(files) == 0) {
-    return(NULL)
-  }
-
   # Build weight keys to look for
   regular_key <- as.character(regular.wt)
   regular_italic_key <- paste0(regular.wt, "italic")
@@ -81,20 +76,7 @@ register_from_cache <- function(entry, regular.wt = 400, bold.wt = 700) {
     is.null(files_to_register$bolditalic) ||
       !fs::file_exists(files_to_register$bolditalic)
   ) {
-    # Prefer bold over italic if available
-    if (
-      !is.null(files_to_register$bold) &&
-        fs::file_exists(files_to_register$bold)
-    ) {
-      files_to_register$bolditalic <- files_to_register$bold
-    } else if (
-      !is.null(files_to_register$italic) &&
-        fs::file_exists(files_to_register$italic)
-    ) {
-      files_to_register$bolditalic <- files_to_register$italic
-    } else {
-      files_to_register$bolditalic <- files_to_register$regular
-    }
+    files_to_register$bolditalic <- files_to_register$bold
   }
 
   # Register with sysfonts

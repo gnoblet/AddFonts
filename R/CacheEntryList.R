@@ -14,12 +14,7 @@ CacheEntryList <- S7::new_class(
   ),
   validator = function(self) {
     entries <- self@entries
-    # entiers is either an empty list or must have at least one element that is a CacheEntry
-
-    # enties is a list
-    if (!is.list(entries)) {
-      cli::cli_abort("self@entries must be a list.")
-    }
+    # entries is either an empty list or a list of CacheEntry objects
 
     if (length(entries) == 0) {
       return(NULL)
