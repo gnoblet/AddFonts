@@ -123,9 +123,11 @@ download_variant_generic <- function(
     return(NULL)
   }
 
-  cli::cli_alert_success(
-    "Downloaded variant: {.file {basename(paths$ttf)}}"
-  )
+  if (!isTRUE(quiet)) {
+    cli::cli_alert_success(
+      "Downloaded variant: {.file {basename(paths$ttf)}}"
+    )
+  }
 
   return(paths$ttf)
 }
