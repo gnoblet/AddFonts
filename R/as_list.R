@@ -19,7 +19,6 @@ as_list <- S7::new_generic(
 #' @export
 S7::method(as_list, CacheMeta) <- function(x) {
   list(
-    family_id = x@family_id,
     source = x@source,
     files = x@files
   )
