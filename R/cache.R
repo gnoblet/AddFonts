@@ -543,3 +543,12 @@ S7::method(cache_get_weights, CacheEntry) <- function(entry, weights) {
 
   return(available)
 }
+
+# Read cache from disk, returning an empty CacheEntryList on any error.
+# Internal helper used wherever a missing/corrupt cache should not abort.
+cache_read_safe <- function(cache_dir = NULL) {
+  tryCatch(
+    cache_read(cache_dir),
+    error = function(e) as_CacheEntryList(list())
+  )
+}

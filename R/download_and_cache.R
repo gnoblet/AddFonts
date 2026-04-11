@@ -66,10 +66,7 @@ download_and_cache <- function(
   )
 
   # Read current cache and update it
-  cel <- tryCatch(
-    cache_read(cache_dir = cache_dir),
-    error = function(e) as_CacheEntryList(list())
-  )
+  cel <- cache_read_safe(cache_dir)
 
   cel <- cache_set(cel, family_name, meta)
   cache_write(cel, cache_dir = cache_dir, quiet = TRUE)

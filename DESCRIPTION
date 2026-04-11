@@ -50,7 +50,6 @@ Collate:
     'download_weights.R'
     'preview_font.R'
     'register_from_cache.R'
-    'register_from_download.R'
     'update_download_and_cache.R'
     'utils.R'
     'woff2_to_ttf.R'
