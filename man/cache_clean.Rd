@@ -4,7 +4,7 @@
 \alias{cache_clean}
 \title{Clean cache entries}
 \usage{
-cache_clean(cache_dir = NULL, families = NULL, reset = FALSE, ...)
+cache_clean(cache_dir = NULL, families = NULL, reset = FALSE)
 }
 \arguments{
 \item{cache_dir}{(\code{NULL | character(1)}) Cache directory to use (default: NULL)}
@@ -12,8 +12,6 @@ cache_clean(cache_dir = NULL, families = NULL, reset = FALSE, ...)
 \item{families}{(\code{character | NULL}) Character vector of family names to remove, or \code{NULL} to clear the whole cache (default: NULL)}
 
 \item{reset}{(\code{logical(1)}) If TRUE, completely reset and clear the cache (default: FALSE).}
-
-\item{...}{(\code{anyD}) Additional arguments (currently unused).}
 }
 \value{
 (\code{character | NULL}) Invisibly returns character vector of removed family names when deleting specific entries, or \code{NULL} when nothing changed. Remove files by default.

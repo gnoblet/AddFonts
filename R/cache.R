@@ -395,8 +395,6 @@ S7::method(cache_remove, CacheEntryList) <- function(
 #'   Character vector of family names to remove, or `NULL` to clear the whole cache (default: NULL)
 #' @typed reset: logical(1)
 #'   If TRUE, completely reset and clear the cache (default: FALSE).
-#' @typed ...: anyD
-#'   Additional arguments (currently unused).
 #'
 #' @typedreturn character | NULL
 #'   Invisibly returns character vector of removed family names when deleting specific entries, or `NULL` when nothing changed. Remove files by default.
@@ -404,48 +402,18 @@ S7::method(cache_remove, CacheEntryList) <- function(
 #' @family cache
 #'
 #' @export
-cache_clean <- S7::new_generic(
-  "cache_clean",
-  "cache_dir",
-  function(
-    cache_dir = NULL,
-    families = NULL,
-    reset = FALSE,
-    ...
-  ) {
-    S7::S7_dispatch()
-  }
-)
-
-# #' @rdname cache_clean
-# #' @name cache_clean
-# #' @export
-# S7::method(cache_clean, NULL) <- function(
-#     cache_dir
-# ) {}
-
-#' @rdname cache_clean
-#' @name cache_clean
-#' @export
-S7::method(cache_clean, S7::class_character | NULL) <- function(
-  cache_dir,
-  families = NULL,
-  reset = FALSE
-) {
+cache_clean <- function(cache_dir = NULL, families = NULL, reset = FALSE) {
   #------ Arg check
 
   # families is a character vector or NULL
-  assert_null_or_non_empty_character_vector(
-    families,
-    allow_null = TRUE
-  )
+  assert_null_or_non_empty_character_vector(families, allow_null = TRUE)
 
   # cache_dir is NULL or a path
   assert_null_or_non_empty_string(cache_dir, allow_null = TRUE)
 
   # reset is a logical(1)
   if (!is.logical(reset) || length(reset) != 1) {
-    cli::cli_abort("`reset` must be a logical scalar.")
+    cli::cli_abort("{.arg reset} must be a logical scalar.")
   }
 
   #------ Do stuff
@@ -458,7 +426,6 @@ S7::method(cache_clean, S7::class_character | NULL) <- function(
   # if reset, delete whole cache dir
   if (reset) {
     if (dir.exists(cache_dir)) {
-      # delete cache dir
       fs::dir_delete(cache_dir)
     } else {
       cli::cli_alert_info(
@@ -493,10 +460,9 @@ S7::method(cache_clean, S7::class_character | NULL) <- function(
     cache_dir = cache_dir
   )
 
-  # write empty cache
+  # write updated cache
   cache_write(cel_new, cache_dir = cache_dir, quiet = TRUE)
 
-  # aler user for success
   cli::cli_alert_success("Cache cleared.")
 
   invisible(NULL)

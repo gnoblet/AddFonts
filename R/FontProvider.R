@@ -24,8 +24,8 @@ FontProvider <- S7::new_class(
   properties = list(
     source = S7::class_character,
     url_template = S7::class_character,
-    conversion = S7::class_character | S7::class_null,
-    conversion_ext = S7::class_character | S7::class_null,
+    conversion = S7::class_character | NULL,
+    conversion_ext = S7::class_character | NULL,
     aliases = S7::class_list
   ),
   validator = function(self) {
