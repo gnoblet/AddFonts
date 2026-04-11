@@ -8,8 +8,6 @@
 #'  "400italic" for italic weight 400). Each element is a character(1) path to the local font files.
 #'
 #' @details
-#' The `added` property is a getter-only field that returns the current timestamp as a character string when accessed. It cannot be set during construction.
-#'
 #' Weights are not explicitly stored - they are derived from the names of the files list.
 #' Registration functions are responsible for selecting appropriate weights for regular/bold variants.
 #'
@@ -21,10 +19,7 @@ CacheMeta <- S7::new_class(
   "CacheMeta",
   properties = list(
     source = S7::class_character,
-    files = S7::class_list,
-    added = S7::new_property(S7::class_character, getter = function(self) {
-      as.character(Sys.time())
-    })
+    files = S7::class_list
   ),
   validator = function(self) {
     # source is a non-empty string
