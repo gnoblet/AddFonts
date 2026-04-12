@@ -3,8 +3,9 @@
 ## Purpose
 
 AddFonts downloads and registers fonts from GDPR-compliant providers for use in R graphics.
-The main entry point is `add_font()`. The only currently supported provider is **Bunny Fonts**
-(`fonts.bunny.net`). Architecture is designed to make adding new providers straightforward.
+The main entry point is `add_font()`. Built-in provider: **Bunny Fonts** (`fonts.bunny.net`).
+Users can register custom providers at runtime via `register_provider()`.
+Architecture is designed to make adding new providers straightforward.
 
 ## OOP System: S7
 
@@ -16,7 +17,7 @@ Key rules:
 - Methods are registered with `S7::method(generic, Class) <- function(x, ...) { ... }`
 - Validators return `NULL` on success or a character string describing the error
 - `S7::methods_register()` must be called in `.onLoad()` for S3 dispatch compatibility (see `zzz.R`)
-- Collation order in `DESCRIPTION` is critical: `CacheMeta` → `CacheEntry` → `CacheEntryList` (child classes after parents)
+- Collation order in `DESCRIPTION` is critical: `CacheMeta` → `CacheEntry` → `CacheEntryList` → `FontProvider` → `provider_registry.R` (child classes after parents; registry after `FontProvider` since it dispatches on it)
 
 ## S7 Classes
 
@@ -39,12 +40,16 @@ Validator: `@family` must be a non-empty safe-id string (see `assert_pattern_wit
 The full in-memory cache index.
 - `@entries` — named list of `CacheEntry` objects
 
-Validator: all entries must have unique family names.
+Keys are compound `"{source}::{family}"` strings (e.g. `"bunny::roboto"`).
+The constructor auto-computes these keys from each entry's `@meta@source` and `@family`,
+overriding any caller-supplied names. `as_CacheEntryList()` re-applies the same logic on
+JSON round-trip. `as_list()` strips names before serialisation so the JSON stays a plain array.
+Validator: all entries must have unique `source::family` combinations.
 
 ### `FontProvider` (`R/FontProvider.R`)
 A font provider specification.
 - `@source` — character: provider name (e.g. `"bunny"`)
-- `@url_template` — character: `sprintf` template with 5 `%s`/`%d` slots: `family, family, subset, weight, style`
+- `@url_template` — character: **glue-style** template with named placeholders `{family}`, `{subset}`, `{weight}`, `{style}`
 - `@conversion` — character | NULL: name of conversion function (`"woff2_to_ttf"` or `NULL`)
 - `@conversion_ext` — character | NULL: source extension before conversion (e.g. `"woff2"`)
 - `@aliases` — list: alternative names to recognise the provider
@@ -57,13 +62,15 @@ These generics dispatch on their first argument:
 |---|---|---|
 | `cache_write(x, cache_dir, quiet)` | `CacheEntryList` | `R/cache.R` |
 | `cache_read(cache_dir)` | `character \| NULL` | `R/cache.R` |
-| `cache_get(x, families, quiet)` | `CacheEntryList` | `R/cache.R` |
+| `cache_get(x, families, source, quiet)` | `CacheEntryList` | `R/cache.R` |
 | `cache_set(x, family, meta)` | `CacheEntryList` | `R/cache.R` |
-| `cache_remove(x, families, ...)` | `CacheEntryList` | `R/cache.R` |
+| `cache_remove(x, families, source, ...)` | `CacheEntryList` | `R/cache.R` |
 | `cache_get_weights(x, weights)` | `CacheEntry` | `R/cache.R` |
 | `as_list(x)` | `CacheMeta \| CacheEntry \| CacheEntryList` | `R/as_list.R` |
 | `as_CacheEntryList(l)` | `list` | `R/as_CacheEntryList.R` |
 | `as_FontProvider(x)` | `list` | `R/as_FontProvider.R` |
+| `register_provider(provider, overwrite)` | `FontProvider` | `R/provider_registry.R` |
+| `unregister_provider(x)` | `character \| FontProvider` | `R/provider_registry.R` |
 
 ## Key Functions (non-generic)
 
@@ -93,9 +100,9 @@ Currently the only supported conversion is `woff2_to_ttf`.
 - **`cache_write`** — serialize `CacheEntryList` → `fonts_db.json` via `jsonlite::write_json`
 - **`cache_read`** — read `fonts_db.json` → `as_CacheEntryList()` → `CacheEntryList`
 - **`cache_read_safe`** — `cache_read` wrapped in `tryCatch`; returns empty `CacheEntryList` on error
-- **`cache_get`** — filter entries by family name; returns list or `NULL`
-- **`cache_set`** — upsert a `CacheEntry` by family name
-- **`cache_remove`** — remove entries (and optionally delete files) by family
+- **`cache_get`** — filter entries by family; if `source` is provided, uses O(1) key lookup, otherwise linear family-name scan; returns named list or `NULL`
+- **`cache_set`** — upsert by compound `"{source}::{family}"` key (named-list assignment); source comes from `meta@source`
+- **`cache_remove`** — remove by family (+ optional source for exact key); optionally delete referenced files
 - **`cache_clean`** — remove entries from disk index and delete files; `reset = TRUE` recreates empty index
 - **`cache_get_weights`** — logical vector: which requested weights are present in a `CacheEntry`
 
@@ -116,9 +123,13 @@ JSON format is a plain array of `{family, meta: {source, files}}` objects.
 - Calls `sysfonts::font_add()` then `showtext::showtext_auto()`
 - Returns `list(regular=, italic=, bold=, bolditalic=)` of local paths, or `NULL` if regular file missing/non-existent
 
-### Provider system (`R/utils.R`, `R/sysdata.rda`, `data-raw/providers.R`)
-- Providers are stored as a named list in `R/sysdata.rda` (internal data, rebuilt from `data-raw/providers.R`)
-- **`get_provider_details(provider)`** (`R/utils.R`) — look up by `@source` or `@aliases`; returns `FontProvider`
+### Provider system (`R/utils.R`, `R/provider_registry.R`, `R/sysdata.rda`, `data-raw/providers.R`)
+- Built-in providers stored in `R/sysdata.rda` (rebuilt from `data-raw/providers.R`); `inst/extdata/providers.json` is the source of truth
+- Session-level registry: `.provider_registry` env in `R/provider_registry.R`; session providers shadow built-ins
+- **`register_provider(provider, overwrite)`** — S7 generic dispatching on `FontProvider`; registers for this R session
+- **`unregister_provider(x)`** — S7 generic; dispatches on `character` (source name) or `FontProvider`
+- **`list_providers()`** — merges built-in + session providers (session shadows built-in on name collision)
+- **`get_provider_details(provider)`** (`R/utils.R`) — checks session registry first, then built-ins; returns `FontProvider`
 - **`get_cache_dir()`** (`R/utils.R`) — `rappdirs::user_cache_dir("AddFonts")`; creates dir if missing
 
 ## Validation Helpers (`R/assert.R`)
@@ -140,7 +151,7 @@ Argument name is captured automatically with `rlang::as_label(rlang::enexpr(x))`
 ## Utilities (`R/utils.R`)
 
 - **`safe_id(name)`** — `tolower` + replace non-`[a-z0-9-]` with `-`; used for cache filenames
-- **`delete_files(entries, quiet)`** — delete files, return list of `$deleted`, `$failed`, `$not_found`
+- **`delete_files(entries, quiet)`** — delete files, return list of `$deleted`, `$failed`, `$not_found`; `quiet = TRUE` suppresses messages
 
 ## Startup (`R/zzz.R`)
 
@@ -149,10 +160,14 @@ Argument name is captured automatically with `rlang::as_label(rlang::enexpr(x))`
 
 ## URL Template Format
 
-`sprintf(provider@url_template, family, family, subset, as.integer(weight), style)`
+`glue::glue_data(list(family=family, subset=subset, weight=as.integer(weight), style=style), provider@url_template)`
 
-Bunny template: `"https://fonts.bunny.net/%s/files/%s-%s-%d-%s.woff2"`
+Bunny template: `"https://fonts.bunny.net/{family}/files/{family}-{subset}-{weight}-{style}.woff2"`
 → `https://fonts.bunny.net/Roboto/files/Roboto-latin-400-normal.woff2`
+
+Named placeholders: `{family}`, `{subset}`, `{weight}` (integer), `{style}`.
+All four are always injected; a template only needs to use those it actually needs.
+`@url_template` validator rejects templates that omit `{family}`.
 
 ## Packages Used
 
@@ -164,7 +179,7 @@ Bunny template: `"https://fonts.bunny.net/%s/files/%s-%s-%d-%s.woff2"`
 | `fs` | Path manipulation, file/dir operations (always prefer over `file.path`, `dir.exists`, etc.) |
 | `rappdirs` | Platform-appropriate user cache directory (`user_cache_dir("AddFonts")`) |
 | `jsonlite` | JSON serialization (`write_json`, `read_json`) |
-| `glue` | String interpolation in error context messages |
+| `glue` | URL template interpolation (`glue_data`) and error context messages |
 | `rlang` | `enexpr`/`as_label` for arg-name capture in assertions |
 | `sysfonts` | Register fonts with graphics devices (`font_add`) |
 | `showtext` | Enable custom fonts in R plots (`showtext_auto`) |
