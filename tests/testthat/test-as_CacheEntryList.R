@@ -18,6 +18,6 @@ test_that("as_CacheEntryList converts native list to CacheEntryList", {
 
   cel <- as_CacheEntryList(l)
   expect_s7_class(cel, CacheEntryList)
-  fams <- vapply(cel@entries, function(e) e@family, character(1))
-  expect_equal(sort(fams), sort(c("roboto", "open-sans")))
+  fams <- unname(vapply(cel@entries, function(e) e@family, character(1)))
+  expect_setequal(fams, c("roboto", "open-sans"))
 })

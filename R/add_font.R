@@ -61,7 +61,7 @@ add_font <- function(
   # Look for existing cache entry
   existing_entry <- NULL
   if (length(cel@entries) > 0) {
-    got <- cache_get(cel, families = family_name, quiet = TRUE)
+    got <- cache_get(cel, families = family_name, source = provider_obj@source, quiet = TRUE)
     if (!is.null(got) && length(got) >= 1) {
       existing_entry <- got[[1]]
     }
@@ -97,6 +97,7 @@ add_font <- function(
       cel <- cache_remove(
         cel,
         families = family_name,
+        source = provider_obj@source,
         remove_files = FALSE,
         cache_dir = cache_dir
       )
@@ -142,6 +143,7 @@ add_font <- function(
       cel <- cache_remove(
         cel,
         families = family_name,
+        source = provider_obj@source,
         remove_files = FALSE,
         cache_dir = cache_dir
       )
@@ -156,6 +158,7 @@ add_font <- function(
       cel <- cache_remove(
         cel,
         families = family_name,
+        source = provider_obj@source,
         remove_files = FALSE,
         cache_dir = cache_dir
       )

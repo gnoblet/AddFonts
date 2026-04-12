@@ -11,7 +11,7 @@ test_that("cache_write and cache_read work with a real directory", {
   cel_read <- cache_read(tmp)
   expect_s7_class(cel_read, CacheEntryList)
   expect_equal(
-    vapply(cel_read@entries, function(e) e@family, character(1)),
+    unname(vapply(cel_read@entries, function(e) e@family, character(1))),
     "cw"
   )
 })
@@ -74,17 +74,17 @@ test_that("cache_get and cache_set behave as expected", {
   cel2 <- cache_set(cel, family = "g2", meta = m2)
   expect_equal(length(cel2@entries), 2)
 
-  # replace existing
+  # replace existing (same source "s" so compound key matches)
   m1b <- CacheMeta(
-    source = "x",
+    source = "s",
     files = list("400" = "g1b.ttf")
   )
   cel3 <- cache_set(cel2, family = "g1", meta = m1b)
   fams <- vapply(cel3@entries, function(e) e@family, character(1))
-  expect_equal(sort(fams), sort(c("g1", "g2")))
+  expect_setequal(unname(fams), c("g1", "g2"))
   # verify replacement
-  idx <- which(fams == "g1")
-  expect_equal(cel3@entries[[idx]]@meta@source, "x")
+  idx <- which(unname(fams) == "g1")
+  expect_equal(cel3@entries[[idx]]@meta@source, "s")
 })
 
 #######################
