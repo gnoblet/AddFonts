@@ -140,9 +140,16 @@ get_provider_details <- function(provider) {
   #------ Arg check
   assert_null_or_non_empty_string(provider, allow_null = FALSE)
 
-  #------ Do stuff
-  # Load providers from internal data (created by data-raw/providers.R)
-  # The 'providers' object is stored in R/sysdata.rda
+  #------ Check session registry first (source name or alias)
+  session_names <- ls(.provider_registry)
+  for (nm in session_names) {
+    fp <- get(nm, envir = .provider_registry)
+    if (fp@source == provider || provider %in% unlist(fp@aliases)) {
+      return(fp)
+    }
+  }
+
+  #------ Fall back to built-in sysdata providers
   if (!exists("providers", mode = "list", envir = asNamespace("AddFonts"))) {
     cli::cli_abort(c(
       "!" = "Internal providers data not found.",
@@ -152,15 +159,25 @@ get_provider_details <- function(provider) {
 
   providers_data <- get("providers", envir = asNamespace("AddFonts"))
 
-  # Check if provider exists in the data
-  if (!provider %in% names(providers_data)) {
-    available <- paste(names(providers_data), collapse = ", ")
-    cli::cli_abort(c(
-      "!" = "Provider {.val {provider}} not found.",
-      "i" = "Available providers: {.val {available}}"
-    ))
+  # Match by source name
+  if (provider %in% names(providers_data)) {
+    return(as_FontProvider(providers_data[[provider]]))
   }
 
-  # Convert to FontProvider object and return
-  as_FontProvider(providers_data[[provider]])
+  # Match by alias across built-ins
+  for (p in providers_data) {
+    fp <- as_FontProvider(p)
+    if (provider %in% unlist(fp@aliases)) {
+      return(fp)
+    }
+  }
+
+  # Nothing found — collect all known names for the error message
+  session_sources <- session_names
+  builtin_sources <- names(providers_data)
+  available <- paste(unique(c(builtin_sources, session_sources)), collapse = ", ")
+  cli::cli_abort(c(
+    "!" = "Provider {.val {provider}} not found.",
+    "i" = "Available providers: {.val {available}}"
+  ))
 }

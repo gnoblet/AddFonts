@@ -6,8 +6,9 @@
 #'
 #' @typed name: character(1)
 #'   Name of the font as known to the provider.
-#' @typed provider: character(1)
-#'   Provider id/name (default: "bunny").
+#' @typed provider: character(1) | FontProvider
+#'   Provider id/name (default: `"bunny"`), or a `FontProvider` object
+#'   constructed with [FontProvider()] (bypasses the registry lookup).
 #' @typed family: character | NULL
 #'   Optional family name to register the font under (default: NULL).
 #' @typed regular.wt: numeric(1)
@@ -31,7 +32,9 @@ add_font <- function(
 ) {
   #------ Arg check
   assert_null_or_non_empty_string(name, allow_null = FALSE)
-  assert_null_or_non_empty_string(provider, allow_null = FALSE)
+  if (!S7::S7_inherits(provider, FontProvider)) {
+    assert_null_or_non_empty_string(provider, allow_null = FALSE)
+  }
   assert_null_or_non_empty_string(family, allow_null = TRUE)
 
   if (!is.numeric(regular.wt) || length(regular.wt) != 1) {
@@ -43,7 +46,11 @@ add_font <- function(
   assert_null_or_non_empty_string(subset, allow_null = FALSE)
 
   #------ Prepare identifiers and provider
-  provider_obj <- get_provider_details(provider)
+  provider_obj <- if (S7::S7_inherits(provider, FontProvider)) {
+    provider
+  } else {
+    get_provider_details(provider)
+  }
   family_name <- if (is.null(family)) name else family
   cache_dir <- get_cache_dir()
 
