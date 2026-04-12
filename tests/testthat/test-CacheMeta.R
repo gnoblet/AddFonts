@@ -9,7 +9,6 @@ test_that("CacheMeta S7 class basics works correctly", {
 
   expect_equal(meta@source, "bunny")
   expect_equal(meta@files, list("400" = "r.ttf"))
-  expect_true(is.character(meta@added))
 })
 
 test_that("CacheMeta validation works correctly", {

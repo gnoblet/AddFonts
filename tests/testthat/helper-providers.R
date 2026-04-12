@@ -3,7 +3,7 @@
 #' Create a test FontProvider object
 new_test_provider <- function(
     source = "test_source",
-    url_template = "https://example.com/%s/%s-%s-%d-%s.woff2",
+    url_template = "https://example.com/{family}/{family}-{subset}-{weight}-{style}.woff2",
     conversion = "woff2_to_ttf",
     conversion_ext = "woff2",
     aliases = list()
@@ -21,7 +21,7 @@ new_test_provider <- function(
 new_bunny_provider <- function() {
     FontProvider(
         source = "bunny",
-        url_template = "https://fonts.bunny.net/%s/files/%s-%s-%d-%s.woff2",
+        url_template = "https://fonts.bunny.net/{family}/files/{family}-{subset}-{weight}-{style}.woff2",
         conversion = "woff2_to_ttf",
         conversion_ext = "woff2",
         aliases = list("fonts.bunny.net")

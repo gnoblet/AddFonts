@@ -4,7 +4,8 @@
 #'   Provider id/name (e.g. "bunny").
 #'
 #' @typed url_template: character(1)
-#'   URL template used to construct download URLs.
+#'   Glue-style URL template. Must contain `{family}`, `{subset}`, `{weight}`,
+#'   and `{style}` placeholders (e.g. `"https://host/{family}-{weight}-{style}.ttf"`).
 #'
 #' @typed conversion: character(1) | NULL
 #'   Optional conversion function name (as string) or `NULL`.
@@ -33,6 +34,10 @@ FontProvider <- S7::new_class(
     assert_null_or_non_empty_string(self@url_template, allow_null = FALSE)
     assert_null_or_non_empty_string(self@conversion)
     assert_null_or_non_empty_string(self@conversion_ext)
+
+    if (!grepl("{family}", self@url_template, fixed = TRUE)) {
+      return("@url_template must contain the {family} placeholder.")
+    }
 
     if (
       !is.null(self@aliases) &&

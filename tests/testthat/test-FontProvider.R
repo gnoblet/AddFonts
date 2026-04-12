@@ -1,7 +1,7 @@
 test_that("FontProvider constructs with valid inputs", {
   fp <- FontProvider(
     source = "bunny",
-    url_template = "https://fonts.bunny.net/%s/files/%s-%s-%d-%s.woff2",
+    url_template = "https://fonts.bunny.net/{family}/files/{family}-{subset}-{weight}-{style}.woff2",
     conversion = "woff2_to_ttf",
     conversion_ext = "woff2",
     aliases = list("fonts.bunny.net")
@@ -11,11 +11,24 @@ test_that("FontProvider constructs with valid inputs", {
   expect_equal(fp@source, "bunny")
   expect_equal(
     fp@url_template,
-    "https://fonts.bunny.net/%s/files/%s-%s-%d-%s.woff2"
+    "https://fonts.bunny.net/{family}/files/{family}-{subset}-{weight}-{style}.woff2"
   )
   expect_equal(fp@conversion, "woff2_to_ttf")
   expect_equal(fp@conversion_ext, "woff2")
   expect_equal(fp@aliases, list("fonts.bunny.net"))
+})
+
+test_that("FontProvider validator rejects url_template without {family}", {
+  expect_error(
+    FontProvider(
+      source = "test",
+      url_template = "https://example.com/%s/%s.woff2",
+      conversion = NULL,
+      conversion_ext = NULL,
+      aliases = list()
+    ),
+    "\\{family\\}"
+  )
 })
 
 test_that("FontProvider constructs with NULL conversion fields", {

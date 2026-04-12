@@ -58,13 +58,14 @@ download_variant_generic <- function(
   )
 
   #------ Build URL and download
-  url <- sprintf(
-    provider@url_template,
-    family,
-    family,
-    subset,
-    as.integer(weight),
-    style
+  url <- glue::glue_data(
+    list(
+      family = family,
+      subset = subset,
+      weight = as.integer(weight),
+      style = style
+    ),
+    provider@url_template
   )
 
   # Determine download target
