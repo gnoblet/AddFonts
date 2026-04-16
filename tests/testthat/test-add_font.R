@@ -277,3 +277,145 @@ test_that("add_font aborts when download_and_cache returns NULL", {
   )
   expect_error(add_font("nonexistent"), "Failed to obtain font")
 })
+
+## ---- provider = "file" ----
+
+test_that("add_font with provider='file' registers from cache on second call", {
+  tmp <- withr::local_tempdir()
+
+  src <- fs::path(tmp, "MyFont-Regular.ttf")
+  writeLines("data", src)
+
+  fake_entry <- CacheEntry(
+    family = "MyFont",
+    meta   = CacheMeta(source = "file", files = list(regular = as.character(src)))
+  )
+  fake_cel <- CacheEntryList(entries = list(fake_entry))
+  fake_files <- list(regular = as.character(src), italic = as.character(src),
+                     bold = as.character(src), bolditalic = as.character(src))
+
+  tracker <- new.env(parent = emptyenv())
+  tracker$copy_called <- FALSE
+
+  local_mocked_bindings(
+    cache_read = function(...) fake_cel,
+    register_from_cache = function(...) fake_files,
+    copy_and_cache_local = function(...) { tracker$copy_called <- TRUE; fake_entry },
+    .package = "AddFonts"
+  )
+
+  res <- add_font(
+    "MyFont", provider = "file",
+    variants = list(regular = as.character(src))
+  )
+
+  expect_false(tracker$copy_called)
+  expect_equal(res, fake_files)
+})
+
+test_that("add_font with provider='file' copies and registers on first call", {
+  tmp <- withr::local_tempdir()
+
+  src <- fs::path(tmp, "MyFont-Regular.ttf")
+  writeLines("data", src)
+
+  fake_entry <- CacheEntry(
+    family = "MyFont",
+    meta   = CacheMeta(source = "file", files = list(regular = as.character(src)))
+  )
+  fake_files <- list(regular = as.character(src), italic = as.character(src),
+                     bold = as.character(src), bolditalic = as.character(src))
+
+  local_mocked_bindings(
+    cache_read = function(...) CacheEntryList(entries = list()),
+    copy_and_cache_local = function(...) fake_entry,
+    register_from_cache  = function(...) fake_files,
+    .package = "AddFonts"
+  )
+
+  res <- add_font(
+    "MyFont", provider = "file",
+    variants = list(regular = as.character(src))
+  )
+
+  expect_equal(res, fake_files)
+})
+
+test_that("add_font with provider='file' errors when regular variant missing", {
+  tmp <- withr::local_tempdir()
+  expect_error(
+    add_font(
+      "MyFont", provider = "file",
+      variants = list(bold = as.character(fs::path(tmp, "MyFont-Bold.ttf")))
+    ),
+    "regular"
+  )
+})
+
+## ---- provider = "url" ----
+
+test_that("add_font with provider='url' registers from cache on second call", {
+  src <- "/fake/cache/url-myfont-regular.ttf"
+
+  fake_entry <- CacheEntry(
+    family = "MyFont",
+    meta   = CacheMeta(source = "url", files = list(regular = src))
+  )
+  fake_cel   <- CacheEntryList(entries = list(fake_entry))
+  fake_files <- list(regular = src, italic = src, bold = src, bolditalic = src)
+
+  tracker <- new.env(parent = emptyenv())
+  tracker$download_called <- FALSE
+
+  local_mocked_bindings(
+    cache_read = function(...) fake_cel,
+    register_from_cache = function(...) fake_files,
+    download_and_cache_url = function(...) {
+      tracker$download_called <- TRUE
+      fake_entry
+    },
+    .package = "AddFonts"
+  )
+
+  res <- add_font(
+    "MyFont", provider = "url",
+    variants = list(regular = "https://example.com/MyFont-Regular.ttf")
+  )
+
+  expect_false(tracker$download_called)
+  expect_equal(res, fake_files)
+})
+
+test_that("add_font with provider='url' downloads and registers on first call", {
+  src <- "/fake/cache/url-myfont-regular.ttf"
+
+  fake_entry <- CacheEntry(
+    family = "MyFont",
+    meta   = CacheMeta(source = "url", files = list(regular = src))
+  )
+  fake_files <- list(regular = src, italic = src, bold = src, bolditalic = src)
+
+  local_mocked_bindings(
+    cache_read = function(...) CacheEntryList(entries = list()),
+    download_and_cache_url = function(...) fake_entry,
+    register_from_cache    = function(...) fake_files,
+    .package = "AddFonts"
+  )
+
+  res <- add_font(
+    "MyFont", provider = "url",
+    variants = list(regular = "https://example.com/MyFont-Regular.ttf")
+  )
+
+  expect_equal(res, fake_files)
+})
+
+test_that("add_font with provider='url' errors when regular variant missing", {
+  expect_error(
+    add_font(
+      "MyFont", provider = "url",
+      variants = list(bold = "https://example.com/MyFont-Bold.ttf")
+    ),
+    "regular"
+  )
+})
