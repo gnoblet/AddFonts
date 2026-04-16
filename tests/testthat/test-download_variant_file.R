@@ -127,3 +127,76 @@ test_that("download_variant_file builds URL from base_url template", {
     "gitlab.com/bye-bye-binary/Alpaga/-/raw/main/ttf/Alpaga-Regular.ttf"
   )
 })
+
+## ---- copy_variant_to_cache ----
+
+test_that("copy_variant_to_cache copies file with expected cache filename", {
+  tmp     <- withr::local_tempdir()
+  src     <- fs::path(tmp, "MyFont-Regular.ttf")
+  writeLines("fake ttf", src)
+  cache   <- fs::path(tmp, "cache")
+  fs::dir_create(cache)
+
+  result <- copy_variant_to_cache(
+    src_path  = as.character(src),
+    family    = "MyFont",
+    variant   = "regular",
+    cache_dir = as.character(cache),
+    quiet     = TRUE
+  )
+
+  expect_false(is.null(result))
+  expect_true(fs::file_exists(result))
+  expect_match(basename(result), "^file-myfont-regular\\.ttf$")
+})
+
+test_that("copy_variant_to_cache infers extension from src_path", {
+  tmp   <- withr::local_tempdir()
+  src   <- fs::path(tmp, "MyFont-Regular.otf")
+  writeLines("fake otf", src)
+  cache <- fs::path(tmp, "cache")
+  fs::dir_create(cache)
+
+  result <- copy_variant_to_cache(
+    src_path  = as.character(src),
+    family    = "MyFont",
+    variant   = "regular",
+    cache_dir = as.character(cache),
+    quiet     = TRUE
+  )
+
+  expect_match(basename(result), "\\.otf$")
+})
+
+test_that("copy_variant_to_cache returns NULL and warns when source file missing", {
+  tmp   <- withr::local_tempdir()
+  cache <- fs::path(tmp, "cache")
+  fs::dir_create(cache)
+
+  expect_warning(
+    result <- copy_variant_to_cache(
+      src_path  = as.character(fs::path(tmp, "nonexistent.ttf")),
+      family    = "MyFont",
+      variant   = "regular",
+      cache_dir = as.character(cache)
+    ),
+    "not found"
+  )
+  expect_null(result)
+})
+
+test_that("copy_variant_to_cache errors on invalid variant name", {
+  tmp <- withr::local_tempdir()
+  src <- fs::path(tmp, "MyFont-Regular.ttf")
+  writeLines("fake ttf", src)
+
+  expect_error(
+    copy_variant_to_cache(
+      src_path  = as.character(src),
+      family    = "MyFont",
+      variant   = "heavy",
+      cache_dir = as.character(tmp)
+    ),
+    "heavy"
+  )
+})
