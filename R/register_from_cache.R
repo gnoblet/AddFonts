@@ -34,17 +34,28 @@ register_from_cache <- function(entry, regular.wt = 400, bold.wt = 700) {
   meta <- entry@meta
   files <- meta@files
 
-  # Build weight keys to look for
-  regular_key <- as.character(regular.wt)
-  regular_italic_key <- paste0(regular.wt, "italic")
-  bold_key <- as.character(bold.wt)
-  bold_italic_key <- paste0(bold.wt, "italic")
+  # Detect whether this entry uses symbolic variant keys or weight-based keys
+  symbolic_keys <- c("regular", "italic", "bold", "bolditalic")
+  is_symbolic <- any(names(files) %in% symbolic_keys)
 
-  # Get files for requested weights (or NULL if not available)
-  regular_file <- files[[regular_key]]
-  italic_file <- files[[regular_italic_key]]
-  bold_file <- files[[bold_key]]
-  bolditalic_file <- files[[bold_italic_key]]
+  if (is_symbolic) {
+    # File-based provider: keys are "regular", "italic", "bold", "bolditalic"
+    regular_file   <- files[["regular"]]
+    italic_file    <- files[["italic"]]
+    bold_file      <- files[["bold"]]
+    bolditalic_file <- files[["bolditalic"]]
+  } else {
+    # Weight-based provider: keys are "400", "400italic", "700", etc.
+    regular_key     <- as.character(regular.wt)
+    regular_italic_key <- paste0(regular.wt, "italic")
+    bold_key        <- as.character(bold.wt)
+    bold_italic_key <- paste0(bold.wt, "italic")
+
+    regular_file    <- files[[regular_key]]
+    italic_file     <- files[[regular_italic_key]]
+    bold_file       <- files[[bold_key]]
+    bolditalic_file <- files[[bold_italic_key]]
+  }
 
   # Check if regular font file exists (required)
   if (is.null(regular_file) || !fs::file_exists(regular_file)) {

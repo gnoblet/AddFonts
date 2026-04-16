@@ -466,6 +466,41 @@ S7::method(cache_get_weights, CacheEntry) <- function(entry, weights) {
   weight_keys %in% cached_weight_keys
 }
 
+#' Check which symbolic variant keys are present in a CacheEntry
+#'
+#' Used for file-based providers whose `CacheMeta@files` uses the keys
+#' `"regular"`, `"italic"`, `"bold"`, `"bolditalic"` instead of numeric
+#' weight strings.
+#'
+#' @typed entry: CacheEntry
+#'   The cache entry to inspect.
+#' @typed variants: character
+#'   Character vector of symbolic variant names to check.
+#'
+#' @typedreturn lgl
+#'   Named logical vector indicating which variants are cached.
+#'
+#' @family cache
+#'
+cache_get_variants <- S7::new_generic(
+  "cache_get_variants",
+  "entry",
+  function(entry, variants) {
+    S7::S7_dispatch()
+  }
+)
+
+#' @rdname cache_get_variants
+#' @name cache_get_variants
+S7::method(cache_get_variants, CacheEntry) <- function(entry, variants) {
+  if (!is.character(variants) || length(variants) == 0) {
+    cli::cli_abort("{.arg variants} must be a non-empty character vector.")
+  }
+
+  cached_keys <- names(entry@meta@files)
+  stats::setNames(variants %in% cached_keys, variants)
+}
+
 # Read cache from disk, returning an empty CacheEntryList on any error.
 # Internal helper used wherever a missing/corrupt cache should not abort.
 cache_read_safe <- function(cache_dir = NULL) {

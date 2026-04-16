@@ -294,6 +294,52 @@ test_that("cache_get_weights validates arguments", {
   )
 })
 
+###########################
+## cache_get_variants tests
+###########################
+
+test_that("cache_get_variants returns TRUE for present symbolic keys", {
+  meta <- CacheMeta(
+    source = "bbb",
+    files = list(regular = "r.ttf", bold = "b.ttf")
+  )
+  entry <- CacheEntry(family = "Alpaga", meta = meta)
+
+  result <- cache_get_variants(entry, c("regular", "bold"))
+  expect_equal(result, c(regular = TRUE, bold = TRUE))
+})
+
+test_that("cache_get_variants returns FALSE for absent symbolic keys", {
+  meta <- CacheMeta(
+    source = "bbb",
+    files = list(regular = "r.ttf")
+  )
+  entry <- CacheEntry(family = "Alpaga", meta = meta)
+
+  result <- cache_get_variants(entry, c("regular", "italic", "bold"))
+  expect_equal(result, c(regular = TRUE, italic = FALSE, bold = FALSE))
+})
+
+test_that("cache_get_variants validates entry argument", {
+  expect_error(
+    cache_get_variants("not_an_entry", "regular"),
+    "Can't find method for"
+  )
+})
+
+test_that("cache_get_variants validates variants argument", {
+  meta  <- CacheMeta(source = "bbb", files = list(regular = "r.ttf"))
+  entry <- CacheEntry(family = "f", meta = meta)
+  expect_error(
+    cache_get_variants(entry, character(0)),
+    "non-empty character vector"
+  )
+  expect_error(
+    cache_get_variants(entry, 1L),
+    "non-empty character vector"
+  )
+})
+
 test_that("cache_read errors on valid JSON with wrong structure", {
   tmp <- withr::local_tempdir()
   # Valid JSON but unrecognisable as a CacheEntryList

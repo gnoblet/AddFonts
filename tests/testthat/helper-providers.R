@@ -8,7 +8,7 @@ new_test_provider <- function(
     conversion_ext = "woff2",
     aliases = list()
 ) {
-    FontProvider(
+    FontProviderWeight(
         source = source,
         url_template = url_template,
         conversion = conversion,
@@ -19,7 +19,7 @@ new_test_provider <- function(
 
 #' Create a bunny-like FontProvider for testing
 new_bunny_provider <- function() {
-    FontProvider(
+    FontProviderWeight(
         source = "bunny",
         url_template = "https://fonts.bunny.net/{family}/files/{family}-{subset}-{weight}-{style}.woff2",
         conversion = "woff2_to_ttf",

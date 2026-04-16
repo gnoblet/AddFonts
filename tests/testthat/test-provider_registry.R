@@ -1,5 +1,5 @@
 test_that("register_provider adds a provider to the session registry", {
-  provider <- FontProvider(
+  provider <- FontProviderWeight(
     source = "test_reg",
     url_template = "https://example.com/{family}-{weight}-{style}.ttf",
     conversion = NULL,
@@ -16,7 +16,7 @@ test_that("register_provider adds a provider to the session registry", {
 })
 
 test_that("register_provider errors on duplicate source without overwrite", {
-  provider <- FontProvider(
+  provider <- FontProviderWeight(
     source = "test_dup",
     url_template = "https://example.com/{family}-{weight}-{style}.ttf",
     conversion = NULL,
@@ -34,7 +34,7 @@ test_that("register_provider errors on duplicate source without overwrite", {
 })
 
 test_that("register_provider overwrites when overwrite = TRUE", {
-  provider <- FontProvider(
+  provider <- FontProviderWeight(
     source = "test_ow",
     url_template = "https://example.com/{family}-{weight}-{style}.ttf",
     conversion = NULL,
@@ -45,7 +45,7 @@ test_that("register_provider overwrites when overwrite = TRUE", {
   register_provider(provider)
   on.exit(try(unregister_provider("test_ow"), silent = TRUE), add = TRUE)
 
-  provider2 <- FontProvider(
+  provider2 <- FontProviderWeight(
     source = "test_ow",
     url_template = "https://other.com/{family}-{weight}-{style}.ttf",
     conversion = NULL,
@@ -59,7 +59,7 @@ test_that("register_provider overwrites when overwrite = TRUE", {
 })
 
 test_that("unregister_provider removes the provider by name", {
-  provider <- FontProvider(
+  provider <- FontProviderWeight(
     source = "test_rm",
     url_template = "https://example.com/{family}-{weight}-{style}.ttf",
     conversion = NULL,
@@ -74,7 +74,7 @@ test_that("unregister_provider removes the provider by name", {
 })
 
 test_that("unregister_provider removes the provider by FontProvider object", {
-  provider <- FontProvider(
+  provider <- FontProviderWeight(
     source = "test_rm_obj",
     url_template = "https://example.com/{family}-{weight}-{style}.ttf",
     conversion = NULL,
@@ -96,7 +96,7 @@ test_that("unregister_provider errors when provider not found", {
 })
 
 test_that("get_provider_details finds session-registered provider by source", {
-  provider <- FontProvider(
+  provider <- FontProviderWeight(
     source = "test_lookup",
     url_template = "https://example.com/{family}-{weight}-{style}.ttf",
     conversion = NULL,
@@ -113,7 +113,7 @@ test_that("get_provider_details finds session-registered provider by source", {
 })
 
 test_that("get_provider_details finds session provider by alias", {
-  provider <- FontProvider(
+  provider <- FontProviderWeight(
     source = "test_alias_src",
     url_template = "https://example.com/{family}-{weight}-{style}.ttf",
     conversion = NULL,
@@ -129,7 +129,7 @@ test_that("get_provider_details finds session provider by alias", {
 })
 
 test_that("list_providers includes both built-in and session providers", {
-  provider <- FontProvider(
+  provider <- FontProviderWeight(
     source = "test_list",
     url_template = "https://example.com/{family}-{weight}-{style}.ttf",
     conversion = NULL,

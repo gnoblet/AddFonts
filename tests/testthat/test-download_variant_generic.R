@@ -7,7 +7,7 @@ test_that("download_variant_generic validates weight and returns appropriate err
 })
 
 test_that("download_variant_generic returns TTF path on success without conversion", {
-  provider <- FontProvider(
+  provider <- FontProviderWeight(
     source = "test",
     url_template = "https://example.com/{family}/{family}/{subset}/{weight}/{style}",
     conversion = NULL,
@@ -67,7 +67,7 @@ test_that("download_variant_generic returns TTF path on success with conversion"
 })
 
 test_that("download_variant_generic returns NULL and warns on download failure", {
-  provider <- FontProvider(
+  provider <- FontProviderWeight(
     source = "test",
     url_template = "https://example.com/{family}/{family}/{subset}/{weight}/{style}",
     conversion = NULL,
@@ -95,7 +95,7 @@ test_that("download_variant_generic returns NULL and warns on download failure",
 })
 
 test_that("download_variant_generic returns NULL silently on download failure when quiet", {
-  provider <- FontProvider(
+  provider <- FontProviderWeight(
     source = "test",
     url_template = "https://example.com/{family}/{family}/{subset}/{weight}/{style}",
     conversion = NULL,
