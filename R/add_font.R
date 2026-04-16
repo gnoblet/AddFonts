@@ -52,15 +52,25 @@ add_font <- function(
   #------ Prepare identifiers and provider
   provider_obj <- if (S7::S7_inherits(provider, FontProvider)) {
     provider
+  } else if (is.character(provider) && provider %in% c("file", "url")) {
+    provider   # pass through as string; routing handled below
   } else {
     get_provider_details(provider)
   }
   family_name <- if (is.null(family)) name else family
   cache_dir <- get_cache_dir()
 
-  maybe_show_first_use(provider_obj)
+  if (S7::S7_inherits(provider_obj, FontProvider)) {
+    maybe_show_first_use(provider_obj)
+  }
 
   #------ Route by provider type
+  if (identical(provider_obj, "file")) {
+    return(.add_font_local(name, family_name, variants, cache_dir))
+  }
+  if (identical(provider_obj, "url")) {
+    return(.add_font_direct_url(name, family_name, variants, cache_dir))
+  }
   if (S7::S7_inherits(provider_obj, FontProviderFile)) {
     .add_font_file(
       provider_obj = provider_obj,
@@ -82,153 +92,3 @@ add_font <- function(
   }
 }
 
-# Internal: weight-based provider path
-.add_font_weight <- function(
-  provider_obj,
-  name,
-  family_name,
-  regular.wt,
-  bold.wt,
-  subset,
-  cache_dir
-) {
-  if (!is.numeric(regular.wt) || length(regular.wt) != 1) {
-    cli::cli_abort("{.arg regular.wt} must be a single numeric weight.")
-  }
-  if (!is.numeric(bold.wt) || length(bold.wt) != 1) {
-    cli::cli_abort("{.arg bold.wt} must be a single numeric weight.")
-  }
-  assert_null_or_non_empty_string(subset, allow_null = FALSE)
-
-  cel <- cache_read_safe(cache_dir = cache_dir)
-  existing_entry <- NULL
-  if (length(cel@entries) > 0) {
-    got <- cache_get(cel, families = family_name, source = provider_obj@source, quiet = TRUE)
-    if (!is.null(got) && length(got) >= 1) existing_entry <- got[[1]]
-  }
-
-  if (!is.null(existing_entry)) {
-    weight_check <- cache_get_weights(existing_entry, c(regular.wt, bold.wt))
-    has_regular <- weight_check[1]
-    has_bold    <- weight_check[2]
-
-    if (has_regular && has_bold) {
-      files <- register_from_cache(existing_entry, regular.wt = regular.wt, bold.wt = bold.wt)
-      if (!is.null(files)) {
-        cli::cli_alert_success("Font {.val {family_name}} registered from cache.")
-        return(invisible(files))
-      }
-      cli::cli_warn("Stale cache entry for {.val {family_name}} - re-downloading.")
-      cel <- cache_remove(cel, families = family_name, source = provider_obj@source,
-                          remove_files = FALSE, cache_dir = cache_dir)
-      cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
-    } else if (has_regular && !has_bold) {
-      cli::cli_inform(
-        "Cached {.val {family_name}} has regular weight {.val {regular.wt}}. Downloading missing bold weight {.val {bold.wt}}."
-      )
-      updated_entry <- update_download_and_cache(
-        entry = existing_entry, provider = provider_obj, name = name,
-        family_name = family_name, missing_weights = bold.wt,
-        subset = subset, cache_dir = cache_dir, cel = cel
-      )
-      if (!is.null(updated_entry)) {
-        files <- register_from_cache(updated_entry, regular.wt = regular.wt, bold.wt = bold.wt)
-        if (!is.null(files)) {
-          cli::cli_alert_success("Font {.val {family_name}} registered with updated weights from cache.")
-          return(invisible(files))
-        }
-      }
-      cli::cli_warn("Failed to download missing weight or register - re-downloading all weights.")
-      cel <- cache_remove(cel, families = family_name, source = provider_obj@source,
-                          remove_files = FALSE, cache_dir = cache_dir)
-      cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
-    } else {
-      cli::cli_inform(
-        "Cached {.val {family_name}} is missing requested regular weight {.val {regular.wt}} - re-downloading."
-      )
-      cel <- cache_remove(cel, families = family_name, source = provider_obj@source,
-                          remove_files = FALSE, cache_dir = cache_dir)
-      cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
-    }
-  }
-
-  cache_entry <- download_and_cache(
-    provider = provider_obj, name = name, family_name = family_name,
-    regular.wt = regular.wt, bold.wt = bold.wt, subset = subset, cache_dir = cache_dir
-  )
-  if (is.null(cache_entry)) {
-    cli::cli_abort("Failed to obtain font {.val {name}} from provider {.val {provider_obj@source}}.")
-  }
-
-  files <- register_from_cache(cache_entry, regular.wt = regular.wt, bold.wt = bold.wt)
-  if (!is.null(files)) {
-    cli::cli_alert_success("Font {.val {family_name}} registered and added to cache.")
-  }
-  invisible(files)
-}
-
-# Internal: file-based provider path
-.add_font_file <- function(
-  provider_obj,
-  name,
-  family_name,
-  variants,
-  cache_dir
-) {
-  # variants validation
-  valid_variants <- c("regular", "italic", "bold", "bolditalic")
-  if (is.null(variants) || !is.list(variants) || is.null(names(variants))) {
-    cli::cli_abort(
-      "{.arg variants} must be a named list for file-based providers.",
-      "i" = "Supply e.g. {.code list(regular = \"Font-Regular\", bold = \"Font-Bold\")}."
-    )
-  }
-  bad <- setdiff(names(variants), valid_variants)
-  if (length(bad) > 0) {
-    cli::cli_abort("Unknown variant name{?s} in {.arg variants}: {.val {bad}}.")
-  }
-  if (!"regular" %in% names(variants)) {
-    cli::cli_abort("{.arg variants} must include a {.val regular} entry.")
-  }
-
-  # Check cache
-  cel <- cache_read_safe(cache_dir = cache_dir)
-  existing_entry <- NULL
-  if (length(cel@entries) > 0) {
-    got <- cache_get(cel, families = family_name, source = provider_obj@source, quiet = TRUE)
-    if (!is.null(got) && length(got) >= 1) existing_entry <- got[[1]]
-  }
-
-  if (!is.null(existing_entry)) {
-    variant_check <- cache_get_variants(existing_entry, "regular")
-    if (isTRUE(variant_check[["regular"]])) {
-      files <- register_from_cache(existing_entry)
-      if (!is.null(files)) {
-        cli::cli_alert_success("Font {.val {family_name}} registered from cache.")
-        return(invisible(files))
-      }
-      # Stale — re-download
-      cli::cli_warn("Stale cache entry for {.val {family_name}} - re-downloading.")
-      cel <- cache_remove(cel, families = family_name, source = provider_obj@source,
-                          remove_files = FALSE, cache_dir = cache_dir)
-      cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
-    }
-  }
-
-  cache_entry <- download_and_cache_file(
-    provider    = provider_obj,
-    name        = name,
-    family_name = family_name,
-    variants    = variants,
-    cache_dir   = cache_dir
-  )
-  if (is.null(cache_entry)) {
-    cli::cli_abort("Failed to obtain font {.val {name}} from provider {.val {provider_obj@source}}.")
-  }
-
-  files <- register_from_cache(cache_entry)
-  if (!is.null(files)) {
-    cli::cli_alert_success("Font {.val {family_name}} registered and added to cache.")
-  }
-  invisible(files)
-}

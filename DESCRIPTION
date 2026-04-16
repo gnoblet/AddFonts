@@ -38,6 +38,7 @@ Collate:
     'FontProvider.R'
     'FontProviderFile.R'
     'first_use_message.R'
+    'helpers.R'
     'provider_registry.R'
     'add_font.R'
     'as_CacheEntryList.R'

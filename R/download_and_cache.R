@@ -55,21 +55,5 @@ download_and_cache <- function(
     return(NULL)
   }
 
-  #------ Create cache entry
-  meta <- CacheMeta(
-    source = provider@source,
-    files = files_entry
-  )
-
-  # Read current cache and update it
-  cel <- cache_read_safe(cache_dir)
-
-  cel <- cache_set(cel, family_name, meta)
-  cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
-
-  #------ Return CacheEntry for caller to register
-  CacheEntry(
-    family = family_name,
-    meta = meta
-  )
+  .persist_cache_entry(provider@source, family_name, files_entry, cache_dir)
 }
