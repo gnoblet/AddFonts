@@ -383,7 +383,7 @@ cache_clean <- function(cache_dir = NULL, families = NULL, reset = FALSE) {
 
   # if reset, delete whole cache dir
   if (reset) {
-    if (dir.exists(cache_dir)) {
+    if (fs::dir_exists(cache_dir)) {
       fs::dir_delete(cache_dir)
     } else {
       cli::cli_alert_info(
