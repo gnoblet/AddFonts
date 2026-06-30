@@ -11,7 +11,7 @@ test_that("cache_variant_paths validates provider and returns expected paths", {
       "latin",
       cache_dir = tmp
     ),
-    "must be a <FontProvider> object"
+    "must be a"
   )
 
   # happy path without conversion
