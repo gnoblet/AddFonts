@@ -7,7 +7,6 @@ Description: Download and register fonts from GDPR-compliant providers for use i
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE, packages = "roxytypes")
-RoxygenNote: 7.3.3
 Config/Needs/documentation: roxytypes
 SystemRequirements: woff2 (>= 1.0.2, optional): needed only for weight-based providers that serve woff2 (e.g. Bunny Fonts). woff2-tools (rpm) or woff2 (deb) or woff2 (arch).
 Imports: 
@@ -37,9 +36,7 @@ Collate:
     'CacheEntryList.R'
     'FontProvider.R'
     'FontProviderFile.R'
-    'first_use_message.R'
-    'helpers.R'
-    'provider_registry.R'
+    'FontProviderWeight.R'
     'add_font.R'
     'as_CacheEntryList.R'
     'as_FontProvider.R'
@@ -54,9 +51,13 @@ Collate:
     'download_variant_file.R'
     'download_variant_generic.R'
     'download_weights.R'
+    'first_use_message.R'
+    'helpers.R'
     'preview_font.R'
+    'provider_registry.R'
     'register_from_cache.R'
     'update_download_and_cache.R'
     'utils.R'
     'woff2_to_ttf.R'
     'zzz.R'
+Config/roxygen2/version: 8.0.0

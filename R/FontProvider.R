@@ -1,6 +1,6 @@
 #' Base font provider class (FontProvider)
 #'
-#' Abstract base class shared by all provider types. Do not construct this directly — use [FontProviderWeight()] or [FontProviderFile()] instead.
+#' Abstract base class shared by all provider types. Do not construct this directly. Use `FontProviderWeight()` or `FontProviderFile()` instead.
 #'
 #' @typed source: character(1)
 #'   Provider id/name (e.g. `"bunny"`, `"bbb"`).

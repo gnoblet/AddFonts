@@ -4,16 +4,17 @@
 \alias{CacheMeta}
 \title{S7-backed cache metadata (CacheMeta)}
 \usage{
-CacheMeta(family_id = character(0), source = character(0), files = list())
+CacheMeta(source = character(0), files = list())
 }
 \arguments{
-\item{family_id}{(\code{character(1)}) A non-empty safe identifier for the font family. Allowed characters: letters,
-digits and hyphen (no spaces, slashes, dots, colons, tildes, etc.).}
-
 \item{source}{(\code{character(1)}) Name of the provider or source that produced the cached font files.}
 
-\item{files}{(\verb{list(1+)}) A non-empty named list of file paths. Names are weight identifiers (e.g., "400" for normal weight 400,
-"400italic" for italic weight 400). Each element is a character(1) path to the local font files.}
+\item{files}{(\verb{list(1+)}) A non-empty named list of file paths. Names are either:
+\itemize{
+\item Weight identifiers: \code{"400"}, \code{"400italic"}, \code{"700"}, etc. (weight-based providers)
+\item Variant keys: \code{"regular"}, \code{"italic"}, \code{"bold"}, \code{"bolditalic"} (file-based providers)
+All keys must follow the same scheme — mixing is not allowed.
+}}
 }
 \value{
 (\code{S7_object}) A validated S7 \code{CacheMeta} object.
@@ -22,8 +23,7 @@ digits and hyphen (no spaces, slashes, dots, colons, tildes, etc.).}
 S7-backed cache metadata (CacheMeta)
 }
 \details{
-The \code{added} property is a getter-only field that returns the current timestamp as a character string when accessed. It cannot be set during construction.
-
-Weights are not explicitly stored - they are derived from the names of the files list.
-Registration functions are responsible for selecting appropriate weights for regular/bold variants.
+The key scheme is determined by the provider type. Weight-based providers (e.g. Bunny)
+use numeric weight keys. File-based providers (e.g. Bye Bye Binary) use symbolic variant keys.
+Registration functions detect the scheme automatically.
 }

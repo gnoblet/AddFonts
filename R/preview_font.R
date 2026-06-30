@@ -10,7 +10,7 @@
 #'   Optional family name to register the font under (default: NULL)
 #' @typed variants: list | NULL
 #'   For file-based providers (`provider = "file"`, `provider = "url"`, or a
-#'   [FontProviderFile()] object). Named list of symbolic variant keys to
+#'   `FontProviderFile` object). Named list of symbolic variant keys to
 #'   file paths / URLs / filename stems. Passed through to [add_font()].
 #'   Ignored for weight-based providers (default: NULL).
 #' @typed sample: character(1)

@@ -5,6 +5,9 @@
 \title{Read from list}
 \usage{
 as_CacheEntryList(l)
+
+## S7 method for class <list>
+as_CacheEntryList(l)
 }
 \arguments{
 \item{l}{(\code{list}) The list to convert to a CacheEntryList.}

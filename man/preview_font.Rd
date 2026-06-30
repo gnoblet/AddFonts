@@ -8,6 +8,7 @@ preview_font(
   name,
   provider = "bunny",
   family = NULL,
+  variants = NULL,
   sample = "The quick brown fox jumps over the lazy dog",
   size = 28,
   subset = "latin",
@@ -21,6 +22,11 @@ preview_font(
 \item{provider}{(\code{character(1)}) Provider name to use (default: "bunny")}
 
 \item{family}{(\code{character | NULL}) Optional family name to register the font under (default: NULL)}
+
+\item{variants}{(\code{list | NULL}) For file-based providers (\code{provider = "file"}, \code{provider = "url"}, or a
+\code{FontProviderFile} object). Named list of symbolic variant keys to
+file paths / URLs / filename stems. Passed through to \code{\link[=add_font]{add_font()}}.
+Ignored for weight-based providers (default: NULL).}
 
 \item{sample}{(\code{character(1)}) Sample text to display (default: "The quick brown fox jumps over the lazy dog")}
 
@@ -36,6 +42,5 @@ preview_font(
 (\code{list}) Invisibly returns the list of paths produced by \code{add_font()}.
 }
 \description{
-Ensure the requested font is installed via \code{add_font()} and draw a brief
-sample using \code{showtext} for proper font rendering.
+Ensure the requested font is installed via \code{add_font()} and draw a brief sample using \code{showtext} for proper font rendering.
 }

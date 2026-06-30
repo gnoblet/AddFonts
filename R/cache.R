@@ -8,7 +8,7 @@ NULL
 #' @typed cache_dir: character(1)
 #'   The cache directory to write to (default: NULL).
 #' @typed quiet: logical(1)
-#'  Whether to suppress output messages (default: TRUE).
+#'   Whether to suppress output messages (default: TRUE).
 #'
 #' @family cache
 #'
@@ -88,11 +88,11 @@ S7::method(cache_write, CacheEntryList) <- function(
 
 #' Read cache entry from disk
 #'
-#' @typed cache_dir: character | NULL
-#'   Cache directory to use. Use [get_cache_dir()] to get the default cache directory.
+#' @typed cache_dir: character(1)
+#'   Cache directory path. Must not be NULL. Use `cache_read_safe()` for a  NULL-tolerant variant that returns an empty index on error.
 #'
 #' @typedreturn CacheEntryList
-#'   The cache index as a <CacheEntryList> if found and valid.
+#'   The cache index as a CacheEntryList if found and valid.
 #'
 #' @family cache
 #'
@@ -106,20 +106,11 @@ cache_read <- S7::new_generic(
 
 #' @rdname cache_read
 #' @name cache_read
-S7::method(cache_read, S7::class_character | NULL) <- function(
-  cache_dir
-) {
+S7::method(cache_read, S7::class_character) <- function(cache_dir) {
   #------ Arg check
-
-  # cache_dir is NULL or a path
-  assert_null_or_non_empty_string(cache_dir, allow_null = TRUE)
+  assert_null_or_non_empty_string(cache_dir, allow_null = FALSE)
 
   #------ Do stuff
-
-  # get cache dir path if NULL
-  if (is.null(cache_dir)) {
-    cache_dir <- get_cache_dir()
-  }
 
   # read index file
   cache_file <- fs::path(cache_dir, "fonts_db.json")
@@ -151,8 +142,7 @@ S7::method(cache_read, S7::class_character | NULL) <- function(
 #' @typed families: character vector
 #'   The family names to retrieve.
 #' @typed source: character(1) | NULL
-#'   If provided, look up by exact compound `"{source}::{family}"` key (fast).
-#'   If `NULL`, scan all entries and match on family name alone (default: NULL).
+#'   If provided, look up by exact compound `"{source}::{family}"` key (fast). If `NULL`, scan all entries and match on family name alone (default: NULL).
 #' @typed quiet: logical(1)
 #'   If TRUE, suppress informational messages (default: TRUE).
 #'
@@ -357,7 +347,6 @@ S7::method(cache_remove, CacheEntryList) <- function(
   x
 }
 
-
 #' Clean cache entries
 #'
 #' Remove entries from the cache, optionally unlinking referenced files.
@@ -483,9 +472,7 @@ S7::method(cache_get_weights, CacheEntry) <- function(entry, weights) {
 
 #' Check which symbolic variant keys are present in a CacheEntry
 #'
-#' Used for file-based providers whose `CacheMeta@files` uses the keys
-#' `"regular"`, `"italic"`, `"bold"`, `"bolditalic"` instead of numeric
-#' weight strings.
+#' Used for file-based providers whose `CacheMeta@files` uses the key `"regular"`, `"italic"`, `"bold"`, `"bolditalic"` instead of numeric weight strings.
 #'
 #' @typed entry: CacheEntry
 #'   The cache entry to inspect.
@@ -516,9 +503,11 @@ S7::method(cache_get_variants, CacheEntry) <- function(entry, variants) {
   stats::setNames(variants %in% cached_keys, variants)
 }
 
-# Read cache from disk, returning an empty CacheEntryList on any error.
-# Internal helper used wherever a missing/corrupt cache should not abort.
+# Read cache from disk, returning an empty CacheEntryList on any error. Internal helper used wherever a missing/corrupt cache should not abort.
 cache_read_safe <- function(cache_dir = NULL) {
+  if (is.null(cache_dir)) {
+    cache_dir <- get_cache_dir()
+  }
   tryCatch(
     cache_read(cache_dir),
     error = function(e) as_CacheEntryList(list())

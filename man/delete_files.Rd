@@ -4,14 +4,13 @@
 \alias{delete_files}
 \title{Delete files}
 \usage{
-delete_files(entries, quiet = c("full", "success", "fail", "none"))
+delete_files(entries, quiet = FALSE)
 }
 \arguments{
 \item{entries}{(\code{character}) Character vector of file paths to remove.}
 
-\item{quiet}{(full" | "success" | "fail" | "none) If "full", capture all output and suppress console messages; if "success",
-only show success messages; if "fail", only show error messages; if "none",
-show all messages (default: "none").}
+\item{quiet}{(\code{logical(1)}) If \code{TRUE}, suppress all console messages. If \code{FALSE}, show success and
+failure messages (default: \code{FALSE}).}
 }
 \value{
 (\code{list}) A list with the following elements:

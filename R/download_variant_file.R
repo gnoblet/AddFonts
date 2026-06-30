@@ -1,6 +1,6 @@
 #' Download one font file from a file-based provider
 #'
-#' Downloads a single font variant directly from a [FontProviderFile()] using its `base_url` template. No conversion is performed — the file is stored as received.
+#' Downloads a single font variant directly from a `FontProviderFile` using its `base_url` template. No conversion is performed — the file is stored as received.
 #'
 #' @typed provider: FontProviderFile
 #'   A file-based provider object.

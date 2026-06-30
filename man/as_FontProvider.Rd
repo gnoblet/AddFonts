@@ -2,16 +2,19 @@
 % Please edit documentation in R/as_FontProvider.R
 \name{as_FontProvider}
 \alias{as_FontProvider}
-\title{Construct a \code{FontProvider} from a named list}
+\title{Construct a FontProvider subclass from a named list}
 \usage{
+as_FontProvider(x)
+
+## S7 method for class <list>
 as_FontProvider(x)
 }
 \arguments{
 \item{x}{(\code{list}) Named list (e.g. from JSON) with provider details.}
 }
 \value{
-(\code{FontProvider}) The corresponding \code{FontProvider} object.
+(\code{FontProviderWeight | FontProviderFile}) The corresponding provider object.
 }
 \description{
-Construct a \code{FontProvider} from a named list
+Reads the \code{type} field (\code{"weight"} or \code{"file"}) and constructs the appropriate subclass. Missing \code{type} defaults to \code{"weight"} for backward compatibility with existing \code{providers.json} entries.
 }

@@ -7,7 +7,6 @@
 download_and_cache(
   provider,
   name,
-  font_id,
   family_name,
   regular.wt = 400,
   bold.wt = 700,
@@ -19,8 +18,6 @@ download_and_cache(
 \item{provider}{(\code{FontProvider}) Provider object used for downloads.}
 
 \item{name}{(\code{character(1)}) Font name at the provider.}
-
-\item{font_id}{(\code{character(1)}) Filesystem-safe font id.}
 
 \item{family_name}{(\code{character(1)}) Family name for the font.}
 
@@ -36,7 +33,5 @@ download_and_cache(
 (\code{CacheEntry | NULL}) Cache entry with downloaded fonts, or \code{NULL} on failure.
 }
 \description{
-Downloads font files for requested weights, creates a cache entry, and
-writes to cache. Does NOT register the font - caller should use
-register_from_cache() for that.
+Downloads font files for requested weights, creates a cache entry, and writes to cache. Does NOT register the font - caller should use register_from_cache() for that.
 }

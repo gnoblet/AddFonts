@@ -7,7 +7,7 @@
 #' @typed name: character(1)
 #'   Name of the font as known to the provider.
 #' @typed provider: character(1) | FontProvider
-#'   Provider id/name (default: `"bunny"`), or a `FontProvider` object constructed with [FontProviderWeight()] or [FontProviderFile()] (bypasses the registry lookup).
+#'   Provider id/name (default: `"bunny"`), or a `FontProvider` object constructed with `FontProviderWeight()` or `FontProviderFile()` (bypasses the registry lookup).
 #' @typed family: character | NULL
 #'   Optional family name to register the font under (default: NULL).
 #' @typed variants: list | NULL

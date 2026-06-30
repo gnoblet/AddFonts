@@ -25,7 +25,7 @@
 
 #' Build a CacheEntry, persist the cache index, and return the entry
 #'
-#' Constructs a [CacheMeta()] and a [CacheEntry()], upserts the entry into the on-disk cache index via [cache_read_safe()], [cache_set()], and [cache_write()], then returns the new entry. This is the shared persist tail used by all download/copy orchestrators.
+#' Constructs a [CacheMeta()] and a [CacheEntry()], upserts the entry into the on-disk cache index via `cache_read_safe()`, [cache_set()], and [cache_write()], then returns the new entry. This is the shared persist tail used by all download/copy orchestrators.
 #'
 #' @typed source: character(1)
 #'   Provider source identifier (e.g. `"bunny"`, `"file"`, `"url"`).
@@ -93,6 +93,8 @@
 #' Read cache and look up an existing entry for a family/source pair
 #'
 #' Returns both the current `CacheEntryList` and the first matching entry (or `NULL` when absent), so callers can continue to use `cel` for updates.
+#'
+#' @noRd
 .cache_lookup <- function(cache_dir, family_name, source) {
   cel <- cache_read_safe(cache_dir = cache_dir)
   entry <- NULL
@@ -105,7 +107,7 @@
 
 #' Route add_font() for a weight-based provider
 #'
-#' Handles the full cache-check → optional partial update-download-register cycle for [FontProviderWeight()] providers.
+#' Handles the full cache-check → optional partial update-download-register cycle for `FontProviderWeight` providers.
 #'
 #' @typed provider_obj: FontProviderWeight
 #'   Weight-based provider object.
@@ -257,7 +259,7 @@
 
 #' Route add_font() for a file-based provider
 #'
-#' Handles the cache-check → download → register cycle for  [FontProviderFile()] providers using symbolic variant keys.
+#' Handles the cache-check → download → register cycle for `FontProviderFile` providers using symbolic variant keys.
 #'
 #' @typed provider_obj: FontProviderFile
 #'   File-based provider object.

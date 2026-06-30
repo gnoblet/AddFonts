@@ -36,6 +36,5 @@ update_download_and_cache(
 (\code{CacheEntry | NULL}) Updated cache entry with new weights (NOT registered), or NULL on failure.
 }
 \description{
-Downloads missing font weights and updates the cache entry.
-Does NOT register the font - use register_from_cache() after this.
+Downloads missing font weights and updates the cache entry. Does NOT register the font - use register_from_cache() after this.
 }

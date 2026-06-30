@@ -1,6 +1,6 @@
 #' Download all variants of a file-based font and add to cache
 #'
-#' Downloads each named variant from a [FontProviderFile()] provider, creates a [CacheEntry()] with symbolic keys (`"regular"`, `"italic"`, `"bold"`, `"bolditalic"`), writes the entry to the cache, and returns it.
+#' Downloads each named variant from a `FontProviderFile` provider, creates a [CacheEntry()] with symbolic keys (`"regular"`, `"italic"`, `"bold"`, `"bolditalic"`), writes the entry to the cache, and returns it.
 #'
 #' @typed provider: FontProviderFile
 #'   A file-based provider object.

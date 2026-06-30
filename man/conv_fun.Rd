@@ -2,8 +2,7 @@
 % Please edit documentation in R/conv_fun.R
 \name{conv_fun}
 \alias{conv_fun}
-\title{Resolve a conversion name to the converter function used by the
-package (currently only \code{woff2_to_ttf}).}
+\title{Resolve a conversion name to the converter function used by the package (currently only \code{woff2_to_ttf}).}
 \usage{
 conv_fun(conversion)
 }
@@ -14,6 +13,5 @@ conv_fun(conversion)
 (\code{function}) The conversion function if known; otherwise the helper aborts.
 }
 \description{
-Resolve a conversion name to the converter function used by the
-package (currently only \code{woff2_to_ttf}).
+Resolve a conversion name to the converter function used by the package (currently only \code{woff2_to_ttf}).
 }

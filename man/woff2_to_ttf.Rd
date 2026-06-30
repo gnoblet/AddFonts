@@ -4,7 +4,7 @@
 \alias{woff2_to_ttf}
 \title{Convert a .woff2 font to .ttf using the system 'woff2_decompress' tool}
 \usage{
-woff2_to_ttf(font_file, overwrite = FALSE, remove_old = TRUE, quiet = "fail")
+woff2_to_ttf(font_file, overwrite = FALSE, remove_old = TRUE, quiet = FALSE)
 }
 \arguments{
 \item{font_file}{(\code{character(1)}) Path to the \code{.woff2} file to convert.}
@@ -13,15 +13,11 @@ woff2_to_ttf(font_file, overwrite = FALSE, remove_old = TRUE, quiet = "fail")
 
 \item{remove_old}{(\code{logical(1)}) If \code{TRUE}, remove the original \code{.woff2} file after conversion try.}
 
-\item{quiet}{(full" | "success" | "fail" | "none) If "full", capture all output and suppress console messages; if "success",
-only show success messages; if "fail", only show error messages; if "none",
-show all messages (default: "none").}
+\item{quiet}{(\code{logical(1)}) If \code{TRUE}, suppress the success message. Errors always abort regardless of this setting (default: \code{FALSE}).}
 }
 \value{
 (\code{character(1)}) Invisibly returns the path to the \code{.ttf} file on success.
 }
 \description{
-Internal helper. Uses the system \code{woff2_decompress} tool to convert a
-\code{.woff2} file into a \code{.ttf} file. Documented with roxytypes annotations
-for clarity.
+Internal helper. Uses the system \code{woff2_decompress} tool to convert a \code{.woff2} file into a \code{.ttf} file.
 }
