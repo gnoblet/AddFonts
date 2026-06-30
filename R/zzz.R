@@ -14,7 +14,10 @@
       cache_file
     )
   } else {
-    cache_write(as_CacheEntryList(list()), cache_dir, quiet = TRUE)
+    tryCatch(
+      cache_write(as_CacheEntryList(list()), cache_dir, quiet = TRUE),
+      error = function(e) NULL
+    )
     if (fs::file_exists(cache_file)) {
       packageStartupMessage(
         "Font cache created at: ",
