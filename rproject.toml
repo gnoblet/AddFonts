@@ -4,8 +4,9 @@ name = "/home/gnoblet/Documents/Codeberg/AddFonts"
 r_version = "4.6"
 
 repositories = [
-    { alias = "CRAN", url = "https://p3m.dev/cran/2025-11-25/bin/linux/manylinux_2_28-x86_64/4.6"}
+    { alias = "CRAN", url = "https://p3m.dev/cran/2026-06-30/bin/linux/manylinux_2_28-x86_64/4.6"}
 ]
+
 
 dependencies = [
     "httr2",
