@@ -28,8 +28,8 @@ download_variant_generic <- function(
   quiet = FALSE
 ) {
   #------ Arg check
-  if (!S7::S7_inherits(provider, FontProvider)) {
-    cli::cli_abort("{.arg provider} must be a <FontProvider> object.")
+  if (!S7::S7_inherits(provider, FontProviderWeight)) {
+    cli::cli_abort("{.arg provider} must be a {.cls FontProviderWeight} object.")
   }
 
   if (
