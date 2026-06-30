@@ -81,7 +81,7 @@
   )
 
   if (inherits(resp, "error") || !fs::file_exists(local_path)) {
-    if (!isTRUE(quiet)) {
+    if (!quiet) {
       cli::cli_warn(c(
         "!" = "Download failed for {.val {family}} ({variant})",
         "i" = if (inherits(resp, "error")) resp$message else "No file written",
@@ -91,11 +91,26 @@
     return(NULL)
   }
 
-  if (!isTRUE(quiet)) {
+  if (!quiet) {
     cli::cli_alert_success("Downloaded variant: {.file {basename(local_path)}}")
   }
 
   local_path
+}
+
+#' Read cache and look up an existing entry for a family/source pair
+#'
+#' Returns both the current `CacheEntryList` and the first matching entry (or
+#' `NULL` when absent), so callers can continue to use `cel` for updates.
+#'
+.cache_lookup <- function(cache_dir, family_name, source) {
+  cel   <- cache_read_safe(cache_dir = cache_dir)
+  entry <- NULL
+  if (length(cel@entries) > 0) {
+    got <- cache_get(cel, families = family_name, source = source, quiet = TRUE)
+    if (!is.null(got) && length(got) >= 1) entry <- got[[1]]
+  }
+  list(cel = cel, entry = entry)
 }
 
 #' Route add_font() for a weight-based provider
@@ -138,12 +153,9 @@
   }
   assert_null_or_non_empty_string(subset, allow_null = FALSE)
 
-  cel <- cache_read_safe(cache_dir = cache_dir)
-  existing_entry <- NULL
-  if (length(cel@entries) > 0) {
-    got <- cache_get(cel, families = family_name, source = provider_obj@source, quiet = TRUE)
-    if (!is.null(got) && length(got) >= 1) existing_entry <- got[[1]]
-  }
+  res            <- .cache_lookup(cache_dir, family_name, provider_obj@source)
+  cel            <- res$cel
+  existing_entry <- res$entry
 
   if (!is.null(existing_entry)) {
     weight_check <- cache_get_weights(existing_entry, c(regular.wt, bold.wt))
@@ -233,12 +245,9 @@
 ) {
   .validate_variants(variants)
 
-  cel <- cache_read_safe(cache_dir = cache_dir)
-  existing_entry <- NULL
-  if (length(cel@entries) > 0) {
-    got <- cache_get(cel, families = family_name, source = provider_obj@source, quiet = TRUE)
-    if (!is.null(got) && length(got) >= 1) existing_entry <- got[[1]]
-  }
+  res            <- .cache_lookup(cache_dir, family_name, provider_obj@source)
+  cel            <- res$cel
+  existing_entry <- res$entry
 
   if (!is.null(existing_entry)) {
     variant_check <- cache_get_variants(existing_entry, "regular")
@@ -293,12 +302,9 @@
 .add_font_local <- function(name, family_name, variants, cache_dir) {
   .validate_variants(variants)
 
-  cel <- cache_read_safe(cache_dir = cache_dir)
-  existing_entry <- NULL
-  if (length(cel@entries) > 0) {
-    got <- cache_get(cel, families = family_name, source = "file", quiet = TRUE)
-    if (!is.null(got) && length(got) >= 1) existing_entry <- got[[1]]
-  }
+  res            <- .cache_lookup(cache_dir, family_name, "file")
+  cel            <- res$cel
+  existing_entry <- res$entry
 
   if (!is.null(existing_entry)) {
     variant_check <- cache_get_variants(existing_entry, "regular")
@@ -352,12 +358,9 @@
 .add_font_direct_url <- function(name, family_name, variants, cache_dir) {
   .validate_variants(variants)
 
-  cel <- cache_read_safe(cache_dir = cache_dir)
-  existing_entry <- NULL
-  if (length(cel@entries) > 0) {
-    got <- cache_get(cel, families = family_name, source = "url", quiet = TRUE)
-    if (!is.null(got) && length(got) >= 1) existing_entry <- got[[1]]
-  }
+  res            <- .cache_lookup(cache_dir, family_name, "url")
+  cel            <- res$cel
+  existing_entry <- res$entry
 
   if (!is.null(existing_entry)) {
     variant_check <- cache_get_variants(existing_entry, "regular")
