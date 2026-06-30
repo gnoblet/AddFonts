@@ -1,9 +1,9 @@
-subset = "latin"
-family = "roboto"
-weight = 400
-provider_l = get_provider_details("bunny")
-subset = "latin"
-style = 'normal'
+subset <- "latin"
+family <- "roboto"
+weight <- 400
+provider_l <- get_provider_details("bunny")
+subset <- "latin"
+style <- 'normal'
 
 cache_variant_paths(
   weight = weight,
