@@ -16,18 +16,35 @@ test_that("cache_ttf_filename composes expected filename", {
 })
 
 test_that("cache_ttf_path and cache_ttf_filename reject invalid weights", {
-
   # non-numeric weight
-  expect_error(cache_ttf_path("src", "fam", "latin", "heavy", "normal"), "must be a single integer")
-  expect_error(cache_ttf_filename("src", "fam", "latin", "heavy", "normal"), "must be a single integer")
+  expect_error(
+    cache_ttf_path("src", "fam", "latin", "heavy", "normal"),
+    "must be a single integer"
+  )
+  expect_error(
+    cache_ttf_filename("src", "fam", "latin", "heavy", "normal"),
+    "must be a single integer"
+  )
 
   # weight out of range
-  expect_error(cache_ttf_path("src", "fam", "latin", 50, "normal"), "must be a single integer")
-  expect_error(cache_ttf_filename("src", "fam", "latin", 50, "normal"), "must be a single integer")
+  expect_error(
+    cache_ttf_path("src", "fam", "latin", 50, "normal"),
+    "must be a single integer"
+  )
+  expect_error(
+    cache_ttf_filename("src", "fam", "latin", 50, "normal"),
+    "must be a single integer"
+  )
 
   # weight as vector (length > 1)
-  expect_error(cache_ttf_path("src", "fam", "latin", c(400, 700), "normal"), "must be a single integer")
-  expect_error(cache_ttf_filename("src", "fam", "latin", c(400, 700), "normal"), "must be a single integer")
+  expect_error(
+    cache_ttf_path("src", "fam", "latin", c(400, 700), "normal"),
+    "must be a single integer"
+  )
+  expect_error(
+    cache_ttf_filename("src", "fam", "latin", c(400, 700), "normal"),
+    "must be a single integer"
+  )
 })
 
 ## ---- cache_file_path (symbolic variant keys) ----
@@ -35,10 +52,10 @@ test_that("cache_ttf_path and cache_ttf_filename reject invalid weights", {
 test_that("cache_file_path constructs expected path for symbolic variant", {
   tmp <- withr::local_tempdir()
   path <- cache_file_path(
-    source    = "bbb",
-    family    = "Alpaga",
-    variant   = "regular",
-    file_ext  = "ttf",
+    source = "bbb",
+    family = "Alpaga",
+    variant = "regular",
+    file_ext = "ttf",
     cache_dir = tmp
   )
   expect_equal(basename(path), "bbb-alpaga-regular.ttf")
@@ -48,10 +65,10 @@ test_that("cache_file_path constructs expected path for symbolic variant", {
 test_that("cache_file_path makes family name filesystem-safe", {
   tmp <- withr::local_tempdir()
   path <- cache_file_path(
-    source    = "bbb",
-    family    = "My Font",
-    variant   = "bold",
-    file_ext  = "ttf",
+    source = "bbb",
+    family = "My Font",
+    variant = "bold",
+    file_ext = "ttf",
     cache_dir = tmp
   )
   expect_equal(basename(path), "bbb-my-font-bold.ttf")
@@ -60,10 +77,10 @@ test_that("cache_file_path makes family name filesystem-safe", {
 test_that("cache_file_path respects file_ext", {
   tmp <- withr::local_tempdir()
   path <- cache_file_path(
-    source    = "x",
-    family    = "font",
-    variant   = "italic",
-    file_ext  = "otf",
+    source = "x",
+    family = "font",
+    variant = "italic",
+    file_ext = "otf",
     cache_dir = tmp
   )
   expect_match(basename(path), "\\.otf$")

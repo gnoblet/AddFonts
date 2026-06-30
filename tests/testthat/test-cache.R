@@ -222,7 +222,6 @@ test_that("cache_clean on-disk empties the cache and removes files", {
 ###########################
 
 test_that("cache_get_weights returns available and missing weights", {
-
   # Create entry with weights 400 and 700
   meta <- CacheMeta(
     source = "bunny",
@@ -241,7 +240,6 @@ test_that("cache_get_weights returns available and missing weights", {
 })
 
 test_that("cache_get_weights identifies missing weights", {
-
   # Create entry with only weight 400
   meta <- CacheMeta(
     source = "bunny",
@@ -255,7 +253,6 @@ test_that("cache_get_weights identifies missing weights", {
 })
 
 test_that("cache_get_weights handles all missing weights", {
-
   # Create entry with weight 300
   meta <- CacheMeta(
     source = "bunny",
@@ -269,7 +266,6 @@ test_that("cache_get_weights handles all missing weights", {
 })
 
 test_that("cache_get_weights validates arguments", {
-
   meta <- CacheMeta(
     source = "bunny",
     files = list("400" = "/tmp/test.ttf")
@@ -328,7 +324,7 @@ test_that("cache_get_variants validates entry argument", {
 })
 
 test_that("cache_get_variants validates variants argument", {
-  meta  <- CacheMeta(source = "bbb", files = list(regular = "r.ttf"))
+  meta <- CacheMeta(source = "bbb", files = list(regular = "r.ttf"))
   entry <- CacheEntry(family = "f", meta = meta)
   expect_error(
     cache_get_variants(entry, character(0)),
@@ -355,10 +351,12 @@ test_that("cache_read_safe returns empty CacheEntryList when cache is missing", 
 })
 
 test_that("cache_write errors when cache_dir does not exist", {
-  cel <- CacheEntryList(entries = list(CacheEntry(
-    family = "cw",
-    meta = CacheMeta(source = "s", files = list("400" = "cw.ttf"))
-  )))
+  cel <- CacheEntryList(
+    entries = list(CacheEntry(
+      family = "cw",
+      meta = CacheMeta(source = "s", files = list("400" = "cw.ttf"))
+    ))
+  )
   expect_error(
     cache_write(cel, cache_dir = "/nonexistent/path/xyz_addfonts"),
     "does not exist"
@@ -366,10 +364,12 @@ test_that("cache_write errors when cache_dir does not exist", {
 })
 
 test_that("cache_get with quiet=FALSE messages when no family found", {
-  local_cel <- CacheEntryList(entries = list(CacheEntry(
-    family = "fam1",
-    meta = CacheMeta(source = "s", files = list("400" = "f.ttf"))
-  )))
+  local_cel <- CacheEntryList(
+    entries = list(CacheEntry(
+      family = "fam1",
+      meta = CacheMeta(source = "s", files = list("400" = "f.ttf"))
+    ))
+  )
   expect_message(
     result <- cache_get(local_cel, families = "missing", quiet = FALSE),
     "No matching families"
@@ -378,12 +378,18 @@ test_that("cache_get with quiet=FALSE messages when no family found", {
 })
 
 test_that("cache_get with quiet=FALSE messages when some families not found", {
-  local_cel <- CacheEntryList(entries = list(CacheEntry(
-    family = "fam1",
-    meta = CacheMeta(source = "s", files = list("400" = "f.ttf"))
-  )))
+  local_cel <- CacheEntryList(
+    entries = list(CacheEntry(
+      family = "fam1",
+      meta = CacheMeta(source = "s", files = list("400" = "f.ttf"))
+    ))
+  )
   expect_message(
-    result <- cache_get(local_cel, families = c("fam1", "missing"), quiet = FALSE),
+    result <- cache_get(
+      local_cel,
+      families = c("fam1", "missing"),
+      quiet = FALSE
+    ),
     "not found"
   )
   expect_equal(length(result), 1)

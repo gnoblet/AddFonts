@@ -30,7 +30,13 @@ test_that("download_variant_generic returns TTF path on success without conversi
     .package = "httr2"
   )
 
-  result <- download_variant_generic(provider, "test-fam", 400, "normal", cache_dir = tmp)
+  result <- download_variant_generic(
+    provider,
+    "test-fam",
+    400,
+    "normal",
+    cache_dir = tmp
+  )
   expect_equal(result, ttf_path)
   expect_true(file.exists(ttf_path))
 })
@@ -43,8 +49,9 @@ test_that("download_variant_generic returns TTF path on success with conversion"
   ttf_path <- file.path(tmp, "font-400-normal.ttf")
 
   local_mocked_bindings(
-    cache_variant_paths = function(...)
-      list(ttf = ttf_path, to_convert = woff2_path),
+    cache_variant_paths = function(...) {
+      list(ttf = ttf_path, to_convert = woff2_path)
+    },
     .package = "AddFonts"
   )
   local_mocked_bindings(
@@ -55,14 +62,22 @@ test_that("download_variant_generic returns TTF path on success with conversion"
     .package = "httr2"
   )
   local_mocked_bindings(
-    conv_fun = function(...) function(from, ...) {
-      writeLines("fake ttf", ttf_path)
-      invisible(ttf_path)
+    conv_fun = function(...) {
+      function(from, ...) {
+        writeLines("fake ttf", ttf_path)
+        invisible(ttf_path)
+      }
     },
     .package = "AddFonts"
   )
 
-  result <- download_variant_generic(provider, "test-fam", 400, "normal", cache_dir = tmp)
+  result <- download_variant_generic(
+    provider,
+    "test-fam",
+    400,
+    "normal",
+    cache_dir = tmp
+  )
   expect_equal(result, ttf_path)
 })
 
@@ -88,7 +103,13 @@ test_that("download_variant_generic returns NULL and warns on download failure",
   )
 
   expect_warning(
-    result <- download_variant_generic(provider, "test-fam", 400, "normal", cache_dir = tmp),
+    result <- download_variant_generic(
+      provider,
+      "test-fam",
+      400,
+      "normal",
+      cache_dir = tmp
+    ),
     "Download failed"
   )
   expect_null(result)
@@ -116,7 +137,14 @@ test_that("download_variant_generic returns NULL silently on download failure wh
   )
 
   expect_no_warning(
-    result <- download_variant_generic(provider, "test-fam", 400, "normal", cache_dir = tmp, quiet = TRUE)
+    result <- download_variant_generic(
+      provider,
+      "test-fam",
+      400,
+      "normal",
+      cache_dir = tmp,
+      quiet = TRUE
+    )
   )
   expect_null(result)
 })
@@ -129,8 +157,9 @@ test_that("download_variant_generic returns NULL and warns on conversion failure
   ttf_path <- file.path(tmp, "font-400-normal.ttf")
 
   local_mocked_bindings(
-    cache_variant_paths = function(...)
-      list(ttf = ttf_path, to_convert = woff2_path),
+    cache_variant_paths = function(...) {
+      list(ttf = ttf_path, to_convert = woff2_path)
+    },
     .package = "AddFonts"
   )
   local_mocked_bindings(
@@ -146,7 +175,13 @@ test_that("download_variant_generic returns NULL and warns on conversion failure
   )
 
   expect_warning(
-    result <- download_variant_generic(provider, "test-fam", 400, "normal", cache_dir = tmp),
+    result <- download_variant_generic(
+      provider,
+      "test-fam",
+      400,
+      "normal",
+      cache_dir = tmp
+    ),
     "Conversion failed"
   )
   expect_null(result)
@@ -163,8 +198,9 @@ test_that("download_variant_generic warns when TTF missing after silent conversi
   ttf_path <- file.path(tmp, "font-400-normal.ttf")
 
   local_mocked_bindings(
-    cache_variant_paths = function(...)
-      list(ttf = ttf_path, to_convert = woff2_path),
+    cache_variant_paths = function(...) {
+      list(ttf = ttf_path, to_convert = woff2_path)
+    },
     .package = "AddFonts"
   )
   local_mocked_bindings(
@@ -181,7 +217,13 @@ test_that("download_variant_generic warns when TTF missing after silent conversi
   )
 
   expect_warning(
-    result <- download_variant_generic(provider, "test-fam", 400, "normal", cache_dir = tmp),
+    result <- download_variant_generic(
+      provider,
+      "test-fam",
+      400,
+      "normal",
+      cache_dir = tmp
+    ),
     "TTF file not found"
   )
   expect_null(result)

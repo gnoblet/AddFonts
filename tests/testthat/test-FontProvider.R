@@ -10,7 +10,7 @@ test_that("FontProviderWeight constructs with valid inputs", {
   )
 
   expect_s7_class(fp, FontProviderWeight)
-  expect_s7_class(fp, FontProvider)   # inherits base
+  expect_s7_class(fp, FontProvider) # inherits base
   expect_equal(fp@source, "bunny")
   expect_equal(
     fp@url_template,
@@ -102,23 +102,23 @@ test_that("FontProviderWeight validator rejects vector conversion_ext", {
 
 test_that("FontProviderFile constructs with valid inputs", {
   fp <- FontProviderFile(
-    source   = "bbb",
+    source = "bbb",
     base_url = "https://gitlab.com/bye-bye-binary/{family}/-/raw/main/ttf/{filename}.ttf"
   )
 
   expect_s7_class(fp, FontProviderFile)
-  expect_s7_class(fp, FontProvider)   # inherits base
+  expect_s7_class(fp, FontProvider) # inherits base
   expect_equal(fp@source, "bbb")
-  expect_equal(fp@file_ext, "ttf")    # default
+  expect_equal(fp@file_ext, "ttf") # default
   expect_null(fp@first_use_message)
 })
 
 test_that("FontProviderFile accepts first_use_message and first_use_url", {
   fp <- FontProviderFile(
-    source            = "bbb",
-    base_url          = "https://example.com/{family}/{filename}.ttf",
+    source = "bbb",
+    base_url = "https://example.com/{family}/{filename}.ttf",
     first_use_message = "Please read the licence.",
-    first_use_url     = "https://example.com/licence"
+    first_use_url = "https://example.com/licence"
   )
   expect_equal(fp@first_use_message, "Please read the licence.")
   expect_equal(fp@first_use_url, "https://example.com/licence")
@@ -127,7 +127,7 @@ test_that("FontProviderFile accepts first_use_message and first_use_url", {
 test_that("FontProviderFile validator rejects base_url missing {family}", {
   expect_error(
     FontProviderFile(
-      source   = "bbb",
+      source = "bbb",
       base_url = "https://example.com/{filename}.ttf"
     ),
     "\\{family\\}"
@@ -137,7 +137,7 @@ test_that("FontProviderFile validator rejects base_url missing {family}", {
 test_that("FontProviderFile validator rejects base_url missing {filename}", {
   expect_error(
     FontProviderFile(
-      source   = "bbb",
+      source = "bbb",
       base_url = "https://example.com/{family}/file.ttf"
     ),
     "\\{filename\\}"
@@ -146,7 +146,7 @@ test_that("FontProviderFile validator rejects base_url missing {filename}", {
 
 test_that("FontProviderFile accepts custom file_ext", {
   fp <- FontProviderFile(
-    source   = "x",
+    source = "x",
     base_url = "https://example.com/{family}/{filename}.otf",
     file_ext = "otf"
   )

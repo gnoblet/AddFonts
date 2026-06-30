@@ -189,7 +189,10 @@ test_that("add_font validates input arguments", {
   expect_error(add_font("font", provider = ""), "non-empty character string")
   expect_error(add_font("font", family = ""), "non-empty character string")
   expect_error(add_font("font", regular.wt = "400"), "single numeric weight")
-  expect_error(add_font("font", regular.wt = c(400, 500)), "single numeric weight")
+  expect_error(
+    add_font("font", regular.wt = c(400, 500)),
+    "single numeric weight"
+  )
   expect_error(add_font("font", bold.wt = "700"), "single numeric weight")
   expect_error(add_font("font", subset = ""), "non-empty character string")
 })
@@ -197,12 +200,18 @@ test_that("add_font validates input arguments", {
 test_that("add_font re-downloads when register_from_cache returns NULL (stale entry)", {
   fake_entry <- CacheEntry(
     family = "somefont",
-    meta = CacheMeta(source = "bunny", files = list("400" = "a.ttf", "700" = "b.ttf"))
+    meta = CacheMeta(
+      source = "bunny",
+      files = list("400" = "a.ttf", "700" = "b.ttf")
+    )
   )
   fake_cache <- CacheEntryList(entries = list(fake_entry))
   fake_new_entry <- CacheEntry(
     family = "somefont",
-    meta = CacheMeta(source = "bunny", files = list("400" = "c.ttf", "700" = "d.ttf"))
+    meta = CacheMeta(
+      source = "bunny",
+      files = list("400" = "c.ttf", "700" = "d.ttf")
+    )
   )
   tracker <- new.env(parent = emptyenv())
   tracker$download_called <- FALSE
@@ -212,7 +221,10 @@ test_that("add_font re-downloads when register_from_cache returns NULL (stale en
     register_from_cache = function(...) NULL,
     cache_remove = function(cel, ...) cel,
     cache_write = function(...) NULL,
-    download_and_cache = function(...) { tracker$download_called <- TRUE; fake_new_entry },
+    download_and_cache = function(...) {
+      tracker$download_called <- TRUE
+      fake_new_entry
+    },
     .package = "AddFonts"
   )
   add_font("somefont", family = "somefont")
@@ -227,9 +239,17 @@ test_that("add_font downloads missing bold and registers from updated entry", {
   fake_cache <- CacheEntryList(entries = list(fake_entry))
   fake_updated_entry <- CacheEntry(
     family = "somefont",
-    meta = CacheMeta(source = "bunny", files = list("400" = "a.ttf", "700" = "b.ttf"))
+    meta = CacheMeta(
+      source = "bunny",
+      files = list("400" = "a.ttf", "700" = "b.ttf")
+    )
   )
-  fake_files <- list(regular = "a.ttf", italic = "a.ttf", bold = "b.ttf", bolditalic = "b.ttf")
+  fake_files <- list(
+    regular = "a.ttf",
+    italic = "a.ttf",
+    bold = "b.ttf",
+    bolditalic = "b.ttf"
+  )
 
   local_mocked_bindings(
     cache_read = function(...) fake_cache,
@@ -249,9 +269,17 @@ test_that("add_font falls back to full re-download when update_download_and_cach
   fake_cache <- CacheEntryList(entries = list(fake_entry))
   fake_new_entry <- CacheEntry(
     family = "somefont",
-    meta = CacheMeta(source = "bunny", files = list("400" = "e.ttf", "700" = "f.ttf"))
+    meta = CacheMeta(
+      source = "bunny",
+      files = list("400" = "e.ttf", "700" = "f.ttf")
+    )
   )
-  fake_files <- list(regular = "e.ttf", italic = "e.ttf", bold = "f.ttf", bolditalic = "f.ttf")
+  fake_files <- list(
+    regular = "e.ttf",
+    italic = "e.ttf",
+    bold = "f.ttf",
+    bolditalic = "f.ttf"
+  )
   tracker <- new.env(parent = emptyenv())
   tracker$download_called <- FALSE
 
@@ -260,7 +288,10 @@ test_that("add_font falls back to full re-download when update_download_and_cach
     update_download_and_cache = function(...) NULL,
     cache_remove = function(cel, ...) cel,
     cache_write = function(...) NULL,
-    download_and_cache = function(...) { tracker$download_called <- TRUE; fake_new_entry },
+    download_and_cache = function(...) {
+      tracker$download_called <- TRUE
+      fake_new_entry
+    },
     register_from_cache = function(...) fake_files,
     .package = "AddFonts"
   )
@@ -288,11 +319,15 @@ test_that("add_font with provider='file' registers from cache on second call", {
 
   fake_entry <- CacheEntry(
     family = "MyFont",
-    meta   = CacheMeta(source = "file", files = list(regular = as.character(src)))
+    meta = CacheMeta(source = "file", files = list(regular = as.character(src)))
   )
   fake_cel <- CacheEntryList(entries = list(fake_entry))
-  fake_files <- list(regular = as.character(src), italic = as.character(src),
-                     bold = as.character(src), bolditalic = as.character(src))
+  fake_files <- list(
+    regular = as.character(src),
+    italic = as.character(src),
+    bold = as.character(src),
+    bolditalic = as.character(src)
+  )
 
   tracker <- new.env(parent = emptyenv())
   tracker$copy_called <- FALSE
@@ -300,12 +335,16 @@ test_that("add_font with provider='file' registers from cache on second call", {
   local_mocked_bindings(
     cache_read = function(...) fake_cel,
     register_from_cache = function(...) fake_files,
-    copy_and_cache_local = function(...) { tracker$copy_called <- TRUE; fake_entry },
+    copy_and_cache_local = function(...) {
+      tracker$copy_called <- TRUE
+      fake_entry
+    },
     .package = "AddFonts"
   )
 
   res <- add_font(
-    "MyFont", provider = "file",
+    "MyFont",
+    provider = "file",
     variants = list(regular = as.character(src))
   )
 
@@ -321,20 +360,25 @@ test_that("add_font with provider='file' copies and registers on first call", {
 
   fake_entry <- CacheEntry(
     family = "MyFont",
-    meta   = CacheMeta(source = "file", files = list(regular = as.character(src)))
+    meta = CacheMeta(source = "file", files = list(regular = as.character(src)))
   )
-  fake_files <- list(regular = as.character(src), italic = as.character(src),
-                     bold = as.character(src), bolditalic = as.character(src))
+  fake_files <- list(
+    regular = as.character(src),
+    italic = as.character(src),
+    bold = as.character(src),
+    bolditalic = as.character(src)
+  )
 
   local_mocked_bindings(
     cache_read = function(...) CacheEntryList(entries = list()),
     copy_and_cache_local = function(...) fake_entry,
-    register_from_cache  = function(...) fake_files,
+    register_from_cache = function(...) fake_files,
     .package = "AddFonts"
   )
 
   res <- add_font(
-    "MyFont", provider = "file",
+    "MyFont",
+    provider = "file",
     variants = list(regular = as.character(src))
   )
 
@@ -345,7 +389,8 @@ test_that("add_font with provider='file' errors when regular variant missing", {
   tmp <- withr::local_tempdir()
   expect_error(
     add_font(
-      "MyFont", provider = "file",
+      "MyFont",
+      provider = "file",
       variants = list(bold = as.character(fs::path(tmp, "MyFont-Bold.ttf")))
     ),
     "regular"
@@ -359,9 +404,9 @@ test_that("add_font with provider='url' registers from cache on second call", {
 
   fake_entry <- CacheEntry(
     family = "MyFont",
-    meta   = CacheMeta(source = "url", files = list(regular = src))
+    meta = CacheMeta(source = "url", files = list(regular = src))
   )
-  fake_cel   <- CacheEntryList(entries = list(fake_entry))
+  fake_cel <- CacheEntryList(entries = list(fake_entry))
   fake_files <- list(regular = src, italic = src, bold = src, bolditalic = src)
 
   tracker <- new.env(parent = emptyenv())
@@ -378,7 +423,8 @@ test_that("add_font with provider='url' registers from cache on second call", {
   )
 
   res <- add_font(
-    "MyFont", provider = "url",
+    "MyFont",
+    provider = "url",
     variants = list(regular = "https://example.com/MyFont-Regular.ttf")
   )
 
@@ -391,19 +437,20 @@ test_that("add_font with provider='url' downloads and registers on first call", 
 
   fake_entry <- CacheEntry(
     family = "MyFont",
-    meta   = CacheMeta(source = "url", files = list(regular = src))
+    meta = CacheMeta(source = "url", files = list(regular = src))
   )
   fake_files <- list(regular = src, italic = src, bold = src, bolditalic = src)
 
   local_mocked_bindings(
     cache_read = function(...) CacheEntryList(entries = list()),
     download_and_cache_url = function(...) fake_entry,
-    register_from_cache    = function(...) fake_files,
+    register_from_cache = function(...) fake_files,
     .package = "AddFonts"
   )
 
   res <- add_font(
-    "MyFont", provider = "url",
+    "MyFont",
+    provider = "url",
     variants = list(regular = "https://example.com/MyFont-Regular.ttf")
   )
 
@@ -413,7 +460,8 @@ test_that("add_font with provider='url' downloads and registers on first call", 
 test_that("add_font with provider='url' errors when regular variant missing", {
   expect_error(
     add_font(
-      "MyFont", provider = "url",
+      "MyFont",
+      provider = "url",
       variants = list(bold = "https://example.com/MyFont-Bold.ttf")
     ),
     "regular"

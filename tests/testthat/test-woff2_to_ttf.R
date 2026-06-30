@@ -56,7 +56,12 @@ test_that("woff2_to_ttf converts successfully and removes source when remove_old
     .package = "base"
   )
 
-  result <- woff2_to_ttf(woff2, overwrite = TRUE, remove_old = TRUE, quiet = TRUE)
+  result <- woff2_to_ttf(
+    woff2,
+    overwrite = TRUE,
+    remove_old = TRUE,
+    quiet = TRUE
+  )
   expect_equal(as.character(result), ttf)
   expect_true(file.exists(ttf))
   expect_false(file.exists(woff2))
@@ -152,5 +157,8 @@ test_that("woff2_to_ttf shows success message when quiet = FALSE", {
     .package = "base"
   )
 
-  expect_message(woff2_to_ttf(woff2, overwrite = TRUE, quiet = FALSE), "Converted")
+  expect_message(
+    woff2_to_ttf(woff2, overwrite = TRUE, quiet = FALSE),
+    "Converted"
+  )
 })

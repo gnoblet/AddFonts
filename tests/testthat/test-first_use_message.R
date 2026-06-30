@@ -4,14 +4,16 @@ test_that("maybe_show_first_use shows message on first call for a source", {
   tmp_dir <- withr::local_tempdir()
   # Reset the tracking env for this source key
   source_key <- "test_fum_source_a"
-  rm(list = intersect(source_key, ls(.first_use_shown)),
-     envir = .first_use_shown)
+  rm(
+    list = intersect(source_key, ls(.first_use_shown)),
+    envir = .first_use_shown
+  )
 
   fp <- FontProviderWeight(
-    source            = source_key,
-    url_template      = "https://example.com/{family}.ttf",
+    source = source_key,
+    url_template = "https://example.com/{family}.ttf",
     first_use_message = "Hello, first use!",
-    first_use_url     = "https://example.com/licence"
+    first_use_url = "https://example.com/licence"
   )
 
   expect_message(
@@ -22,12 +24,14 @@ test_that("maybe_show_first_use shows message on first call for a source", {
 
 test_that("maybe_show_first_use only shows message once per session", {
   source_key <- "test_fum_source_b"
-  rm(list = intersect(source_key, ls(.first_use_shown)),
-     envir = .first_use_shown)
+  rm(
+    list = intersect(source_key, ls(.first_use_shown)),
+    envir = .first_use_shown
+  )
 
   fp <- FontProviderWeight(
-    source            = source_key,
-    url_template      = "https://example.com/{family}.ttf",
+    source = source_key,
+    url_template = "https://example.com/{family}.ttf",
     first_use_message = "Only once!"
   )
 
@@ -38,7 +42,7 @@ test_that("maybe_show_first_use only shows message once per session", {
 
 test_that("maybe_show_first_use is silent when first_use_message is NULL", {
   fp <- FontProviderWeight(
-    source       = "test_fum_source_c",
+    source = "test_fum_source_c",
     url_template = "https://example.com/{family}.ttf"
   )
 
@@ -47,14 +51,16 @@ test_that("maybe_show_first_use is silent when first_use_message is NULL", {
 
 test_that("maybe_show_first_use includes URL when first_use_url is set", {
   source_key <- "test_fum_source_d"
-  rm(list = intersect(source_key, ls(.first_use_shown)),
-     envir = .first_use_shown)
+  rm(
+    list = intersect(source_key, ls(.first_use_shown)),
+    envir = .first_use_shown
+  )
 
   fp <- FontProviderWeight(
-    source            = source_key,
-    url_template      = "https://example.com/{family}.ttf",
+    source = source_key,
+    url_template = "https://example.com/{family}.ttf",
     first_use_message = "Check the licence.",
-    first_use_url     = "https://example.com/licence"
+    first_use_url = "https://example.com/licence"
   )
 
   msgs <- capture_messages(maybe_show_first_use(fp))
@@ -65,12 +71,14 @@ test_that("maybe_show_first_use includes URL when first_use_url is set", {
 
 test_that("maybe_show_first_use works for FontProviderFile too", {
   source_key <- "test_fum_source_e"
-  rm(list = intersect(source_key, ls(.first_use_shown)),
-     envir = .first_use_shown)
+  rm(
+    list = intersect(source_key, ls(.first_use_shown)),
+    envir = .first_use_shown
+  )
 
   fp <- FontProviderFile(
-    source            = source_key,
-    base_url          = "https://example.com/{family}/{filename}.ttf",
+    source = source_key,
+    base_url = "https://example.com/{family}/{filename}.ttf",
     first_use_message = "BBB notice."
   )
 

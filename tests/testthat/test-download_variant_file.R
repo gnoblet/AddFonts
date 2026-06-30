@@ -1,7 +1,7 @@
 ## helper: a minimal FontProviderFile for tests
 new_bbb_provider <- function() {
   FontProviderFile(
-    source   = "bbb",
+    source = "bbb",
     base_url = "https://gitlab.com/bye-bye-binary/{family}/-/raw/main/ttf/{filename}.ttf"
   )
 }
@@ -12,10 +12,10 @@ test_that("download_variant_file rejects non-FontProviderFile provider", {
   tmp <- withr::local_tempdir()
   expect_error(
     download_variant_file(
-      provider  = "bunny",
-      family    = "Alpaga",
-      filename  = "Alpaga-Regular",
-      variant   = "regular",
+      provider = "bunny",
+      family = "Alpaga",
+      filename = "Alpaga-Regular",
+      variant = "regular",
       cache_dir = tmp
     ),
     "FontProviderFile"
@@ -26,10 +26,10 @@ test_that("download_variant_file rejects unknown variant name", {
   tmp <- withr::local_tempdir()
   expect_error(
     download_variant_file(
-      provider  = new_bbb_provider(),
-      family    = "Alpaga",
-      filename  = "Alpaga-Regular",
-      variant   = "heavy",
+      provider = new_bbb_provider(),
+      family = "Alpaga",
+      filename = "Alpaga-Regular",
+      variant = "heavy",
       cache_dir = tmp
     ),
     "heavy"
@@ -40,10 +40,10 @@ test_that("download_variant_file rejects empty family", {
   tmp <- withr::local_tempdir()
   expect_error(
     download_variant_file(
-      provider  = new_bbb_provider(),
-      family    = "",
-      filename  = "Alpaga-Regular",
-      variant   = "regular",
+      provider = new_bbb_provider(),
+      family = "",
+      filename = "Alpaga-Regular",
+      variant = "regular",
       cache_dir = tmp
     ),
     "empty"
@@ -64,12 +64,12 @@ test_that("download_variant_file returns local path on successful download", {
   )
 
   result <- download_variant_file(
-    provider  = new_bbb_provider(),
-    family    = "Alpaga",
-    filename  = "Alpaga-Regular",
-    variant   = "regular",
+    provider = new_bbb_provider(),
+    family = "Alpaga",
+    filename = "Alpaga-Regular",
+    variant = "regular",
     cache_dir = tmp,
-    quiet     = TRUE
+    quiet = TRUE
   )
 
   expect_false(is.null(result))
@@ -87,12 +87,12 @@ test_that("download_variant_file returns NULL when download fails", {
 
   result <- suppressWarnings(
     download_variant_file(
-      provider  = new_bbb_provider(),
-      family    = "Alpaga",
-      filename  = "Alpaga-Regular",
-      variant   = "regular",
+      provider = new_bbb_provider(),
+      family = "Alpaga",
+      filename = "Alpaga-Regular",
+      variant = "regular",
       cache_dir = tmp,
-      quiet     = TRUE
+      quiet = TRUE
     )
   )
 
@@ -114,12 +114,12 @@ test_that("download_variant_file builds URL from base_url template", {
   )
 
   download_variant_file(
-    provider  = new_bbb_provider(),
-    family    = "Alpaga",
-    filename  = "Alpaga-Regular",
-    variant   = "regular",
+    provider = new_bbb_provider(),
+    family = "Alpaga",
+    filename = "Alpaga-Regular",
+    variant = "regular",
     cache_dir = tmp,
-    quiet     = TRUE
+    quiet = TRUE
   )
 
   expect_match(
@@ -131,18 +131,18 @@ test_that("download_variant_file builds URL from base_url template", {
 ## ---- copy_variant_to_cache ----
 
 test_that("copy_variant_to_cache copies file with expected cache filename", {
-  tmp     <- withr::local_tempdir()
-  src     <- fs::path(tmp, "MyFont-Regular.ttf")
+  tmp <- withr::local_tempdir()
+  src <- fs::path(tmp, "MyFont-Regular.ttf")
   writeLines("fake ttf", src)
-  cache   <- fs::path(tmp, "cache")
+  cache <- fs::path(tmp, "cache")
   fs::dir_create(cache)
 
   result <- copy_variant_to_cache(
-    src_path  = as.character(src),
-    family    = "MyFont",
-    variant   = "regular",
+    src_path = as.character(src),
+    family = "MyFont",
+    variant = "regular",
     cache_dir = as.character(cache),
-    quiet     = TRUE
+    quiet = TRUE
   )
 
   expect_false(is.null(result))
@@ -151,33 +151,33 @@ test_that("copy_variant_to_cache copies file with expected cache filename", {
 })
 
 test_that("copy_variant_to_cache infers extension from src_path", {
-  tmp   <- withr::local_tempdir()
-  src   <- fs::path(tmp, "MyFont-Regular.otf")
+  tmp <- withr::local_tempdir()
+  src <- fs::path(tmp, "MyFont-Regular.otf")
   writeLines("fake otf", src)
   cache <- fs::path(tmp, "cache")
   fs::dir_create(cache)
 
   result <- copy_variant_to_cache(
-    src_path  = as.character(src),
-    family    = "MyFont",
-    variant   = "regular",
+    src_path = as.character(src),
+    family = "MyFont",
+    variant = "regular",
     cache_dir = as.character(cache),
-    quiet     = TRUE
+    quiet = TRUE
   )
 
   expect_match(basename(result), "\\.otf$")
 })
 
 test_that("copy_variant_to_cache returns NULL and warns when source file missing", {
-  tmp   <- withr::local_tempdir()
+  tmp <- withr::local_tempdir()
   cache <- fs::path(tmp, "cache")
   fs::dir_create(cache)
 
   expect_warning(
     result <- copy_variant_to_cache(
-      src_path  = as.character(fs::path(tmp, "nonexistent.ttf")),
-      family    = "MyFont",
-      variant   = "regular",
+      src_path = as.character(fs::path(tmp, "nonexistent.ttf")),
+      family = "MyFont",
+      variant = "regular",
       cache_dir = as.character(cache)
     ),
     "not found"
@@ -192,9 +192,9 @@ test_that("copy_variant_to_cache errors on invalid variant name", {
 
   expect_error(
     copy_variant_to_cache(
-      src_path  = as.character(src),
-      family    = "MyFont",
-      variant   = "heavy",
+      src_path = as.character(src),
+      family = "MyFont",
+      variant = "heavy",
       cache_dir = as.character(tmp)
     ),
     "heavy"

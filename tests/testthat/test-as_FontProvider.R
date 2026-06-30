@@ -42,36 +42,39 @@ test_that("as_FontProvider passes first_use_message and first_use_url for weight
     source = "x",
     url_template = "https://example.com/{family}.ttf",
     first_use_message = "Licence notice.",
-    first_use_url     = "https://example.com/licence"
+    first_use_url = "https://example.com/licence"
   )
   fp <- as_FontProvider(x)
 
   expect_s7_class(fp, FontProviderWeight)
   expect_equal(fp@first_use_message, "Licence notice.")
-  expect_equal(fp@first_use_url,     "https://example.com/licence")
+  expect_equal(fp@first_use_url, "https://example.com/licence")
 })
 
 ## ---- File-type provider ----
 
 test_that("as_FontProvider constructs FontProviderFile from list with type = 'file'", {
   x <- list(
-    type     = "file",
-    source   = "bbb",
+    type = "file",
+    source = "bbb",
     base_url = "https://gitlab.com/bye-bye-binary/{family}/-/raw/main/ttf/{filename}.ttf"
   )
   fp <- as_FontProvider(x)
 
   expect_s7_class(fp, FontProviderFile)
   expect_s7_class(fp, FontProvider)
-  expect_equal(fp@source,   "bbb")
-  expect_equal(fp@base_url, "https://gitlab.com/bye-bye-binary/{family}/-/raw/main/ttf/{filename}.ttf")
-  expect_equal(fp@file_ext, "ttf")   # default
+  expect_equal(fp@source, "bbb")
+  expect_equal(
+    fp@base_url,
+    "https://gitlab.com/bye-bye-binary/{family}/-/raw/main/ttf/{filename}.ttf"
+  )
+  expect_equal(fp@file_ext, "ttf") # default
 })
 
 test_that("as_FontProvider passes file_ext for file type", {
   x <- list(
-    type     = "file",
-    source   = "x",
+    type = "file",
+    source = "x",
     base_url = "https://example.com/{family}/{filename}.otf",
     file_ext = "otf"
   )
@@ -83,18 +86,18 @@ test_that("as_FontProvider passes file_ext for file type", {
 
 test_that("as_FontProvider passes aliases and first_use fields for file type", {
   x <- list(
-    type              = "file",
-    source            = "bbb",
-    base_url          = "https://example.com/{family}/{filename}.ttf",
-    aliases           = list("example.com"),
+    type = "file",
+    source = "bbb",
+    base_url = "https://example.com/{family}/{filename}.ttf",
+    aliases = list("example.com"),
     first_use_message = "Please respect the licence.",
-    first_use_url     = "https://example.com/licence"
+    first_use_url = "https://example.com/licence"
   )
   fp <- as_FontProvider(x)
 
-  expect_equal(fp@aliases,           list("example.com"))
+  expect_equal(fp@aliases, list("example.com"))
   expect_equal(fp@first_use_message, "Please respect the licence.")
-  expect_equal(fp@first_use_url,     "https://example.com/licence")
+  expect_equal(fp@first_use_url, "https://example.com/licence")
 })
 
 ## ---- Unknown type ----
@@ -102,7 +105,7 @@ test_that("as_FontProvider passes aliases and first_use fields for file type", {
 test_that("as_FontProvider errors on unknown type", {
   expect_error(
     as_FontProvider(list(
-      type   = "streaming",
+      type = "streaming",
       source = "x",
       base_url = "https://example.com/{family}/{filename}.ttf"
     )),

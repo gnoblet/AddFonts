@@ -54,8 +54,10 @@ test_that("register_provider overwrites when overwrite = TRUE", {
   )
 
   expect_no_error(register_provider(provider2, overwrite = TRUE))
-  expect_equal(list_providers()[["test_ow"]]@url_template,
-               "https://other.com/{family}-{weight}-{style}.ttf")
+  expect_equal(
+    list_providers()[["test_ow"]]@url_template,
+    "https://other.com/{family}-{weight}-{style}.ttf"
+  )
 })
 
 test_that("unregister_provider removes the provider by name", {
