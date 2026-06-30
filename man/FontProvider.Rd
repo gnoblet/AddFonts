@@ -7,8 +7,8 @@
 FontProvider(
   source = character(0),
   url_template = character(0),
-  conversion = NULL,
-  conversion_ext = NULL,
+  conversion = character(0),
+  conversion_ext = character(0),
   aliases = list()
 )
 }

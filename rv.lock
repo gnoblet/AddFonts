@@ -122,6 +122,21 @@ force_source = false
 dependencies = []
 
 [[packages]]
+name = "covr"
+version = "3.6.5"
+source = { repository = "https://p3m.dev/cran/2025-11-25/bin/linux/manylinux_2_28-x86_64/4.5" }
+force_source = false
+dependencies = [
+    "digest",
+    "jsonlite",
+    "rex",
+    "httr",
+    "cli",
+    { name = "withr", requirement = "(>= 1.0.2)" },
+    "yaml",
+]
+
+[[packages]]
 name = "cpp11"
 version = "0.5.2"
 source = { repository = "https://p3m.dev/cran/2025-11-25/bin/linux/manylinux_2_28-x86_64/4.5" }
@@ -559,6 +574,19 @@ dependencies = [
 ]
 
 [[packages]]
+name = "httr"
+version = "1.4.7"
+source = { repository = "https://p3m.dev/cran/2025-11-25/bin/linux/manylinux_2_28-x86_64/4.5" }
+force_source = false
+dependencies = [
+    { name = "curl", requirement = "(>= 5.0.2)" },
+    "jsonlite",
+    "mime",
+    { name = "openssl", requirement = "(>= 0.8)" },
+    "R6",
+]
+
+[[packages]]
 name = "httr2"
 version = "1.2.1"
 source = { repository = "https://p3m.dev/cran/2025-11-25/bin/linux/manylinux_2_28-x86_64/4.5" }
@@ -638,8 +666,15 @@ dependencies = [
 
 [[packages]]
 name = "lattice"
-version = "0.22-7"
+version = "0.22-9"
 source = { builtin = true }
+force_source = false
+dependencies = []
+
+[[packages]]
+name = "lazyeval"
+version = "0.2.2"
+source = { repository = "https://p3m.dev/cran/2025-11-25/bin/linux/manylinux_2_28-x86_64/4.5" }
 force_source = false
 dependencies = []
 
@@ -914,6 +949,15 @@ version = "2.5.0"
 source = { repository = "https://p3m.dev/cran/2025-11-25/bin/linux/manylinux_2_28-x86_64/4.5" }
 force_source = false
 dependencies = []
+
+[[packages]]
+name = "rex"
+version = "1.2.1"
+source = { repository = "https://p3m.dev/cran/2025-11-25/bin/linux/manylinux_2_28-x86_64/4.5" }
+force_source = false
+dependencies = [
+    "lazyeval",
+]
 
 [[packages]]
 name = "rlang"

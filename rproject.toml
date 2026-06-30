@@ -24,4 +24,5 @@ dependencies = [
     "pak",
     {name = "hexSticker", git = "https://github.com/GuangchuangYu/hexSticker.git",  branch = "master"},
     "svglite",
+    "covr",
 ]
