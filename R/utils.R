@@ -4,10 +4,9 @@
 #'
 #' @typed entries: character
 #'   Character vector of file paths to remove.
-#' @typed quiet: "full" | "success" | "fail" | "none"
-#'   If "full", capture all output and suppress console messages; if "success",
-#'   only show success messages; if "fail", only show error messages; if "none",
-#'   show all messages (default: "none").
+#' @typed quiet: logical(1)
+#'   If `TRUE`, suppress all console messages. If `FALSE`, show success and
+#'   failure messages (default: `FALSE`).
 
 #' @typedreturn list
 #'   A list with the following elements:
@@ -19,18 +18,16 @@
 #' @export
 delete_files <- function(
   entries,
-  quiet = c("full", "success", "fail", "none")
+  quiet = FALSE
 ) {
   #------ Arg check
 
   # entries is a character vector
   assert_null_or_non_empty_character_vector(entries)
 
-  # quiest is one of allowed values
-  assert_string_in_set(
-    quiet,
-    choices = c("full", "success", "fail", "none")
-  )
+  if (!is.logical(quiet) || length(quiet) != 1) {
+    cli::cli_abort("{.arg quiet} must be a logical scalar.")
+  }
 
   #------ Do stuff
 
@@ -65,16 +62,12 @@ delete_files <- function(
     }
   }
 
-  if (quiet %in% c("none", "success") && length(deleted) > 0) {
+  if (!quiet && length(deleted) > 0) {
     cli::cli_alert_success("Deleted {length(deleted)} file{?s}:")
     lapply(deleted, function(x) cli::cli_text("  - {.file {x}}"))
   }
 
-  if (
-    quiet %in%
-      c("none", "fail") &&
-      (length(failed) > 0 || length(not_found) > 0)
-  ) {
+  if (!quiet && (length(failed) > 0 || length(not_found) > 0)) {
     if (length(failed) > 0) {
       cli::cli_alert_danger("Failed to delete {length(failed)} file{?s}:")
       lapply(failed, function(x) cli::cli_text("  - {.file {x}}"))
@@ -147,9 +140,16 @@ get_provider_details <- function(provider) {
   #------ Arg check
   assert_null_or_non_empty_string(provider, allow_null = FALSE)
 
-  #------ Do stuff
-  # Load providers from internal data (created by data-raw/providers.R)
-  # The 'providers' object is stored in R/sysdata.rda
+  #------ Check session registry first (source name or alias)
+  session_names <- ls(.provider_registry)
+  for (nm in session_names) {
+    fp <- get(nm, envir = .provider_registry)
+    if (fp@source == provider || provider %in% unlist(fp@aliases)) {
+      return(fp)
+    }
+  }
+
+  #------ Fall back to built-in sysdata providers
   if (!exists("providers", mode = "list", envir = asNamespace("AddFonts"))) {
     cli::cli_abort(c(
       "!" = "Internal providers data not found.",
@@ -159,15 +159,28 @@ get_provider_details <- function(provider) {
 
   providers_data <- get("providers", envir = asNamespace("AddFonts"))
 
-  # Check if provider exists in the data
-  if (!provider %in% names(providers_data)) {
-    available <- paste(names(providers_data), collapse = ", ")
-    cli::cli_abort(c(
-      "!" = "Provider {.val {provider}} not found.",
-      "i" = "Available providers: {.val {available}}"
-    ))
+  # Match by source name
+  if (provider %in% names(providers_data)) {
+    return(as_FontProvider(providers_data[[provider]]))
   }
 
-  # Convert to FontProvider object and return
-  as_FontProvider(providers_data[[provider]])
+  # Match by alias across built-ins
+  for (p in providers_data) {
+    fp <- as_FontProvider(p)
+    if (provider %in% unlist(fp@aliases)) {
+      return(fp)
+    }
+  }
+
+  # Nothing found — collect all known names for the error message
+  session_sources <- session_names
+  builtin_sources <- names(providers_data)
+  available <- paste(
+    unique(c(builtin_sources, session_sources)),
+    collapse = ", "
+  )
+  cli::cli_abort(c(
+    "!" = "Provider {.val {provider}} not found.",
+    "i" = "Available providers: {.val {available}}"
+  ))
 }

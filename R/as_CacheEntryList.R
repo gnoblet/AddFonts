@@ -35,5 +35,15 @@ S7::method(as_CacheEntryList, S7::class_list) <- function(l) {
       meta = cm
     )
   })
+
+  # Name with compound source::family keys.
+  # Works for both new format and legacy single-key JSON (migration is free
+  # since source is always stored inside meta).
+  names(el) <- vapply(
+    el,
+    function(e) paste0(e@meta@source, "::", e@family),
+    character(1)
+  )
+
   CacheEntryList(entries = el)
 }

@@ -5,6 +5,9 @@
 \title{Write CacheEntryList to disk as JSON}
 \usage{
 cache_write(x, cache_dir = NULL, quiet = TRUE)
+
+## S7 method for class <AddFonts::CacheEntryList>
+cache_write(x, cache_dir = NULL, quiet = TRUE)
 }
 \arguments{
 \item{x}{(\code{CacheEntryList}) The CacheEntryList object to write to disk.}
@@ -20,11 +23,12 @@ cache_write(x, cache_dir = NULL, quiet = TRUE)
 Write CacheEntryList to disk as JSON
 }
 \seealso{
-Other cache: 
-\code{\link{cache_clean}()},
-\code{\link{cache_get}()},
-\code{\link{cache_get_weights}()},
-\code{\link{cache_read}()},
-\code{\link{cache_remove}()}
+Other cache:
+\code{\link[=cache_clean]{cache_clean()}},
+\code{\link[=cache_get]{cache_get()}},
+\code{\link[=cache_get_variants]{cache_get_variants()}},
+\code{\link[=cache_get_weights]{cache_get_weights()}},
+\code{\link[=cache_read]{cache_read()}},
+\code{\link[=cache_remove]{cache_remove()}}
 }
 \concept{cache}

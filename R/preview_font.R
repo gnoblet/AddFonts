@@ -1,8 +1,6 @@
-## Preview: preview_font
 #' Preview a font by ensuring it's installed and drawing a sample string
 #'
-#' Ensure the requested font is installed via `add_font()` and draw a brief
-#' sample using `showtext` for proper font rendering.
+#' Ensure the requested font is installed via `add_font()` and draw a brief sample using `showtext` for proper font rendering.
 #'
 #' @typed name: character(1)
 #'   Font name as used by the provider (e.g. "oswald").
@@ -10,6 +8,11 @@
 #'   Provider name to use (default: "bunny")
 #' @typed family: character | NULL
 #'   Optional family name to register the font under (default: NULL)
+#' @typed variants: list | NULL
+#'   For file-based providers (`provider = "file"`, `provider = "url"`, or a
+#'   `FontProviderFile` object). Named list of symbolic variant keys to
+#'   file paths / URLs / filename stems. Passed through to [add_font()].
+#'   Ignored for weight-based providers (default: NULL).
 #' @typed sample: character(1)
 #'   Sample text to display (default: "The quick brown fox jumps over the lazy dog")
 #' @typed size: numeric(1)
@@ -29,6 +32,7 @@ preview_font <- function(
   name,
   provider = "bunny",
   family = NULL,
+  variants = NULL,
   sample = "The quick brown fox jumps over the lazy dog",
   size = 28,
   subset = "latin",
@@ -40,6 +44,7 @@ preview_font <- function(
     name,
     provider = provider,
     family = family,
+    variants = variants,
     regular.wt = regular.wt,
     bold.wt = bold.wt,
     subset = subset

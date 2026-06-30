@@ -5,6 +5,9 @@
 \title{Set cache entries}
 \usage{
 cache_set(x, family, meta)
+
+## S7 method for class <AddFonts::CacheEntryList>
+cache_set(x, family, meta)
 }
 \arguments{
 \item{x}{(\code{CacheEntryList}) The CacheEntryList object to modify.}

@@ -4,14 +4,15 @@
 #'  Name of the provider or source that produced the cached font files.
 #'
 #' @typed files: list(1+)
-#'  A non-empty named list of file paths. Names are weight identifiers (e.g., "400" for normal weight 400,
-#'  "400italic" for italic weight 400). Each element is a character(1) path to the local font files.
+#'  A non-empty named list of file paths. Names are either:
+#'  - Weight identifiers: `"400"`, `"400italic"`, `"700"`, etc. (weight-based providers)
+#'  - Variant keys: `"regular"`, `"italic"`, `"bold"`, `"bolditalic"` (file-based providers)
+#'  All keys must follow the same scheme — mixing is not allowed.
 #'
 #' @details
-#' The `added` property is a getter-only field that returns the current timestamp as a character string when accessed. It cannot be set during construction.
-#'
-#' Weights are not explicitly stored - they are derived from the names of the files list.
-#' Registration functions are responsible for selecting appropriate weights for regular/bold variants.
+#' The key scheme is determined by the provider type. Weight-based providers (e.g. Bunny)
+#' use numeric weight keys. File-based providers (e.g. Bye Bye Binary) use symbolic variant keys.
+#' Registration functions detect the scheme automatically.
 #'
 #' @typedreturn S7_object
 #'  A validated S7 `CacheMeta` object.
@@ -21,10 +22,7 @@ CacheMeta <- S7::new_class(
   "CacheMeta",
   properties = list(
     source = S7::class_character,
-    files = S7::class_list,
-    added = S7::new_property(S7::class_character, getter = function(self) {
-      as.character(Sys.time())
-    })
+    files = S7::class_list
   ),
   validator = function(self) {
     # source is a non-empty string
@@ -32,7 +30,7 @@ CacheMeta <- S7::new_class(
 
     files <- self@files
     # - non-empty list of non-empty character strings
-    if (!is.list(files) || length(files) == 0) {
+    if (length(files) == 0) {
       cli::cli_abort("self@files must be a non-empty list.")
     }
     for (f in files) {
@@ -47,25 +45,37 @@ CacheMeta <- S7::new_class(
       assert_pattern_with_ext(f, ext = ".ttf")
     })
 
-    # Validate file names follow weight pattern (e.g., "400", "400italic", "700italic")
+    # Validate file key names
     file_names <- names(files)
-    if (any(is.na(file_names)) || is.null(file_names) || any(file_names == "")) {
+    if (
+      any(is.na(file_names)) || is.null(file_names) || any(file_names == "")
+    ) {
       cli::cli_abort(
-        "All elements of self@files must be named (with weight identifiers)."
+        "All elements of self@files must be named with weight or variant keys."
       )
     }
 
-    # Check that names match the pattern: valid weight (100-900) followed by optional "italic"
-    valid_pattern <- grepl(
-      "^(100|200|300|400|500|600|700|800|900)(?:italic)?$",
-      file_names
-    )
-    if (!all(valid_pattern)) {
-      invalid_names <- file_names[!valid_pattern]
+    symbolic_keys <- c("regular", "italic", "bold", "bolditalic")
+    weight_rx <- "^(100|200|300|400|500|600|700|800|900)(?:italic)?$"
+
+    is_symbolic <- file_names %in% symbolic_keys
+    is_weight <- grepl(weight_rx, file_names)
+
+    if (!all(is_symbolic | is_weight)) {
+      bad <- file_names[!(is_symbolic | is_weight)]
       cli::cli_abort(c(
-        "File names in {.arg self@files} must follow {.val <weight>} or {.val <weight>italic}.",
-        "i" = "Valid weights: 100, 200, 300, 400, 500, 600, 700, 800, 900.",
-        "x" = "Invalid name{?s}: {.val {invalid_names}}"
+        "File names in {.arg self@files} must be weight keys or variant keys.",
+        "i" = "Weight keys: 100\u2013900 with optional {.val italic} suffix (e.g. {.val 400}, {.val 700italic}).",
+        "i" = "Variant keys: {.val regular}, {.val italic}, {.val bold}, {.val bolditalic}.",
+        "x" = "Invalid key{?s}: {.val {bad}}"
+      ))
+    }
+
+    if (any(is_symbolic) && any(is_weight)) {
+      cli::cli_abort(c(
+        "self@files must use either weight keys or variant keys, not both.",
+        "i" = "Weight-based providers use numeric keys (e.g. {.val 400}, {.val 700}).",
+        "i" = "File-based providers use variant keys ({.val regular}, {.val bold}, \u2026)."
       ))
     }
 

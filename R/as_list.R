@@ -38,5 +38,5 @@ S7::method(as_list, CacheEntry) <- function(x) {
 #' @name as_list
 #' @export
 S7::method(as_list, CacheEntryList) <- function(x) {
-  lapply(x@entries, as_list)
+  unname(lapply(x@entries, as_list))
 }

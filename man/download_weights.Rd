@@ -20,10 +20,8 @@ download_weights(provider, name, weights, subset, cache_dir, quiet = TRUE)
 \item{quiet}{(\code{logical(1)}) Whether to suppress download messages (default: TRUE).}
 }
 \value{
-(\code{list}) Named list where names are weight identifiers (e.g., "400", "700italic")
-and values are file paths.
+(\code{list}) Named list where names are weight identifiers (e.g., "400", "700italic") and values are file paths.
 }
 \description{
-Downloads normal and italic variants for each weight and returns a named
-list with weight-based keys.
+Downloads normal and italic variants for each weight and returns a named list with weight-based keys.
 }

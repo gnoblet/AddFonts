@@ -4,12 +4,30 @@
 \alias{cache_remove}
 \title{Delete entry from cache}
 \usage{
-cache_remove(x, families = NULL, remove_files = TRUE, cache_dir = NULL)
+cache_remove(
+  x,
+  families = NULL,
+  source = NULL,
+  remove_files = TRUE,
+  cache_dir = NULL
+)
+
+## S7 method for class <AddFonts::CacheEntryList>
+cache_remove(
+  x,
+  families = NULL,
+  source = NULL,
+  remove_files = TRUE,
+  cache_dir = NULL
+)
 }
 \arguments{
 \item{x}{(\code{CacheEntryList}) The CacheEntryList object to modify.}
 
 \item{families}{(\code{character | NULL}) The font families to delete. If NULL, all entries are deleted.}
+
+\item{source}{(\code{character(1) | NULL}) If provided, remove only the entry for \code{"{source}::{family}"}. If NULL,
+remove all entries whose family name matches, regardless of source.}
 
 \item{remove_files}{(\code{logical(1)}) If \code{TRUE} attempt to delete files referenced by removed entries (default: TRUE).}
 
@@ -22,11 +40,12 @@ cache_remove(x, families = NULL, remove_files = TRUE, cache_dir = NULL)
 Delete entry from cache
 }
 \seealso{
-Other cache: 
-\code{\link{cache_clean}()},
-\code{\link{cache_get}()},
-\code{\link{cache_get_weights}()},
-\code{\link{cache_read}()},
-\code{\link{cache_write}()}
+Other cache:
+\code{\link[=cache_clean]{cache_clean()}},
+\code{\link[=cache_get]{cache_get()}},
+\code{\link[=cache_get_variants]{cache_get_variants()}},
+\code{\link[=cache_get_weights]{cache_get_weights()}},
+\code{\link[=cache_read]{cache_read()}},
+\code{\link[=cache_write]{cache_write()}}
 }
 \concept{cache}

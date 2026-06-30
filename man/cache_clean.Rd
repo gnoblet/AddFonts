@@ -20,11 +20,12 @@ cache_clean(cache_dir = NULL, families = NULL, reset = FALSE)
 Remove entries from the cache, optionally unlinking referenced files.
 }
 \seealso{
-Other cache: 
-\code{\link{cache_get}()},
-\code{\link{cache_get_weights}()},
-\code{\link{cache_read}()},
-\code{\link{cache_remove}()},
-\code{\link{cache_write}()}
+Other cache:
+\code{\link[=cache_get]{cache_get()}},
+\code{\link[=cache_get_variants]{cache_get_variants()}},
+\code{\link[=cache_get_weights]{cache_get_weights()}},
+\code{\link[=cache_read]{cache_read()}},
+\code{\link[=cache_remove]{cache_remove()}},
+\code{\link[=cache_write]{cache_write()}}
 }
 \concept{cache}

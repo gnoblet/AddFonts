@@ -27,8 +27,10 @@ cache_variant_paths <- function(
   #------ Arg check
 
   # Ensure provider is a FontProvider object
-  if (!S7::S7_inherits(provider, FontProvider)) {
-    cli::cli_abort("{.arg provider} must be a <FontProvider> object.")
+  if (!S7::S7_inherits(provider, FontProviderWeight)) {
+    cli::cli_abort(
+      "{.arg provider} must be a {.cls FontProviderWeight} object."
+    )
   }
 
   #------ Do stuff

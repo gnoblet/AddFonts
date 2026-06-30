@@ -1,7 +1,6 @@
 #' Download font files for specified weights
 #'
-#' Downloads normal and italic variants for each weight and returns a named
-#' list with weight-based keys.
+#' Downloads normal and italic variants for each weight and returns a named list with weight-based keys.
 #'
 #' @typed provider: FontProvider
 #'   Provider object used for downloads.
@@ -17,8 +16,7 @@
 #'   Whether to suppress download messages (default: TRUE).
 #'
 #' @typedreturn list
-#'   Named list where names are weight identifiers (e.g., "400", "700italic")
-#'   and values are file paths.
+#'   Named list where names are weight identifiers (e.g., "400", "700italic") and values are file paths.
 #'
 download_weights <- function(
   provider,

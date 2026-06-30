@@ -1,11 +1,24 @@
 {
     "bunny": {
         "source": "bunny",
-        "url_template": "https://fonts.bunny.net/%s/files/%s-%s-%d-%s.woff2",
+        "type": "weight",
+        "url_template": "https://fonts.bunny.net/{family}/files/{family}-{subset}-{weight}-{style}.woff2",
         "conversion": "woff2_to_ttf",
         "conversion_ext": "woff2",
         "aliases": [
             "fonts.bunny.net"
         ]
+    },
+    "bbb": {
+        "source": "bbb",
+        "type": "file",
+        "base_url": "https://gitlab.com/bye-bye-binary/{family}/-/raw/main/ttf/{filename}.ttf",
+        "file_ext": "ttf",
+        "aliases": [
+            "bye-bye-binary",
+            "gitlab.com/bye-bye-binary"
+        ],
+        "first_use_message": "HELLO TOULS!\nLa typoth\u00e8que Bye Bye Binary est une initiative f\u00e9ministe et queer qui cr\u00e9e des polices libres et gratuites.\nMerci de respecter les licences des polices utilis\u00e9es.",
+        "first_use_url": "https://gitlab.com/bye-bye-binary"
     }
 }

@@ -56,7 +56,12 @@ test_that("woff2_to_ttf converts successfully and removes source when remove_old
     .package = "base"
   )
 
-  result <- woff2_to_ttf(woff2, overwrite = TRUE, remove_old = TRUE, quiet = "full")
+  result <- woff2_to_ttf(
+    woff2,
+    overwrite = TRUE,
+    remove_old = TRUE,
+    quiet = TRUE
+  )
   expect_equal(as.character(result), ttf)
   expect_true(file.exists(ttf))
   expect_false(file.exists(woff2))
@@ -80,11 +85,11 @@ test_that("woff2_to_ttf keeps source when remove_old = FALSE", {
     .package = "base"
   )
 
-  woff2_to_ttf(woff2, remove_old = FALSE, quiet = "full")
+  woff2_to_ttf(woff2, remove_old = FALSE, quiet = TRUE)
   expect_true(file.exists(woff2))
 })
 
-test_that("woff2_to_ttf aborts on non-zero status when quiet is 'fail'", {
+test_that("woff2_to_ttf aborts on non-zero status regardless of quiet", {
   tmp_dir <- withr::local_tempdir()
   woff2 <- file.path(tmp_dir, "font.woff2")
   writeLines("fake woff2", woff2)
@@ -103,7 +108,12 @@ test_that("woff2_to_ttf aborts on non-zero status when quiet is 'fail'", {
   )
 
   expect_error(
-    woff2_to_ttf(woff2, quiet = "fail"),
+    woff2_to_ttf(woff2, quiet = FALSE),
+    "Error during conversion"
+  )
+  writeLines("fake woff2", woff2)
+  expect_error(
+    woff2_to_ttf(woff2, quiet = TRUE),
     "Error during conversion"
   )
 })
@@ -124,12 +134,12 @@ test_that("woff2_to_ttf aborts when output file missing after conversion", {
   )
 
   expect_error(
-    woff2_to_ttf(woff2, quiet = "full"),
+    woff2_to_ttf(woff2, quiet = TRUE),
     "output file not found"
   )
 })
 
-test_that("woff2_to_ttf shows success message when quiet is 'success' or 'none'", {
+test_that("woff2_to_ttf shows success message when quiet = FALSE", {
   tmp_dir <- withr::local_tempdir()
   woff2 <- file.path(tmp_dir, "font.woff2")
   ttf <- file.path(tmp_dir, "font.ttf")
@@ -147,7 +157,8 @@ test_that("woff2_to_ttf shows success message when quiet is 'success' or 'none'"
     .package = "base"
   )
 
-  expect_message(woff2_to_ttf(woff2, overwrite = TRUE, quiet = "success"), "Converted")
-  writeLines("fake woff2", woff2)
-  expect_message(woff2_to_ttf(woff2, overwrite = TRUE, quiet = "none"), "Converted")
+  expect_message(
+    woff2_to_ttf(woff2, overwrite = TRUE, quiet = FALSE),
+    "Converted"
+  )
 })

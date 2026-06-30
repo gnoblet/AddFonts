@@ -2,30 +2,28 @@
 % Please edit documentation in R/FontProvider.R
 \name{FontProvider}
 \alias{FontProvider}
-\title{Font provider specification (FontProvider)}
+\title{Base font provider class (FontProvider)}
 \usage{
 FontProvider(
   source = character(0),
-  url_template = character(0),
-  conversion = NULL,
-  conversion_ext = NULL,
-  aliases = list()
+  aliases = list(),
+  first_use_message = character(0),
+  first_use_url = character(0)
 )
 }
 \arguments{
-\item{source}{(\code{character(1)}) Provider id/name (e.g. "bunny").}
+\item{source}{(\code{character(1)}) Provider id/name (e.g. \code{"bunny"}, \code{"bbb"}).}
 
-\item{url_template}{(\code{character(1)}) URL template used to construct download URLs.}
+\item{aliases}{(\code{list}) Optional list of alias strings to recognise the provider by
+(e.g. \code{list("fonts.bunny.net")}).}
 
-\item{conversion}{(\code{character(1) | NULL}) Optional conversion function name (as string) or \code{NULL}.}
+\item{first_use_message}{(\code{character(1) | NULL}) Optional message displayed once per R session the first time this provider is used (e.g. a licensing notice). \code{NULL} means no message.}
 
-\item{conversion_ext}{(\code{character(1) | NULL}) Original extension handled by the provider (e.g. "woff2").}
-
-\item{aliases}{(\code{list | NULL}) Optional list of alias names to match (e.g. "fonts.bunny.net").}
+\item{first_use_url}{(\code{character(1) | NULL}) Optional URL shown alongside \code{first_use_message}. \code{NULL} means no URL.}
 }
 \value{
-(\code{FontProviders}) S7 class representing a font provider specification.
+(\code{FontProvider}) S7 base class. Use a subclass constructor in practice.
 }
 \description{
-Font provider specification (FontProvider)
+Abstract base class shared by all provider types. Do not construct this directly. Use \code{FontProviderWeight()} or \code{FontProviderFile()} instead.
 }

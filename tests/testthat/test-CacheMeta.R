@@ -9,7 +9,6 @@ test_that("CacheMeta S7 class basics works correctly", {
 
   expect_equal(meta@source, "bunny")
   expect_equal(meta@files, list("400" = "r.ttf"))
-  expect_true(is.character(meta@added))
 })
 
 test_that("CacheMeta validation works correctly", {
@@ -67,13 +66,21 @@ test_that("CacheMeta validation works correctly", {
     "must be formatted as a path whose extension is '.ttf'."
   )
 
-  # invalid file names (not weight pattern)
+  # symbolic variant keys are valid (file-based providers)
+  expect_no_error(
+    CacheMeta(
+      source = "bbb",
+      files = list(regular = "r.ttf", bold = "b.ttf")
+    )
+  )
+
+  # invalid file names (unknown key — neither weight nor symbolic)
   expect_error(
     CacheMeta(
       source = "bunny",
-      files = list(regular = "r.ttf")
+      files = list(foo = "r.ttf")
     ),
-    "must follow"
+    "must be weight keys or variant keys"
   )
 
   # invalid file names (unnamed)

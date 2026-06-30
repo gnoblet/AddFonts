@@ -80,10 +80,11 @@ test_that("preview_font passes family and name to add_font", {
     bolditalic = "r.ttf"
   )
 
-  captured <- list()
+  tracker <- new.env(parent = emptyenv())
+  tracker$captured <- list()
   local_mocked_bindings(
     add_font = function(name, family = NULL, ...) {
-      captured <<- list(name = name, family = family)
+      tracker$captured <- list(name = name, family = family)
       fake_files
     },
     .package = "AddFonts"
@@ -95,6 +96,6 @@ test_that("preview_font passes family and name to add_font", {
 
   # Use family = "sans" so the draw step uses a safe PostScript font
   preview_into_pdf(name = "myfont", family = "sans")
-  expect_equal(captured$name, "myfont")
-  expect_equal(captured$family, "sans")
+  expect_equal(tracker$captured$name, "myfont")
+  expect_equal(tracker$captured$family, "sans")
 })

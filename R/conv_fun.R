@@ -1,7 +1,6 @@
 ## Helper: resolve a conversion specification to a function
 #'
-#' Resolve a conversion name to the converter function used by the
-#' package (currently only `woff2_to_ttf`).
+#' Resolve a conversion name to the converter function used by the package (currently only `woff2_to_ttf`).
 #'
 #' @typed conversion: character(1)
 #'   Name of the conversion to resolve.
