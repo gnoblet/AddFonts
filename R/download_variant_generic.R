@@ -29,7 +29,9 @@ download_variant_generic <- function(
 ) {
   #------ Arg check
   if (!S7::S7_inherits(provider, FontProviderWeight)) {
-    cli::cli_abort("{.arg provider} must be a {.cls FontProviderWeight} object.")
+    cli::cli_abort(
+      "{.arg provider} must be a {.cls FontProviderWeight} object."
+    )
   }
 
   if (
@@ -98,7 +100,12 @@ download_variant_generic <- function(
   if (!is.null(provider@conversion)) {
     conv_f <- conv_fun(provider@conversion)
     res <- tryCatch(
-      conv_f(paths$to_convert, overwrite = TRUE, remove_old = TRUE, quiet = quiet),
+      conv_f(
+        paths$to_convert,
+        overwrite = TRUE,
+        remove_old = TRUE,
+        quiet = quiet
+      ),
       error = function(e) e
     )
 

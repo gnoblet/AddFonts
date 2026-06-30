@@ -1,11 +1,8 @@
 ## Helper: register_from_cache
 #'
-#' Validate a cache entry and register the font with sysfonts if the
-#' required files exist. Returns the prepared `files` list or `NULL` when
-#' registration cannot proceed.
+#' Validate a cache entry and register the font with sysfonts if the required files exist. Returns the prepared `files` list or `NULL` when registration cannot proceed.
 #'
-#' This is the ONLY function that calls sysfonts::font_add(). It does not
-#' print success messages - callers should handle user feedback.
+#' This is the ONLY function that calls sysfonts::font_add(). It does not print success messages - callers should handle user feedback.
 #'
 #' @typed entry: CacheEntry
 #'   Cache entry object with family and metadata.
@@ -40,20 +37,20 @@ register_from_cache <- function(entry, regular.wt = 400, bold.wt = 700) {
 
   if (is_symbolic) {
     # File-based provider: keys are "regular", "italic", "bold", "bolditalic"
-    regular_file   <- files[["regular"]]
-    italic_file    <- files[["italic"]]
-    bold_file      <- files[["bold"]]
+    regular_file <- files[["regular"]]
+    italic_file <- files[["italic"]]
+    bold_file <- files[["bold"]]
     bolditalic_file <- files[["bolditalic"]]
   } else {
     # Weight-based provider: keys are "400", "400italic", "700", etc.
-    regular_key     <- as.character(regular.wt)
+    regular_key <- as.character(regular.wt)
     regular_italic_key <- paste0(regular.wt, "italic")
-    bold_key        <- as.character(bold.wt)
+    bold_key <- as.character(bold.wt)
     bold_italic_key <- paste0(bold.wt, "italic")
 
-    regular_file    <- files[[regular_key]]
-    italic_file     <- files[[regular_italic_key]]
-    bold_file       <- files[[bold_key]]
+    regular_file <- files[[regular_key]]
+    italic_file <- files[[regular_italic_key]]
+    bold_file <- files[[bold_key]]
     bolditalic_file <- files[[bold_italic_key]]
   }
 

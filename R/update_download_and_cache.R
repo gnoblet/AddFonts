@@ -1,7 +1,6 @@
 #' Download missing weights and update an existing cache entry
 #'
-#' Downloads missing font weights and updates the cache entry.
-#' Does NOT register the font - use register_from_cache() after this.
+#' Downloads missing font weights and updates the cache entry. Does NOT register the font - use register_from_cache() after this.
 #'
 #' @typed entry: CacheEntry
 #'   Existing cache entry to update.

@@ -39,7 +39,11 @@ CacheEntryList <- S7::new_class(
     }
 
     # check if all entries are CacheEntry objects
-    res <- vapply(entries, function(e) S7::S7_inherits(e, CacheEntry), logical(1))
+    res <- vapply(
+      entries,
+      function(e) S7::S7_inherits(e, CacheEntry),
+      logical(1)
+    )
     if (!all(res)) {
       cli::cli_abort(
         "All elements of self@entries must be <CacheEntry> objects."

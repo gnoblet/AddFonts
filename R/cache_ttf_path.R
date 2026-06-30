@@ -134,13 +134,15 @@ cache_file_path <- function(
   file_ext,
   cache_dir = NULL
 ) {
-  assert_null_or_non_empty_string(source,   allow_null = FALSE)
-  assert_null_or_non_empty_string(family,   allow_null = FALSE)
-  assert_null_or_non_empty_string(variant,  allow_null = FALSE)
+  assert_null_or_non_empty_string(source, allow_null = FALSE)
+  assert_null_or_non_empty_string(family, allow_null = FALSE)
+  assert_null_or_non_empty_string(variant, allow_null = FALSE)
   assert_null_or_non_empty_string(file_ext, allow_null = FALSE)
   assert_null_or_non_empty_string(cache_dir, allow_null = TRUE)
 
-  if (is.null(cache_dir)) cache_dir <- get_cache_dir()
+  if (is.null(cache_dir)) {
+    cache_dir <- get_cache_dir()
+  }
 
   sid <- safe_id(family)
   fname <- sprintf("%s-%s-%s.%s", source, sid, variant, file_ext)

@@ -1,19 +1,13 @@
 #' Add a font to the local cache and register it for use
 #'
-#' Ensure a font is available locally: try the cache first, otherwise
-#' download/convert and register the font so it can be used by plotting
-#' devices. Returns (invisibly) the list of local file paths.
+#' Ensure a font is available locally: try the cache first, otherwise download/convert and register the font so it can be used by plotting devices. Returns (invisibly) the list of local file paths.
 #'
-#' For weight-based providers (e.g. Bunny Fonts), supply `regular.wt`,
-#' `bold.wt`, and `subset`. For file-based providers (e.g. Bye Bye Binary),
-#' supply `variants` instead.
+#' For weight-based providers (e.g. Bunny Fonts), supply `regular.wt`,`bold.wt`, and `subset`. For file-based providers (e.g. Bye Bye Binary), supply `variants` instead.
 #'
 #' @typed name: character(1)
 #'   Name of the font as known to the provider.
 #' @typed provider: character(1) | FontProvider
-#'   Provider id/name (default: `"bunny"`), or a `FontProvider` object
-#'   constructed with [FontProviderWeight()] or [FontProviderFile()]
-#'   (bypasses the registry lookup).
+#'   Provider id/name (default: `"bunny"`), or a `FontProvider` object constructed with [FontProviderWeight()] or [FontProviderFile()] (bypasses the registry lookup).
 #' @typed family: character | NULL
 #'   Optional family name to register the font under (default: NULL).
 #' @typed variants: list | NULL
@@ -53,7 +47,7 @@ add_font <- function(
   provider_obj <- if (S7::S7_inherits(provider, FontProvider)) {
     provider
   } else if (is.character(provider) && provider %in% c("file", "url")) {
-    provider   # pass through as string; routing handled below
+    provider # pass through as string; routing handled below
   } else {
     get_provider_details(provider)
   }
@@ -74,21 +68,20 @@ add_font <- function(
   if (S7::S7_inherits(provider_obj, FontProviderFile)) {
     .add_font_file(
       provider_obj = provider_obj,
-      name         = name,
-      family_name  = family_name,
-      variants     = variants,
-      cache_dir    = cache_dir
+      name = name,
+      family_name = family_name,
+      variants = variants,
+      cache_dir = cache_dir
     )
   } else {
     .add_font_weight(
       provider_obj = provider_obj,
-      name         = name,
-      family_name  = family_name,
-      regular.wt   = regular.wt,
-      bold.wt      = bold.wt,
-      subset       = subset,
-      cache_dir    = cache_dir
+      name = name,
+      family_name = family_name,
+      regular.wt = regular.wt,
+      bold.wt = bold.wt,
+      subset = subset,
+      cache_dir = cache_dir
     )
   }
 }
-

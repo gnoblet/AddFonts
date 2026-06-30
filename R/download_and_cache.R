@@ -1,8 +1,6 @@
 #' Download font variants and add to cache
 #'
-#' Downloads font files for requested weights, creates a cache entry, and
-#' writes to cache. Does NOT register the font - caller should use
-#' register_from_cache() for that.
+#' Downloads font files for requested weights, creates a cache entry, and writes to cache. Does NOT register the font - caller should use register_from_cache() for that.
 #'
 #' @typed provider: FontProvider
 #'   Provider object used for downloads.

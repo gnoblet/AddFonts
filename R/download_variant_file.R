@@ -1,17 +1,13 @@
 #' Download one font file from a file-based provider
 #'
-#' Downloads a single font variant directly from a [FontProviderFile()] using
-#' its `base_url` template. No conversion is performed — the file is stored as
-#' received.
+#' Downloads a single font variant directly from a [FontProviderFile()] using its `base_url` template. No conversion is performed — the file is stored as received.
 #'
 #' @typed provider: FontProviderFile
 #'   A file-based provider object.
 #' @typed family: character(1)
 #'   Family identifier used in the URL template and cache filename.
 #' @typed filename: character(1)
-#'   Filename stem (without extension) for the specific variant (e.g.
-#'   `"Alpaga-Regular"`). Substituted into the `{filename}` placeholder of
-#'   `provider@base_url`.
+#'   Filename stem (without extension) for the specific variant (e.g. `"Alpaga-Regular"`). Substituted into the `{filename}` placeholder of `provider@base_url`.
 #' @typed variant: character(1)
 #'   Symbolic key for this variant: one of `"regular"`, `"italic"`, `"bold"`,
 #'   `"bolditalic"`.
@@ -35,9 +31,9 @@ download_variant_file <- function(
   if (!S7::S7_inherits(provider, FontProviderFile)) {
     cli::cli_abort("{.arg provider} must be a {.cls FontProviderFile} object.")
   }
-  assert_null_or_non_empty_string(family,   allow_null = FALSE)
+  assert_null_or_non_empty_string(family, allow_null = FALSE)
   assert_null_or_non_empty_string(filename, allow_null = FALSE)
-  assert_null_or_non_empty_string(variant,  allow_null = FALSE)
+  assert_null_or_non_empty_string(variant, allow_null = FALSE)
 
   valid_variants <- c("regular", "italic", "bold", "bolditalic")
   if (!variant %in% valid_variants) {
@@ -46,14 +42,16 @@ download_variant_file <- function(
     )
   }
 
-  if (is.null(cache_dir)) cache_dir <- get_cache_dir()
+  if (is.null(cache_dir)) {
+    cache_dir <- get_cache_dir()
+  }
 
   #------ Compute local cache path
   local_path <- cache_file_path(
-    source    = provider@source,
-    family    = family,
-    variant   = variant,
-    file_ext  = provider@file_ext,
+    source = provider@source,
+    family = family,
+    variant = variant,
+    file_ext = provider@file_ext,
     cache_dir = cache_dir
   )
 
@@ -67,8 +65,7 @@ download_variant_file <- function(
 
 #' Copy one local font file into the cache
 #'
-#' Copies a local font file into the AddFonts cache directory, naming it
-#' according to the standard `"file-{family}-{variant}.{ext}"` convention.
+#' Copies a local font file into the AddFonts cache directory, naming it according to the standard `"file-{family}-{variant}.{ext}"` convention.
 #'
 #' @typed src_path: character(1)
 #'   Absolute path to the source font file.
@@ -93,7 +90,7 @@ copy_variant_to_cache <- function(
   quiet = FALSE
 ) {
   assert_null_or_non_empty_string(src_path, allow_null = FALSE)
-  assert_null_or_non_empty_string(family,   allow_null = FALSE)
+  assert_null_or_non_empty_string(family, allow_null = FALSE)
 
   valid_variants <- c("regular", "italic", "bold", "bolditalic")
   if (!variant %in% valid_variants) {
@@ -109,9 +106,17 @@ copy_variant_to_cache <- function(
     return(NULL)
   }
 
-  if (is.null(cache_dir)) cache_dir <- get_cache_dir()
+  if (is.null(cache_dir)) {
+    cache_dir <- get_cache_dir()
+  }
 
-  dest   <- cache_file_path("file", family, variant, fs::path_ext(src_path), cache_dir)
+  dest <- cache_file_path(
+    "file",
+    family,
+    variant,
+    fs::path_ext(src_path),
+    cache_dir
+  )
   result <- tryCatch(
     fs::file_copy(src_path, dest, overwrite = TRUE),
     error = function(e) e
@@ -121,7 +126,11 @@ copy_variant_to_cache <- function(
     if (!isTRUE(quiet)) {
       cli::cli_warn(c(
         "!" = "Failed to copy {.val {family}} ({variant}) to cache.",
-        "i" = if (inherits(result, "error")) result$message else "No file written"
+        "i" = if (inherits(result, "error")) {
+          result$message
+        } else {
+          "No file written"
+        }
       ))
     }
     return(NULL)

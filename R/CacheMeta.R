@@ -47,7 +47,9 @@ CacheMeta <- S7::new_class(
 
     # Validate file key names
     file_names <- names(files)
-    if (any(is.na(file_names)) || is.null(file_names) || any(file_names == "")) {
+    if (
+      any(is.na(file_names)) || is.null(file_names) || any(file_names == "")
+    ) {
       cli::cli_abort(
         "All elements of self@files must be named with weight or variant keys."
       )
@@ -57,7 +59,7 @@ CacheMeta <- S7::new_class(
     weight_rx <- "^(100|200|300|400|500|600|700|800|900)(?:italic)?$"
 
     is_symbolic <- file_names %in% symbolic_keys
-    is_weight   <- grepl(weight_rx, file_names)
+    is_weight <- grepl(weight_rx, file_names)
 
     if (!all(is_symbolic | is_weight)) {
       bad <- file_names[!(is_symbolic | is_weight)]

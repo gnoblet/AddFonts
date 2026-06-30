@@ -197,7 +197,11 @@ S7::method(cache_get, CacheEntryList) <- function(
     found <- entries[keys[keys %in% names(entries)]]
   } else {
     # Scan by family name (works even for unnamed/legacy entries)
-    found <- entries[vapply(entries, function(e) e@family %in% families, logical(1))]
+    found <- entries[vapply(
+      entries,
+      function(e) e@family %in% families,
+      logical(1)
+    )]
   }
 
   if (length(found) == 0) {
@@ -208,7 +212,10 @@ S7::method(cache_get, CacheEntryList) <- function(
   }
 
   if (!quiet && length(found) < length(families)) {
-    missing_fams <- setdiff(families, vapply(found, function(e) e@family, character(1)))
+    missing_fams <- setdiff(
+      families,
+      vapply(found, function(e) e@family, character(1))
+    )
     cli::cli_alert_info(
       "Some families were not found in cache: {.val {missing_fams}}"
     )
@@ -279,7 +286,13 @@ S7::method(cache_set, CacheEntryList) <- function(
 cache_remove <- S7::new_generic(
   "cache_remove",
   "x",
-  function(x, families = NULL, source = NULL, remove_files = TRUE, cache_dir = NULL) {
+  function(
+    x,
+    families = NULL,
+    source = NULL,
+    remove_files = TRUE,
+    cache_dir = NULL
+  ) {
     S7::S7_dispatch()
   }
 )
@@ -326,7 +339,9 @@ S7::method(cache_remove, CacheEntryList) <- function(
   if (remove_files) {
     for (key in keys_to_remove) {
       entry <- entries[[key]]
-      if (is.null(entry)) next
+      if (is.null(entry)) {
+        next
+      }
       files <- unlist(entry@meta@files)
       if (length(files) > 0) {
         delete_files(fs::path(cache_dir, files), quiet = FALSE)

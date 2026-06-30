@@ -1,8 +1,6 @@
 #' Convert a .woff2 font to .ttf using the system 'woff2_decompress' tool
 #'
-#' Internal helper. Uses the system `woff2_decompress` tool to convert a
-#' `.woff2` file into a `.ttf` file. Documented with roxytypes annotations
-#' for clarity.
+#' Internal helper. Uses the system `woff2_decompress` tool to convert a `.woff2` file into a `.ttf` file.
 #'
 #' @typed font_file: character(1)
 #'   Path to the `.woff2` file to convert.
@@ -11,8 +9,7 @@
 #' @typed remove_old: logical(1)
 #'   If `TRUE`, remove the original `.woff2` file after conversion try.
 #' @typed quiet: logical(1)
-#'   If `TRUE`, suppress the success message. Errors always abort regardless
-#'   of this setting (default: `FALSE`).
+#'   If `TRUE`, suppress the success message. Errors always abort regardless of this setting (default: `FALSE`).
 #'
 #' @typedreturn character(1)
 #'   Invisibly returns the path to the `.ttf` file on success.

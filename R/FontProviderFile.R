@@ -1,8 +1,6 @@
 #' File-based font provider (FontProviderFile)
 #'
-#' Provider that downloads font files directly by filename from a base URL,
-#' with no weight/style/subset parameterisation. Covers Git-hosted
-#' collections like Bye Bye Binary where each variant has a fixed filename.
+#' Provider that downloads font files directly by filename from a base URL, with no weight/style/subset parameterisation. Covers Git-hosted collections like Bye Bye Binary where each variant has a fixed filename.
 #'
 #' @typed source: character(1)
 #'   Provider id/name (e.g. `"bbb"`).
@@ -39,19 +37,19 @@ FontProviderFile <- S7::new_class(
   constructor = function(
     source,
     base_url,
-    file_ext           = "ttf",
-    aliases            = list(),
-    first_use_message  = NULL,
-    first_use_url      = NULL
+    file_ext = "ttf",
+    aliases = list(),
+    first_use_message = NULL,
+    first_use_url = NULL
   ) {
     S7::new_object(
       S7::S7_object(),
-      source            = source,
-      base_url          = base_url,
-      file_ext          = file_ext,
-      aliases           = aliases,
+      source = source,
+      base_url = base_url,
+      file_ext = file_ext,
+      aliases = aliases,
       first_use_message = first_use_message,
-      first_use_url     = first_use_url
+      first_use_url = first_use_url
     )
   },
   validator = function(self) {

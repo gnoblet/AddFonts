@@ -175,7 +175,10 @@ get_provider_details <- function(provider) {
   # Nothing found — collect all known names for the error message
   session_sources <- session_names
   builtin_sources <- names(providers_data)
-  available <- paste(unique(c(builtin_sources, session_sources)), collapse = ", ")
+  available <- paste(
+    unique(c(builtin_sources, session_sources)),
+    collapse = ", "
+  )
   cli::cli_abort(c(
     "!" = "Provider {.val {provider}} not found.",
     "i" = "Available providers: {.val {available}}"

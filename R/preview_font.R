@@ -1,8 +1,6 @@
-## Preview: preview_font
 #' Preview a font by ensuring it's installed and drawing a sample string
 #'
-#' Ensure the requested font is installed via `add_font()` and draw a brief
-#' sample using `showtext` for proper font rendering.
+#' Ensure the requested font is installed via `add_font()` and draw a brief sample using `showtext` for proper font rendering.
 #'
 #' @typed name: character(1)
 #'   Font name as used by the provider (e.g. "oswald").
