@@ -105,6 +105,20 @@
   list(cel = cel, entry = entry)
 }
 
+#' Collect per-variant paths into a named list
+#'
+#' Iterates over `names(variants)`, calls `fetch_fn(variant)` for each, and collects non-NULL results. Used by all three variant-based download/copy orchestrators to eliminate duplicated loop skeletons.
+#'
+#' @noRd
+.collect_variant_paths <- function(variants, fetch_fn) {
+  files <- list()
+  for (variant in names(variants)) {
+    path <- fetch_fn(variant)
+    if (!is.null(path)) files[[variant]] <- path
+  }
+  files
+}
+
 #' Route add_font() for a weight-based provider
 #'
 #' Handles the full cache-check → optional partial update-download-register cycle for `FontProviderWeight` providers.
