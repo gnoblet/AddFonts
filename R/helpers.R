@@ -40,7 +40,9 @@
 #'   The newly created cache entry.
 #'
 .persist_cache_entry <- function(source, family_name, files_entry, cache_dir) {
-  meta <- CacheMeta(source = source, files = files_entry)
+  symbolic_keys <- c("regular", "italic", "bold", "bolditalic")
+  key_scheme <- if (any(names(files_entry) %in% symbolic_keys)) "symbolic" else "weight"
+  meta <- CacheMeta(source = source, key_scheme = key_scheme, files = files_entry)
   cel <- cache_read_safe(cache_dir)
   cel <- cache_set(cel, family_name, meta)
   cache_write(cel, cache_dir = cache_dir, quiet = TRUE)

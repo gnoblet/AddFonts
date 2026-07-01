@@ -25,9 +25,17 @@ S7::method(as_CacheEntryList, S7::class_list) <- function(l) {
       files <- as.list(files)
     }
 
-    # construct CacheMeta and CacheEntry (S7 constructors will validate)
+    # Backfill key_scheme for cache files written before this field existed.
+    symbolic_keys <- c("regular", "italic", "bold", "bolditalic")
+    key_scheme <- if (is.null(meta_raw$key_scheme)) {
+      if (any(names(files) %in% symbolic_keys)) "symbolic" else "weight"
+    } else {
+      meta_raw$key_scheme
+    }
+
     cm <- CacheMeta(
       source = meta_raw$source,
+      key_scheme = key_scheme,
       files = files
     )
     CacheEntry(

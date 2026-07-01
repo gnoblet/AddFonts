@@ -31,9 +31,7 @@ register_from_cache <- function(entry, regular.wt = 400, bold.wt = 700) {
   meta <- entry@meta
   files <- meta@files
 
-  # Detect whether this entry uses symbolic variant keys or weight-based keys
-  symbolic_keys <- c("regular", "italic", "bold", "bolditalic")
-  is_symbolic <- any(names(files) %in% symbolic_keys)
+  is_symbolic <- meta@key_scheme == "symbolic"
 
   if (is_symbolic) {
     # File-based provider: keys are "regular", "italic", "bold", "bolditalic"
