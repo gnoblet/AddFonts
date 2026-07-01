@@ -70,6 +70,7 @@ update_download_and_cache <- function(
   #------ Create updated cache entry
   updated_meta <- CacheMeta(
     source = entry@meta@source,
+    key_scheme = entry@meta@key_scheme,
     files = updated_files
   )
 

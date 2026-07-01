@@ -34,22 +34,16 @@ download_and_cache_file <- function(
   }
 
   #------ Download each requested variant
-  files_entry <- list()
-
-  for (variant in names(variants)) {
-    filename <- variants[[variant]]
-    path <- download_variant_file(
+  files_entry <- .collect_variant_paths(variants, function(variant) {
+    download_variant_file(
       provider = provider,
       family = name,
-      filename = filename,
+      filename = variants[[variant]],
       variant = variant,
       cache_dir = cache_dir,
       quiet = FALSE
     )
-    if (!is.null(path)) {
-      files_entry[[variant]] <- path
-    }
-  }
+  })
 
   if (!"regular" %in% names(files_entry)) {
     return(NULL)
@@ -91,15 +85,12 @@ download_and_cache_url <- function(
     cache_dir <- get_cache_dir()
   }
 
-  files_entry <- list()
-
-  for (variant in names(variants)) {
+  files_entry <- .collect_variant_paths(variants, function(variant) {
     url <- variants[[variant]]
     file_ext <- fs::path_ext(basename(url))
     dest <- cache_file_path("url", name, variant, file_ext, cache_dir)
-    path <- .fetch_url_to_cache(url, dest, name, variant, quiet = FALSE)
-    if (!is.null(path)) files_entry[[variant]] <- path
-  }
+    .fetch_url_to_cache(url, dest, name, variant, quiet = FALSE)
+  })
 
   if (!"regular" %in% names(files_entry)) {
     return(NULL)
@@ -141,18 +132,15 @@ copy_and_cache_local <- function(
     cache_dir <- get_cache_dir()
   }
 
-  files_entry <- list()
-
-  for (variant in names(variants)) {
-    path <- copy_variant_to_cache(
+  files_entry <- .collect_variant_paths(variants, function(variant) {
+    copy_variant_to_cache(
       src_path = variants[[variant]],
       family = name,
       variant = variant,
       cache_dir = cache_dir,
       quiet = FALSE
     )
-    if (!is.null(path)) files_entry[[variant]] <- path
-  }
+  })
 
   if (!"regular" %in% names(files_entry)) {
     return(NULL)

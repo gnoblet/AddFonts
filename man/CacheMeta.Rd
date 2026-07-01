@@ -4,26 +4,18 @@
 \alias{CacheMeta}
 \title{S7-backed cache metadata (CacheMeta)}
 \usage{
-CacheMeta(source = character(0), files = list())
+CacheMeta(source, files, key_scheme = NULL)
 }
 \arguments{
 \item{source}{(\code{character(1)}) Name of the provider or source that produced the cached font files.}
 
-\item{files}{(\verb{list(1+)}) A non-empty named list of file paths. Names are either:
-\itemize{
-\item Weight identifiers: \code{"400"}, \code{"400italic"}, \code{"700"}, etc. (weight-based providers)
-\item Variant keys: \code{"regular"}, \code{"italic"}, \code{"bold"}, \code{"bolditalic"} (file-based providers)
-All keys must follow the same scheme — mixing is not allowed.
-}}
+\item{files}{(\verb{list(1+)}) A non-empty named list of file paths. Names must follow the scheme declared by \code{key_scheme}.}
+
+\item{key_scheme}{(\code{character(1)}) Key scheme used in \code{files}: \code{"weight"} for numeric weight keys (e.g. \code{"400"}, \code{"700italic"}) or \code{"symbolic"} for variant keys (\code{"regular"}, \code{"bold"}, etc.).}
 }
 \value{
 (\code{S7_object}) A validated S7 \code{CacheMeta} object.
 }
 \description{
 S7-backed cache metadata (CacheMeta)
-}
-\details{
-The key scheme is determined by the provider type. Weight-based providers (e.g. Bunny)
-use numeric weight keys. File-based providers (e.g. Bye Bye Binary) use symbolic variant keys.
-Registration functions detect the scheme automatically.
 }

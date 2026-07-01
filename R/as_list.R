@@ -20,6 +20,7 @@ as_list <- S7::new_generic(
 S7::method(as_list, CacheMeta) <- function(x) {
   list(
     source = x@source,
+    key_scheme = x@key_scheme,
     files = x@files
   )
 }
