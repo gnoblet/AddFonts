@@ -28,11 +28,7 @@ FontProvider <- S7::new_class(
     first_use_url = S7::class_character | NULL
   ),
   validator = function(self) {
-    # Prevent direct construction of the base class
-    if (
-      !S7::S7_inherits(self, FontProviderWeight) &&
-        !S7::S7_inherits(self, FontProviderFile)
-    ) {
+    if (identical(S7::S7_class(self)@name, "FontProvider")) {
       cli::cli_abort(c(
         "Cannot construct {.cls FontProvider} directly.",
         "i" = "Use {.fn FontProviderWeight} or {.fn FontProviderFile} instead."
@@ -44,5 +40,43 @@ FontProvider <- S7::new_class(
     assert_null_or_non_empty_string(self@first_use_url)
 
     NULL
+  }
+)
+
+#' Sentinel provider for local font files (provider = "file")
+#'
+#' Returned internally when `add_font(provider = "file")` is used. Carries no extra properties — its type alone signals the local-copy dispatch path.
+#'
+#' @export
+FontProviderLocal <- S7::new_class(
+  "FontProviderLocal",
+  parent = FontProvider,
+  constructor = function() {
+    S7::new_object(
+      S7::S7_object(),
+      source = "file",
+      aliases = list(),
+      first_use_message = NULL,
+      first_use_url = NULL
+    )
+  }
+)
+
+#' Sentinel provider for direct-URL font downloads (provider = "url")
+#'
+#' Returned internally when `add_font(provider = "url")` is used. Carries no extra properties — its type alone signals the direct-URL dispatch path.
+#'
+#' @export
+FontProviderDirectURL <- S7::new_class(
+  "FontProviderDirectURL",
+  parent = FontProvider,
+  constructor = function() {
+    S7::new_object(
+      S7::S7_object(),
+      source = "url",
+      aliases = list(),
+      first_use_message = NULL,
+      first_use_url = NULL
+    )
   }
 )

@@ -46,23 +46,23 @@ add_font <- function(
   #------ Prepare identifiers and provider
   provider_obj <- if (S7::S7_inherits(provider, FontProvider)) {
     provider
-  } else if (is.character(provider) && provider %in% c("file", "url")) {
-    provider # pass through as string; routing handled below
+  } else if (identical(provider, "file")) {
+    FontProviderLocal()
+  } else if (identical(provider, "url")) {
+    FontProviderDirectURL()
   } else {
     get_provider_details(provider)
   }
   family_name <- if (is.null(family)) name else family
   cache_dir <- get_cache_dir()
 
-  if (S7::S7_inherits(provider_obj, FontProvider)) {
-    maybe_show_first_use(provider_obj)
-  }
+  maybe_show_first_use(provider_obj)
 
-  #------ Route by provider type
-  if (identical(provider_obj, "file")) {
+  #------ Route by provider type (pure S7 dispatch)
+  if (S7::S7_inherits(provider_obj, FontProviderLocal)) {
     return(.add_font_local(name, family_name, variants, cache_dir))
   }
-  if (identical(provider_obj, "url")) {
+  if (S7::S7_inherits(provider_obj, FontProviderDirectURL)) {
     return(.add_font_direct_url(name, family_name, variants, cache_dir))
   }
   if (S7::S7_inherits(provider_obj, FontProviderFile)) {
