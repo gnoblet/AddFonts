@@ -9,7 +9,7 @@ on:
 
 jobs:
   R-CMD-check:
-    runs-on: codeberg-small
+    runs-on: codeberg-medium
     env:
       GITHUB_PAT: ${{ forge.token }}
       R_KEEP_PKG_SOURCE: yes
