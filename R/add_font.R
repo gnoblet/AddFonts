@@ -189,43 +189,43 @@ add_font <- function(
         )
         cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
       } else {
-      cli::cli_inform(
-        "Cached {.val {family_name}} has regular weight {.val {regular.wt}}. Downloading missing bold weight {.val {bold.wt}}."
-      )
-      updated_entry <- update_download_and_cache(
-        entry = existing_entry,
-        provider = provider_obj,
-        name = name,
-        family_name = family_name,
-        missing_weights = bold.wt,
-        subset = subset,
-        cache_dir = cache_dir,
-        cel = cel
-      )
-      if (!is.null(updated_entry)) {
-        files <- register_from_cache(
-          updated_entry,
-          regular.wt = regular.wt,
-          bold.wt = bold.wt
+        cli::cli_inform(
+          "Cached {.val {family_name}} has regular weight {.val {regular.wt}}. Downloading missing bold weight {.val {bold.wt}}."
         )
-        if (!is.null(files)) {
-          cli::cli_alert_success(
-            "Font {.val {family_name}} registered with updated weights from cache."
+        updated_entry <- update_download_and_cache(
+          entry = existing_entry,
+          provider = provider_obj,
+          name = name,
+          family_name = family_name,
+          missing_weights = bold.wt,
+          subset = subset,
+          cache_dir = cache_dir,
+          cel = cel
+        )
+        if (!is.null(updated_entry)) {
+          files <- register_from_cache(
+            updated_entry,
+            regular.wt = regular.wt,
+            bold.wt = bold.wt
           )
-          return(invisible(files))
+          if (!is.null(files)) {
+            cli::cli_alert_success(
+              "Font {.val {family_name}} registered with updated weights from cache."
+            )
+            return(invisible(files))
+          }
         }
-      }
-      cli::cli_warn(
-        "Failed to download missing weight or register - re-downloading all weights."
-      )
-      cel <- cache_remove(
-        cel,
-        families = family_name,
-        source = provider_obj@source,
-        remove_files = FALSE,
-        cache_dir = cache_dir
-      )
-      cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
+        cli::cli_warn(
+          "Failed to download missing weight or register - re-downloading all weights."
+        )
+        cel <- cache_remove(
+          cel,
+          families = family_name,
+          source = provider_obj@source,
+          remove_files = FALSE,
+          cache_dir = cache_dir
+        )
+        cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
       }
     } else {
       cli::cli_inform(

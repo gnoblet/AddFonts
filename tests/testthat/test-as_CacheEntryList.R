@@ -44,16 +44,18 @@ test_that("as_CacheEntryList backfills failed_keys = character(0) for old JSON w
 test_that("as_CacheEntryList preserves failed_keys through round-trip", {
   withr::local_tempdir()
 
-  original <- CacheEntryList(entries = list(
-    "bunny::roboto" = CacheEntry(
-      family = "roboto",
-      meta = CacheMeta(
-        source = "bunny",
-        files = list("400" = "roboto-400.ttf"),
-        failed_keys = c("700", "700italic")
+  original <- CacheEntryList(
+    entries = list(
+      "bunny::roboto" = CacheEntry(
+        family = "roboto",
+        meta = CacheMeta(
+          source = "bunny",
+          files = list("400" = "roboto-400.ttf"),
+          failed_keys = c("700", "700italic")
+        )
       )
     )
-  ))
+  )
 
   round_tripped <- as_CacheEntryList(as_list(original))
   expect_equal(

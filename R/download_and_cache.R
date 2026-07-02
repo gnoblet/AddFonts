@@ -57,6 +57,11 @@ download_and_cache <- function(
   requested_keys <- as.character(c(regular.wt, bold.wt))
   failed_keys <- requested_keys[!requested_keys %in% names(files_entry)]
 
-  .persist_cache_entry(provider@source, family_name, files_entry, cache_dir,
-                       failed_keys = failed_keys)
+  .persist_cache_entry(
+    provider@source,
+    family_name,
+    files_entry,
+    cache_dir,
+    failed_keys = failed_keys
+  )
 }

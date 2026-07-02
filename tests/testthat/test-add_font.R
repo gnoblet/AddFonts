@@ -480,8 +480,12 @@ test_that("add_font registers from cache without re-downloading when bold is in 
       failed_keys = c("700")
     )
   )
-  fake_files <- list(regular = "/tmp/somefont-400.ttf", italic = NULL,
-                     bold = "/tmp/somefont-400.ttf", bolditalic = NULL)
+  fake_files <- list(
+    regular = "/tmp/somefont-400.ttf",
+    italic = NULL,
+    bold = "/tmp/somefont-400.ttf",
+    bolditalic = NULL
+  )
 
   tracker <- new.env(parent = emptyenv())
   tracker$update_called <- FALSE
@@ -489,8 +493,13 @@ test_that("add_font registers from cache without re-downloading when bold is in 
   local_mocked_bindings(
     get_provider_details = function(...) provider,
     get_cache_dir = function() tmp,
-    .cache_lookup = function(...) list(cel = CacheEntryList(entries = list()), entry = existing_entry),
-    update_download_and_cache = function(...) { tracker$update_called <- TRUE; NULL },
+    .cache_lookup = function(...) {
+      list(cel = CacheEntryList(entries = list()), entry = existing_entry)
+    },
+    update_download_and_cache = function(...) {
+      tracker$update_called <- TRUE
+      NULL
+    },
     register_from_cache = function(...) fake_files,
     maybe_show_first_use = function(...) invisible(NULL),
     .package = "AddFonts"
@@ -511,18 +520,25 @@ test_that("add_font calls update_download_and_cache when bold is NOT in failed_k
     meta = CacheMeta(
       source = "bunny",
       files = list("400" = "/tmp/somefont-400.ttf"),
-      failed_keys = character(0)  # no recorded failures
+      failed_keys = character(0) # no recorded failures
     )
   )
   updated_entry <- CacheEntry(
     family = "somefont",
     meta = CacheMeta(
       source = "bunny",
-      files = list("400" = "/tmp/somefont-400.ttf", "700" = "/tmp/somefont-700.ttf")
+      files = list(
+        "400" = "/tmp/somefont-400.ttf",
+        "700" = "/tmp/somefont-700.ttf"
+      )
     )
   )
-  fake_files <- list(regular = "/tmp/somefont-400.ttf", italic = NULL,
-                     bold = "/tmp/somefont-700.ttf", bolditalic = NULL)
+  fake_files <- list(
+    regular = "/tmp/somefont-400.ttf",
+    italic = NULL,
+    bold = "/tmp/somefont-700.ttf",
+    bolditalic = NULL
+  )
 
   tracker <- new.env(parent = emptyenv())
   tracker$update_called <- FALSE
@@ -530,8 +546,13 @@ test_that("add_font calls update_download_and_cache when bold is NOT in failed_k
   local_mocked_bindings(
     get_provider_details = function(...) provider,
     get_cache_dir = function() tmp,
-    .cache_lookup = function(...) list(cel = CacheEntryList(entries = list()), entry = existing_entry),
-    update_download_and_cache = function(...) { tracker$update_called <- TRUE; updated_entry },
+    .cache_lookup = function(...) {
+      list(cel = CacheEntryList(entries = list()), entry = existing_entry)
+    },
+    update_download_and_cache = function(...) {
+      tracker$update_called <- TRUE
+      updated_entry
+    },
     register_from_cache = function(...) fake_files,
     maybe_show_first_use = function(...) invisible(NULL),
     .package = "AddFonts"

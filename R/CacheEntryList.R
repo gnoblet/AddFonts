@@ -6,7 +6,6 @@
 #' @typedreturn S7_object
 #'  A validated S7 `CacheEntryList` object.
 #'
-#' @export
 CacheEntryList <- S7::new_class(
   "CacheEntryList",
   properties = list(

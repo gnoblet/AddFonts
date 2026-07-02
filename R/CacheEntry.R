@@ -12,7 +12,6 @@ NULL
 #' @typedreturn S7_object
 #'  A validated S7 `CacheEntry` object.
 #'
-#' @export
 CacheEntry <- S7::new_class(
   "CacheEntry",
   properties = list(

@@ -15,7 +15,6 @@
 #'   - failed: character() — paths that existed but could not be deleted
 #'   - not_found: character() — paths that were not found on disk
 #'
-#' @export
 delete_files <- function(
   entries,
   quiet = FALSE

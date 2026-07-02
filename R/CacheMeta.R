@@ -15,7 +15,6 @@
 #' @typedreturn S7_object
 #'  A validated S7 `CacheMeta` object.
 #'
-#' @export
 CacheMeta <- S7::new_class(
   "CacheMeta",
   properties = list(

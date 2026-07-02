@@ -144,7 +144,7 @@ test_that("download_and_cache records failed_keys when bold weight is not downlo
 
   local_mocked_bindings(
     download_weights = function(...) {
-      list("400" = "/tmp/test-400.ttf")  # only regular; bold 700 "failed"
+      list("400" = "/tmp/test-400.ttf") # only regular; bold 700 "failed"
     }
   )
 

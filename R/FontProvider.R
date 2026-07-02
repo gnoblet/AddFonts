@@ -18,7 +18,6 @@
 #' @typedreturn FontProvider
 #'   S7 base class. Use a subclass constructor in practice.
 #'
-#' @export
 FontProvider <- S7::new_class(
   "FontProvider",
   properties = list(
@@ -47,7 +46,6 @@ FontProvider <- S7::new_class(
 #'
 #' Returned internally when `add_font(provider = "file")` is used. Carries no extra properties — its type alone signals the local-copy dispatch path.
 #'
-#' @export
 FontProviderLocal <- S7::new_class(
   "FontProviderLocal",
   parent = FontProvider,
@@ -66,7 +64,6 @@ FontProviderLocal <- S7::new_class(
 #'
 #' Returned internally when `add_font(provider = "url")` is used. Carries no extra properties — its type alone signals the direct-URL dispatch path.
 #'
-#' @export
 FontProviderDirectURL <- S7::new_class(
   "FontProviderDirectURL",
   parent = FontProvider,
