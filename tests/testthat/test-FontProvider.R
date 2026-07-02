@@ -153,6 +153,37 @@ test_that("FontProviderFile accepts custom file_ext", {
   expect_equal(fp@file_ext, "otf")
 })
 
+test_that("FontProviderFile validator rejects empty source", {
+  expect_error(
+    FontProviderFile(
+      source = "",
+      base_url = "https://example.com/{family}/{filename}.ttf"
+    ),
+    "empty"
+  )
+})
+
+test_that("FontProviderFile validator rejects empty base_url", {
+  expect_error(
+    FontProviderFile(
+      source = "bbb",
+      base_url = ""
+    ),
+    "empty"
+  )
+})
+
+test_that("FontProviderFile validator rejects empty file_ext", {
+  expect_error(
+    FontProviderFile(
+      source = "bbb",
+      base_url = "https://example.com/{family}/{filename}.ttf",
+      file_ext = ""
+    ),
+    "empty"
+  )
+})
+
 ## ---- Base FontProvider guard ----
 
 test_that("bare FontProvider() construction is rejected", {

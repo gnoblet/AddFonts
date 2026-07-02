@@ -1,3 +1,33 @@
+test_that("cache_ttf_filename produces correct filename format", {
+  fname <- cache_ttf_filename("bunny", "Roboto", "latin", 400, "normal")
+  expect_equal(fname, "bunny-roboto-latin-400-normal.ttf")
+})
+
+test_that("cache_ttf_filename applies safe_id to font_id", {
+  fname <- cache_ttf_filename("bunny", "My Font", "latin", 700, "italic")
+  expect_equal(fname, "bunny-my-font-latin-700-italic.ttf")
+})
+
+test_that("cache_ttf_filename rejects invalid weight", {
+  expect_error(
+    cache_ttf_filename("bunny", "roboto", "latin", 999, "normal"),
+    "between 100 and 900"
+  )
+})
+
+test_that("cache_file_path produces correctly formatted path", {
+  tmp <- withr::local_tempdir()
+  path <- cache_file_path("bbb", "My Font", "regular", "ttf", cache_dir = tmp)
+  expect_true(grepl("bbb-my-font-regular\\.ttf$", as.character(path)))
+  expect_true(startsWith(as.character(path), tmp))
+})
+
+test_that("cache_file_path respects file_ext and variant", {
+  tmp <- withr::local_tempdir()
+  path <- cache_file_path("bbb", "roboto", "bold", "otf", cache_dir = tmp)
+  expect_true(grepl("bbb-roboto-bold\\.otf$", as.character(path)))
+})
+
 test_that("cache_variant_paths validates provider and returns expected paths", {
   tmp <- withr::local_tempdir()
 
