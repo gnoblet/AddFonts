@@ -136,3 +136,29 @@ test_that("download_and_cache uses default cache_dir when NULL", {
   # Should use mocked cache dir
   expect_true(fs::file_exists(fs::path(mock_cache_dir, "fonts_db.json")))
 })
+
+
+test_that("download_and_cache records failed_keys when bold weight is not downloaded", {
+  provider <- new_bunny_provider()
+  tmp <- withr::local_tempdir()
+
+  local_mocked_bindings(
+    download_weights = function(...) {
+      list("400" = "/tmp/test-400.ttf")  # only regular; bold 700 "failed"
+    }
+  )
+
+  result <- download_and_cache(
+    provider = provider,
+    name = "test-font",
+    family_name = "test",
+    regular.wt = 400,
+    bold.wt = 700,
+    subset = "latin",
+    cache_dir = tmp
+  )
+
+  expect_s7_class(result, CacheEntry)
+  expect_equal(result@meta@failed_keys, "700")
+  expect_equal(names(result@meta@files), "400")
+})

@@ -92,3 +92,20 @@ test_that("CacheMeta validation works correctly", {
     "All elements of self@files must be named."
   )
 })
+
+test_that("CacheMeta failed_keys defaults to character(0) and can be set", {
+  withr::local_tempdir()
+
+  meta_default <- CacheMeta(
+    source = "bunny",
+    files = list("400" = "r.ttf")
+  )
+  expect_equal(meta_default@failed_keys, character(0))
+
+  meta_with_failures <- CacheMeta(
+    source = "bunny",
+    files = list("400" = "r.ttf"),
+    failed_keys = c("700", "700italic")
+  )
+  expect_equal(meta_with_failures@failed_keys, c("700", "700italic"))
+})

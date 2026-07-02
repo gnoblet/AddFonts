@@ -50,7 +50,7 @@ test_that("update_download_and_cache validates arguments", {
   )
 })
 
-test_that("update_download_and_cache returns NULL when no files downloaded", {
+test_that("update_download_and_cache records failed weights when download returns nothing", {
   provider <- new_bunny_provider()
 
   meta <- CacheMeta(
@@ -61,7 +61,7 @@ test_that("update_download_and_cache returns NULL when no files downloaded", {
 
   tmp <- withr::local_tempdir()
 
-  # Mock download_weights to return empty list
+  # Mock download_weights to return empty list (simulates 404)
   local_mocked_bindings(
     download_weights = function(...) {
       list()
@@ -79,7 +79,9 @@ test_that("update_download_and_cache returns NULL when no files downloaded", {
     cel = NULL
   )
 
-  expect_null(result)
+  expect_s7_class(result, CacheEntry)
+  expect_equal(result@meta@failed_keys, "700")
+  expect_equal(result@meta@files, list("400" = "/tmp/test-400.ttf"))
 })
 
 test_that("update_download_and_cache merges new files with existing", {
