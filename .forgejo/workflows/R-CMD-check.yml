@@ -35,6 +35,12 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: 'true'
 
+      - name: Install rv
+        run: |
+          curl -sSL https://raw.githubusercontent.com/A2-ai/rv/refs/heads/main/scripts/install.sh | bash
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+        shell: bash
+
       - uses: https://github.com/r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
