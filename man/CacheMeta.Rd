@@ -4,14 +4,16 @@
 \alias{CacheMeta}
 \title{S7-backed cache metadata (CacheMeta)}
 \usage{
-CacheMeta(source, files, key_scheme = NULL)
+CacheMeta(source, files, key_scheme = NULL, failed_keys = character(0))
 }
 \arguments{
 \item{source}{(\code{character(1)}) Name of the provider or source that produced the cached font files.}
 
-\item{files}{(\verb{list(1+)}) A non-empty named list of file paths. Names must follow the scheme declared by \code{key_scheme}.}
+\item{files}{(\verb{list(1+)}) A non-empty named list of file paths. Names must follow the scheme declared by \code{key_scheme}. (default: NULL)}
 
 \item{key_scheme}{(\code{character(1)}) Key scheme used in \code{files}: \code{"weight"} for numeric weight keys (e.g. \code{"400"}, \code{"700italic"}) or \code{"symbolic"} for variant keys (\code{"regular"}, \code{"bold"}, etc.).}
+
+\item{failed_keys}{(\verb{character(0+)}) A character vector of keys that were requested but failed to download. Empty if all requested keys were successfully downloaded. (default: character(0))}
 }
 \value{
 (\code{S7_object}) A validated S7 \code{CacheMeta} object.

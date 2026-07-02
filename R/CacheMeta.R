@@ -7,7 +7,10 @@
 #'  Key scheme used in `files`: `"weight"` for numeric weight keys (e.g. `"400"`, `"700italic"`) or `"symbolic"` for variant keys (`"regular"`, `"bold"`, etc.).
 #'
 #' @typed files: list(1+)
-#'  A non-empty named list of file paths. Names must follow the scheme declared by `key_scheme`.
+#'  A non-empty named list of file paths. Names must follow the scheme declared by `key_scheme`. (default: NULL)
+#'
+#' @typed failed_keys: character(0+)
+#'  A character vector of keys that were requested but failed to download. Empty if all requested keys were successfully downloaded. (default: character(0))
 #'
 #' @typedreturn S7_object
 #'  A validated S7 `CacheMeta` object.
@@ -21,10 +24,19 @@ CacheMeta <- S7::new_class(
     files = S7::class_list,
     failed_keys = S7::class_character
   ),
-  constructor = function(source, files, key_scheme = NULL, failed_keys = character(0)) {
+  constructor = function(
+    source,
+    files,
+    key_scheme = NULL,
+    failed_keys = character(0)
+  ) {
     if (is.null(key_scheme)) {
       symbolic_keys <- c("regular", "italic", "bold", "bolditalic")
-      key_scheme <- if (any(names(files) %in% symbolic_keys)) "symbolic" else "weight"
+      key_scheme <- if (any(names(files) %in% symbolic_keys)) {
+        "symbolic"
+      } else {
+        "weight"
+      }
     }
     S7::new_object(
       S7::S7_object(),
@@ -49,7 +61,9 @@ CacheMeta <- S7::new_class(
     }
     for (f in files) {
       if (!is.character(f) || length(f) < 1 || !nzchar(f[1])) {
-        cli::cli_abort("self@files must be a list of non-empty character strings.")
+        cli::cli_abort(
+          "self@files must be a list of non-empty character strings."
+        )
       }
     }
     lapply(files, function(f) {
@@ -57,8 +71,12 @@ CacheMeta <- S7::new_class(
     })
 
     file_names <- names(files)
-    if (any(is.na(file_names)) || is.null(file_names) || any(file_names == "")) {
-      cli::cli_abort("All elements of self@files must be named with weight or variant keys.")
+    if (
+      any(is.na(file_names)) || is.null(file_names) || any(file_names == "")
+    ) {
+      cli::cli_abort(
+        "All elements of self@files must be named with weight or variant keys."
+      )
     }
 
     if (self@key_scheme == "symbolic") {

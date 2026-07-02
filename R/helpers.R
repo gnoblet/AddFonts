@@ -35,14 +35,25 @@
 #'   Named list of variant-key to local file path mappings.
 #' @typed cache_dir: character(1)
 #'   Path to the cache directory.
+#' @typed failed_keys: character(0+)
+#'  A character vector of keys that were requested but failed to download. Empty if all requested keys were successfully downloaded. (default: character(0))
 #'
 #' @typedreturn CacheEntry
 #'   The newly created cache entry.
 #'
-.persist_cache_entry <- function(source, family_name, files_entry, cache_dir,
-                                 failed_keys = character(0)) {
+.persist_cache_entry <- function(
+  source,
+  family_name,
+  files_entry,
+  cache_dir,
+  failed_keys = character(0)
+) {
   symbolic_keys <- c("regular", "italic", "bold", "bolditalic")
-  key_scheme <- if (any(names(files_entry) %in% symbolic_keys)) "symbolic" else "weight"
+  key_scheme <- if (any(names(files_entry) %in% symbolic_keys)) {
+    "symbolic"
+  } else {
+    "weight"
+  }
   meta <- CacheMeta(
     source = source,
     key_scheme = key_scheme,

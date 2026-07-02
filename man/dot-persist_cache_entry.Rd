@@ -4,7 +4,13 @@
 \alias{.persist_cache_entry}
 \title{Build a CacheEntry, persist the cache index, and return the entry}
 \usage{
-.persist_cache_entry(source, family_name, files_entry, cache_dir)
+.persist_cache_entry(
+  source,
+  family_name,
+  files_entry,
+  cache_dir,
+  failed_keys = character(0)
+)
 }
 \arguments{
 \item{source}{(\code{character(1)}) Provider source identifier (e.g. \code{"bunny"}, \code{"file"}, \code{"url"}).}
@@ -14,6 +20,8 @@
 \item{files_entry}{(\code{list}) Named list of variant-key to local file path mappings.}
 
 \item{cache_dir}{(\code{character(1)}) Path to the cache directory.}
+
+\item{failed_keys}{(\verb{character(0+)}) A character vector of keys that were requested but failed to download. Empty if all requested keys were successfully downloaded. (default: character(0))}
 }
 \value{
 (\code{CacheEntry}) The newly created cache entry.
