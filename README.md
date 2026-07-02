@@ -17,17 +17,19 @@ status](https://gnoblet.r-universe.dev/AddFonts/badges/checks)](https://gnoblet.
 
 <!-- badges: end -->
 
-Download and register fonts from GDPR-compliant providers for use in R
-graphics. Currently supports [Bunny Fonts](https://fonts.bunny.net/), a
-privacy-first alternative to Google Fonts.
+Download and register fonts in R from multiple sources: Bunny Fonts
+(GDPR-compliant CDN), local files, direct URLs, or custom file-based
+providers. Fonts are cached on first use and registered via `sysfonts`
+so they work immediately with `showtext` and `ggplot2`.
 
 ## Features
 
-- 🔒 **GDPR-compliant**: Uses Bunny Fonts (no tracking, no data
-  collection)
-- 📦 **Simple API**: One function to download and register fonts
-- 💾 **Smart caching**: Downloads once, reuses forever
-- 🎨 **Full variants**: Regular, bold, italic, and bold-italic support
+- 🔒 **Privacy-first default**: Bunny Fonts CDN — no tracking,
+  GDPR-compliant
+- 📂 **Multiple sources**: CDN providers, local files, direct URLs, or
+  custom providers
+- 💾 **Smart caching**: Downloads/copies once, reuses across R sessions
+- 🎨 **Full variant support**: regular, bold, italic, bold-italic
 
 ## Installation
 
@@ -78,7 +80,9 @@ example, to add the “Oswald” font:
 library(AddFonts)
 # Download and register Oswald font
 add_font("oswald")
+#> ✔ Converted '/home/gnoblet/.cache/AddFonts/bunny-oswald-latin-400-normal.woff2' to TTF: '/home/gnoblet/.cache/AddFonts/bunny-oswald-latin-400-normal.ttf'
 #> ✔ Downloaded variant: 'bunny-oswald-latin-400-normal.ttf'
+#> ✔ Converted '/home/gnoblet/.cache/AddFonts/bunny-oswald-latin-700-normal.woff2' to TTF: '/home/gnoblet/.cache/AddFonts/bunny-oswald-latin-700-normal.ttf'
 #> ✔ Downloaded variant: 'bunny-oswald-latin-700-normal.ttf'
 #> ✔ Font "oswald" registered and added to cache.
 ```
@@ -96,52 +100,34 @@ library(AddFonts)
 preview_font("merriweather", regular.wt = 400, bold.wt = 700)
 ```
 
-<img src="man/figures/README-preview-1.png" width="90%" />
+<img src="man/figures/README-preview-1.png" alt="" width="90%" />
 
 ### Add Fonts And Use With ggplot2
 
-Let’s imagine we want to use several fonts in a simple plot. First, we
-loop over a vector of font family names and call `add_font()` for each
-one to download and register them with R.
+Once fonts are registered, they can be used in ggplot2 via `showtext`.
+Here we download three fonts and display them in a plot:
 
 ``` r
 library(AddFonts)
 library(showtext)
 library(ggplot2)
 
-fonts <- c(
-  "oswald",
-  "blaka-ink",
-  "barrio",
-  "major-mono-display",
-  "merriweather",
-  "montserrat",
-  "sixtyfour",
-  "playfair-display",
-  "inter",
-  "aboreto",
-  "aclonica",
-  "akronim",
-  "babylonica"
-)
+fonts <- c("oswald", "merriweather", "playfair-display")
 
 for (font in fonts) {
   add_font(font)
 }
 ```
 
-Now that fonts have been registered, we can use them in a `ggplot` for
-instance.
-
 ``` r
 showtext_auto()
 
 font_data <- data.frame(
   x = 0.5,
-  y = seq(0.95, 0.1, length.out = length(fonts)),
+  y = seq(0.75, 0.25, length.out = length(fonts)),
   label = paste(tools::toTitleCase(gsub("-", " ", fonts)), "Font"),
   family = fonts,
-  size = c(9, 8, 8, 6, 8, 8, 7, 8, 8, 8, 8, 8, 9)
+  size = c(9, 8, 8)
 )
 
 ggplot(
@@ -155,50 +141,108 @@ ggplot(
   theme_void()
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="90%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" alt="" width="90%" />
 
 ### Cache Management
 
+Fonts are stored in a user-level cache directory. Use these functions to
+inspect or clear the cache if you need to free disk space or force a
+re-download.
+
 ``` r
-# Get cache location
+# Show cache location
 get_cache_dir()
 
-# Clear specific fonts
-cache_clean(families = c("roboto", "open-sans"))
+# Remove a specific font
+cache_clean(families = c("oswald"))
 
-# Clear all fonts
+# Clear everything
 cache_clean(reset = TRUE)
+```
+
+## Providers
+
+`add_font()` supports several font sources via the `provider` argument.
+
+### Bunny Fonts (default)
+
+The default provider. Supply the font family name as it appears on
+[fonts.bunny.net](https://fonts.bunny.net/):
+
+``` r
+add_font("oswald")
+```
+
+### Local files
+
+Pass absolute paths to TTF or OTF files already on disk:
+
+``` r
+add_font(
+  "my-font",
+  provider = "file",
+  variants = list(
+    regular = "/path/to/MyFont-Regular.ttf",
+    bold = "/path/to/MyFont-Bold.ttf"
+  )
+)
+```
+
+### Direct URLs
+
+Download from any URL — no provider account needed:
+
+``` r
+add_font(
+  "my-font",
+  provider = "url",
+  variants = list(
+    regular = "https://example.com/fonts/MyFont-Regular.ttf"
+  )
+)
+```
+
+### Custom file-based providers
+
+Use `FontProviderFile()` for CDN providers that serve static font files
+(e.g. Bye Bye Binary):
+
+``` r
+bbb <- FontProviderFile(
+  source = "bbb",
+  base_url = "https://bye.bye.binary.com/fonts/{family}/{filename}.ttf"
+)
+
+add_font(
+  "alpaga",
+  provider = bbb,
+  variants = list(regular = "Alpaga-Regular", bold = "Alpaga-Bold")
+)
 ```
 
 ## Why Bunny Fonts?
 
-[Bunny Fonts](https://fonts.bunny.net/) is a privacy-focused,
-GDPR-compliant alternative to Google Fonts:
+[Bunny Fonts](https://fonts.bunny.net/) is the default provider because
+it mirrors most of Google Fonts with no tracking and no data collection
+— important for EU users and privacy-conscious projects. It has a fast
+global CDN and is free and open-source.
 
-- 🔒 No tracking or data collection
-- 🚀 Fast global CDN
-- 🆓 Free and open-source
-- 🎨 Includes most popular Google Fonts
+For other font sources, see the [Providers](#providers) section above.
 
-Perfect for EU users or anyone prioritizing privacy.
+## How AddFonts Works
 
-After a period of testing on real world projects using Bunny Fonts as
-the only-and-default font provider, `AddFonts` is meant to integrate
-other providers.
+`add_font()` follows the same three steps for every provider:
 
-## How AddFont Works
+1.  **Check cache** — if the font is already on disk, register it
+    immediately and return
+2.  **Fetch** — download from a CDN, copy from a local path, or fetch
+    from a URL; for Bunny Fonts, also converts WOFF2 → TTF (R’s
+    `sysfonts` requires TTF format)
+3.  **Register** — calls `sysfonts::font_add()` so the font is available
+    in all graphics devices via `showtext`
 
-1.  Downloads WOFF2 files from Bunny Fonts CDN
-2.  Converts to TTF format using `woff2_decompress`
-3.  Caches locally for reuse
-4.  Registers with R via `sysfonts` package
-
-**Why convert?** Bunny Fonts serves WOFF2 (web-optimized), but R’s
-`sysfonts` needs TTF format. Conversion happens once; subsequent uses
-load instantly from cache.
-
-In the background, `S7` classes manage font metadata and caching logic,
-while `sysfonts` handles registration with R’s graphics system.
+In the background, S7 classes manage provider metadata and cache
+entries.
 
 ## Related Packages
 
@@ -211,8 +255,4 @@ while `sysfonts` handles registration with R’s graphics system.
 
 ## License
 
-GPL (\>= 3)
-
-------------------------------------------------------------------------
-
-**Note**: AddFonts is experimental. API may change. Feedback welcome!
+GPL (\>= 3) — see [LICENSE](LICENSE)
