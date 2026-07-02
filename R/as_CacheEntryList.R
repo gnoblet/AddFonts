@@ -33,10 +33,17 @@ S7::method(as_CacheEntryList, S7::class_list) <- function(l) {
       meta_raw$key_scheme
     }
 
+    raw_fk <- meta_raw$failed_keys
+    failed_keys <- if (is.null(raw_fk) || length(raw_fk) == 0) {
+      character(0)
+    } else {
+      as.character(unlist(raw_fk, use.names = FALSE))
+    }
     cm <- CacheMeta(
       source = meta_raw$source,
       key_scheme = key_scheme,
-      files = files
+      files = files,
+      failed_keys = failed_keys
     )
     CacheEntry(
       family = ent$family,

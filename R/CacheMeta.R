@@ -18,9 +18,10 @@ CacheMeta <- S7::new_class(
   properties = list(
     source = S7::class_character,
     key_scheme = S7::class_character,
-    files = S7::class_list
+    files = S7::class_list,
+    failed_keys = S7::class_character
   ),
-  constructor = function(source, files, key_scheme = NULL) {
+  constructor = function(source, files, key_scheme = NULL, failed_keys = character(0)) {
     if (is.null(key_scheme)) {
       symbolic_keys <- c("regular", "italic", "bold", "bolditalic")
       key_scheme <- if (any(names(files) %in% symbolic_keys)) "symbolic" else "weight"
@@ -29,7 +30,8 @@ CacheMeta <- S7::new_class(
       S7::S7_object(),
       source = source,
       key_scheme = key_scheme,
-      files = files
+      files = files,
+      failed_keys = failed_keys
     )
   },
   validator = function(self) {

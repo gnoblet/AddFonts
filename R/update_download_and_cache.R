@@ -59,8 +59,14 @@ update_download_and_cache <- function(
     quiet = TRUE
   )
 
-  # Return NULL if no new files were downloaded
-  if (length(new_files) == 0) {
+  # Track which requested weights failed; merge with pre-existing failures
+  new_failed <- as.character(missing_weights)[
+    !as.character(missing_weights) %in% names(new_files)
+  ]
+  merged_failed <- unique(c(entry@meta@failed_keys, new_failed))
+
+  # If nothing changed (no new files, no new failures to record) return NULL
+  if (length(new_files) == 0 && length(new_failed) == 0) {
     return(NULL)
   }
 
@@ -71,7 +77,8 @@ update_download_and_cache <- function(
   updated_meta <- CacheMeta(
     source = entry@meta@source,
     key_scheme = entry@meta@key_scheme,
-    files = updated_files
+    files = updated_files,
+    failed_keys = merged_failed
   )
 
   updated_entry <- CacheEntry(

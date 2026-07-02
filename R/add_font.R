@@ -158,6 +158,37 @@ add_font <- function(
       )
       cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
     } else if (has_regular && !has_bold) {
+      bold_key <- as.character(bold.wt)
+      if (bold_key %in% existing_entry@meta@failed_keys) {
+        cli::cli_inform(c(
+          "i" = "Bold weight {.val {bold.wt}} is not available from {.val {provider_obj@source}} for {.val {family_name}}.",
+          "i" = "Registering with regular weight {.val {regular.wt}} as fallback.",
+          "i" = "To retry, run {.run cache_clean(families = \"{family_name}\")} first."
+        ))
+        files <- register_from_cache(
+          existing_entry,
+          regular.wt = regular.wt,
+          bold.wt = bold.wt
+        )
+        if (!is.null(files)) {
+          cli::cli_alert_success(
+            "Font {.val {family_name}} registered from cache."
+          )
+          return(invisible(files))
+        }
+        # Stale files on disk — fall through to full re-download
+        cli::cli_warn(
+          "Stale cache entry for {.val {family_name}} - re-downloading."
+        )
+        cel <- cache_remove(
+          cel,
+          families = family_name,
+          source = provider_obj@source,
+          remove_files = FALSE,
+          cache_dir = cache_dir
+        )
+        cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
+      } else {
       cli::cli_inform(
         "Cached {.val {family_name}} has regular weight {.val {regular.wt}}. Downloading missing bold weight {.val {bold.wt}}."
       )
@@ -195,6 +226,7 @@ add_font <- function(
         cache_dir = cache_dir
       )
       cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
+      }
     } else {
       cli::cli_inform(
         "Cached {.val {family_name}} is missing requested regular weight {.val {regular.wt}} - re-downloading."

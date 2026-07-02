@@ -21,7 +21,8 @@ S7::method(as_list, CacheMeta) <- function(x) {
   list(
     source = x@source,
     key_scheme = x@key_scheme,
-    files = x@files
+    files = x@files,
+    failed_keys = as.list(x@failed_keys)
   )
 }
 
