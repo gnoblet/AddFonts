@@ -1,0 +1,188 @@
+name: R-universe build
+
+on:
+  push:
+  pull_request:
+
+env:
+  UNIVERSE_NAME: ${{ github.repository_owner }}
+  MY_UNIVERSE: https://${{ github.repository_owner }}.r-universe.dev
+  CRAN_VERSION: ''
+  NO_ADDITIONAL_REPOSITORIES: 'false'
+
+jobs:
+  source:
+    name: Build source pkg and vignettes
+    runs-on: codeberg-small
+    timeout-minutes: 90
+    outputs:
+      commitinfo: ${{ steps.build.outputs.COMMITINFO }}
+      maintainerinfo: ${{ steps.build.outputs.MAINTAINERINFO }}
+      sourcepkg: ${{ steps.build.outputs.SOURCEPKG }}
+      package: ${{ steps.build.outputs.PACKAGE }}
+      version: ${{ steps.build.outputs.VERSION }}
+      java: ${{ steps.build.outputs.NEED_RJAVA }}
+      jags: ${{ steps.build.outputs.NEED_JAGS }}
+      cmdstan: ${{ steps.build.outputs.NEED_CMDSTAN }}
+      fortran: ${{ steps.build.outputs.NEED_FORTRAN }}
+      golang: ${{ steps.build.outputs.NEED_GOLANG }}
+      cargo: ${{ steps.build.outputs.NEED_CARGO }}
+      quarto: ${{ steps.build.outputs.NEED_QUARTO }}
+      ostype: ${{ steps.build.outputs.OSTYPE }}
+      compiled: ${{ steps.build.outputs.NEEDS_COMPILATION }}
+
+    steps:
+      - name: Free disk space on runner
+        run: rm -Rf /usr/share/dotnet /opt/ghc "/usr/local/share/boost" "$AGENT_TOOLSDIRECTORY" || true
+
+      - id: build
+        name: Build source package and vignettes
+        timeout-minutes: 60
+        uses: https://github.com/r-universe-org/build-source@master
+        env:
+          GITHUB_PAT: ${{ forge.token }}
+        with:
+          url: ${{ github.server_url }}/${{ github.repository }}
+          ref: ${{ github.sha }}
+          subdir: ''
+          branch: ''
+          articles: ''
+
+      - name: Store source package
+        uses: https://github.com/r-universe-org/actions/store-package@v12
+        if: ${{ !cancelled() && steps.build.outputs.PACKAGE }}
+        id: artifact
+        with:
+          name: package-source
+          JOB_STATUS: ${{ job.status }}
+          DISTRO: ${{ steps.build.outputs.DISTRO }}
+          FILE: ${{ steps.build.outputs.SOURCEPKG }}
+          TARGET: ${{ steps.build.outputs.SOURCEPKG && 'source' || 'failure' }}
+
+      - name: Store linux binary package
+        uses: https://github.com/r-universe-org/actions/store-package@v12
+        if: ${{ !cancelled() && steps.build.outputs.BINARYPKG }}
+        with:
+          name: package-linux-release-x86_64
+          JOB_STATUS: ${{ job.status }}
+          DISTRO: ${{ steps.build.outputs.DISTRO }}
+          FILE: ${{ steps.build.outputs.BINARYPKG }}
+          TARGET: linux
+
+      - name: Conclude source
+        if: always()
+        run: echo "Artifact URL ${{ steps.artifact.outputs.artifact-url }}"
+
+  linux:
+    needs: [source]
+    if: ${{ !cancelled() && needs.source.outputs.sourcepkg }}
+    runs-on: codeberg-small
+    timeout-minutes: 120
+    name: Build R-${{ matrix.r }} for Linux x86_64
+    strategy:
+      fail-fast: false
+      matrix:
+        r: ['devel', 'release']
+    container:
+      image: ghcr.io/r-universe-org/base-image:${{ matrix.r }}
+      volumes:
+        - /usr:/host/usr
+
+    steps:
+      - name: Prepare Linux system
+        timeout-minutes: 10
+        uses: https://github.com/r-universe-org/actions/linux-prep@v12
+
+      - name: Get dependencies
+        id: deps
+        timeout-minutes: 60
+        uses: https://github.com/r-universe-org/actions/linux-deps@v12
+        env:
+          GITHUB_PAT: ${{ forge.token }}
+        with:
+          sourcepkg: ${{ needs.source.outputs.sourcepkg }}
+
+      - name: Build package
+        timeout-minutes: 60
+        uses: https://github.com/r-universe-org/actions/linux-build@v12
+        env:
+          GITHUB_PAT: ${{ forge.token }}
+        with:
+          sourcepkg: ${{ needs.source.outputs.sourcepkg }}
+
+      - name: R CMD check
+        id: check
+        timeout-minutes: 60
+        uses: https://github.com/r-universe-org/actions/linux-check@v12
+        env:
+          GITHUB_PAT: ${{ forge.token }}
+        with:
+          sourcepkg: ${{ needs.source.outputs.sourcepkg }}
+
+      - name: Store binaries
+        id: artifact
+        uses: https://github.com/r-universe-org/actions/store-package@v12
+        if: ${{ always() && steps.check.outputs.binarypkg }}
+        with:
+          name: package-linux-${{ matrix.r }}-x86_64
+          overwrite: ${{ matrix.r == 'release' }}
+          JOB_STATUS: ${{ job.status }}
+          DISTRO: ${{ steps.check.outputs.distro }}
+          FILE: ${{ steps.check.outputs.binarypkg }}
+          CHECKSTATUS: ${{ steps.check.outputs.checkstatus }}
+          TARGET: linux
+
+      - name: Conclude linux-${{ matrix.r }}
+        if: always()
+        run: echo "Artifact URL ${{ steps.artifact.outputs.artifact-url }}"
+
+  wasm:
+    needs: [source]
+    if: ${{ !cancelled() && needs.source.outputs.sourcepkg }}
+    runs-on: codeberg-small
+    timeout-minutes: 60
+    name: Build R-${{ matrix.r }} for Wasm
+    strategy:
+      fail-fast: false
+      matrix:
+        r: ['release']
+    container:
+      image: ghcr.io/r-universe-org/build-wasm${{ matrix.r == 'oldrel' && ':4.4' || '' }}
+
+    steps:
+      - name: Prepare WebAssembly system
+        timeout-minutes: 10
+        uses: https://github.com/r-universe-org/actions/linux-prep@v12
+
+      - name: Get dependencies
+        id: deps
+        timeout-minutes: 60
+        uses: https://github.com/r-universe-org/actions/linux-deps@v12
+        env:
+          GITHUB_PAT: ${{ forge.token }}
+        with:
+          sourcepkg: ${{ needs.source.outputs.sourcepkg }}
+
+      - id: build
+        name: Build package
+        timeout-minutes: 60
+        uses: https://github.com/r-universe-org/actions/wasm-build@v12
+        env:
+          GITHUB_PAT: ${{ forge.token }}
+          NEED_CARGO: ${{ needs.source.outputs.cargo }}
+        with:
+          sourcepkg: ${{ needs.source.outputs.sourcepkg }}
+
+      - name: Store package files
+        id: artifact
+        uses: https://github.com/r-universe-org/actions/store-package@v12
+        if: ${{ always() && steps.build.outputs.binarypkg }}
+        with:
+          name: package-wasm-${{ matrix.r }}
+          JOB_STATUS: ${{ job.status }}
+          FILE: ${{ steps.build.outputs.binarypkg }}
+          TARGET: wasm
+
+      - name: Conclude wasm-${{ matrix.r }}
+        if: always()
+        run: echo "Artifact URL ${{ steps.artifact.outputs.artifact-url }}"
