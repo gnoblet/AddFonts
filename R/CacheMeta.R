@@ -93,7 +93,7 @@ CacheMeta <- S7::new_class(
       if (length(bad) > 0) {
         cli::cli_abort(c(
           "File names in {.arg self@files} must be weight keys or variant keys.",
-          "i" = "Weight keys: 100–900 with optional {.val italic} suffix (e.g. {.val 400}, {.val 700italic}).",
+          "i" = "Weight keys: 100-900 with optional {.val italic} suffix (e.g. {.val 400}, {.val 700italic}).",
           "i" = "Variant keys: {.val regular}, {.val italic}, {.val bold}, {.val bolditalic}.",
           "x" = "Invalid key{?s}: {.val {bad}}"
         ))
