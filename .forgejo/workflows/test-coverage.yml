@@ -23,7 +23,8 @@ jobs:
       - name: Install dependencies
         run: |
           install.packages("pak", repos = "https://r-lib.github.io/p/pak/stable/")
-          pak::pak(c("any::covr", "any::xml2", "deps::."), ask = FALSE)
+          pak::local_install_dev_deps(ask = FALSE)
+          pak::pak(c("any::covr", "any::xml2"), ask = FALSE)
         shell: Rscript {0}
 
       - name: Test coverage
