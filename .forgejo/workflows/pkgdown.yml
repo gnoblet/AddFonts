@@ -8,7 +8,7 @@ on:
 
 jobs:
   pkgdown:
-    runs-on: codeberg-small
+    runs-on: codeberg-medium
     concurrency:
       group: pkgdown-${{ forge.event_name != 'pull_request' || forge.run_id }}
     env:
