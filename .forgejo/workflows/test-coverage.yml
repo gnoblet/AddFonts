@@ -23,6 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           install.packages("pak", repos = "https://r-lib.github.io/p/pak/stable/")
+          options(repos = c(CRAN = "https://p3m.dev/cran/2026-06-30/bin/linux/manylinux_2_28-x86_64/4.6"))
           pak::local_install_dev_deps(ask = FALSE)
           pak::pak(c("any::covr", "any::xml2"), ask = FALSE)
         shell: Rscript {0}
