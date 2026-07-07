@@ -22,10 +22,11 @@ jobs:
           r-version: '4.6.0'
           use-public-rspm: 'true'
 
-      - uses: https://github.com/r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::rcmdcheck
-          needs: check
+      - name: Install dependencies
+        run: |
+          install.packages("pak", repos = "https://r-lib.github.io/p/pak/stable/")
+          pak::pak(c("any::rcmdcheck", "deps::."), ask = FALSE)
+        shell: Rscript {0}
 
       - name: Check package
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")

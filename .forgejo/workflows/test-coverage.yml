@@ -20,10 +20,11 @@ jobs:
           r-version: 'release'
           use-public-rspm: 'true'
 
-      - uses: https://github.com/r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::covr, any::xml2
-          needs: coverage
+      - name: Install dependencies
+        run: |
+          install.packages("pak", repos = "https://r-lib.github.io/p/pak/stable/")
+          pak::pak(c("any::covr", "any::xml2", "deps::."), ask = FALSE)
+        shell: Rscript {0}
 
       - name: Test coverage
         run: |
