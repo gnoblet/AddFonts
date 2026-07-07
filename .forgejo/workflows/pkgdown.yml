@@ -27,10 +27,12 @@ jobs:
         with:
           use-public-rspm: 'true'
 
-      - uses: https://github.com/r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::pkgdown, local::.
-          needs: website
+      - name: Install dependencies
+        run: |
+          install.packages("pak", repos = "https://r-lib.github.io/p/pak/stable/")
+          pak::local_install_dev_deps(ask = FALSE)
+          pak::pak(c("any::pkgdown", "local::."), ask = FALSE)
+        shell: Rscript {0}
 
       - name: Build site
         run: pkgdown::build_site(new_process = FALSE, install = FALSE)
