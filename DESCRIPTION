@@ -1,5 +1,5 @@
 Package: AddFonts
-Title: Download and Register Fonts from GDPR-Compliant Providers For Use In R graphics
+Title: Download and Register Fonts from GDPR-Compliant Providers for Use in R Graphics
 Version: 1.0.0
 Authors@R: 
     person("Guillaume", "Noblet", , "gnoblet@zaclys.net", role = c("aut", "cre", "cph"))
@@ -28,7 +28,7 @@ Config/testthat/edition: 3
 LazyData: true
 Depends:
     R (>= 4.1.0)
-URL: https://codeberg.org/gnoblet/AddFonts, http://guillaume-noblet.com/AddFonts/, https://gnoblet.r-universe.dev/AddFonts
+URL: https://codeberg.org/gnoblet/AddFonts, https://guillaume-noblet.com/AddFonts/, https://gnoblet.r-universe.dev/AddFonts
 BugReports: https://codeberg.org/gnoblet/AddFonts/issues
 Collate:
     'CacheMeta.R'
