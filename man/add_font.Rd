@@ -8,6 +8,7 @@ add_font(
   name,
   provider = "bunny",
   family = NULL,
+  variants = NULL,
   regular.wt = 400,
   bold.wt = 700,
   subset = "latin"
@@ -16,21 +17,28 @@ add_font(
 \arguments{
 \item{name}{(\code{character(1)}) Name of the font as known to the provider.}
 
-\item{provider}{(\code{character(1)}) Provider id/name (default: "bunny").}
+\item{provider}{(\code{character(1) | FontProvider}) Provider id/name (default: \code{"bunny"}), or a \code{FontProvider} object constructed with \code{FontProviderWeight()} or \code{FontProviderFile()} (bypasses the registry lookup).}
 
 \item{family}{(\code{character | NULL}) Optional family name to register the font under (default: NULL).}
 
-\item{regular.wt}{(\code{numeric(1)}) Regular weight to request (default: 400).}
+\item{variants}{(\code{list | NULL}) For file-based providers only. Named list mapping symbolic variant keys
+(\code{"regular"}, \code{"italic"}, \code{"bold"}, \code{"bolditalic"}) to filename stems
+served by the provider (without extension). Must include at least
+\code{"regular"}. Ignored for weight-based providers (default: NULL).}
 
-\item{bold.wt}{(\code{numeric(1)}) Bold weight to request (default: 700).}
+\item{regular.wt}{(\code{numeric(1)}) For weight-based providers. Regular weight to request (default: 400).}
 
-\item{subset}{(\code{character(1)}) Glyph subset to request (default: "latin").}
+\item{bold.wt}{(\code{numeric(1)}) For weight-based providers. Bold weight to request (default: 700).}
+
+\item{subset}{(\code{character(1)}) For weight-based providers. Glyph subset to request (default: "latin").}
 }
 \value{
-(\code{list}) Invisibly returns a list with paths for \code{regular}, \code{italic}, \code{bold} and \code{bolditalic} variants, or throws an error on failure.
+(\code{list}) Invisibly returns a list with paths for \code{regular}, \code{italic}, \code{bold} and
+\code{bolditalic} variants, or throws an error on failure.
 }
 \description{
-Ensure a font is available locally: try the cache first, otherwise
-download/convert and register the font so it can be used by plotting
-devices. Returns (invisibly) the list of local file paths.
+Ensure a font is available locally: try the cache first, otherwise download/convert and register the font so it can be used by plotting devices. Returns (invisibly) the list of local file paths.
+}
+\details{
+For weight-based providers (e.g. Bunny Fonts), supply \code{regular.wt},\code{bold.wt}, and \code{subset}. For file-based providers (e.g. Bye Bye Binary), supply \code{variants} instead.
 }

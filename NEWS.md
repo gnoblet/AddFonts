@@ -1,6 +1,9 @@
-# AddFonts 0.2.0
+# AddFonts 1.0.0
 
-* Initial release.
+* Stable release. Minimum R version lowered to 4.1.0 (was 4.5.0).
+* Failed font weight downloads are now recorded in the cache to avoid repeated retry attempts on subsequent calls (#16).
+* Cleaned up exports: only user-facing functions are now exported (`add_font`, `cache_clean`, `preview_font`, `list_providers`, `register_provider`, `unregister_provider`, `FontProviderFile`, `FontProviderWeight`). Internal S7 classes are no longer exported (#9).
+* Internal refactoring: pure S7 dispatch in `add_font()`, `CacheMeta` gains a `key_scheme` property, sentinel provider types replace runtime detection.
 
 # AddFonts 0.1.0
 

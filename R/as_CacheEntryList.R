@@ -25,15 +25,40 @@ S7::method(as_CacheEntryList, S7::class_list) <- function(l) {
       files <- as.list(files)
     }
 
-    # construct CacheMeta and CacheEntry (S7 constructors will validate)
+    # Backfill key_scheme for cache files written before this field existed.
+    symbolic_keys <- c("regular", "italic", "bold", "bolditalic")
+    key_scheme <- if (is.null(meta_raw$key_scheme)) {
+      if (any(names(files) %in% symbolic_keys)) "symbolic" else "weight"
+    } else {
+      meta_raw$key_scheme
+    }
+
+    raw_fk <- meta_raw$failed_keys
+    failed_keys <- if (is.null(raw_fk) || length(raw_fk) == 0) {
+      character(0)
+    } else {
+      as.character(unlist(raw_fk, use.names = FALSE))
+    }
     cm <- CacheMeta(
       source = meta_raw$source,
-      files = files
+      key_scheme = key_scheme,
+      files = files,
+      failed_keys = failed_keys
     )
     CacheEntry(
       family = ent$family,
       meta = cm
     )
   })
+
+  # Name with compound source::family keys.
+  # Works for both new format and legacy single-key JSON (migration is free
+  # since source is always stored inside meta).
+  names(el) <- vapply(
+    el,
+    function(e) paste0(e@meta@source, "::", e@family),
+    character(1)
+  )
+
   CacheEntryList(entries = el)
 }

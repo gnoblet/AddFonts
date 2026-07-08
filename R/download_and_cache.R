@@ -1,8 +1,6 @@
 #' Download font variants and add to cache
 #'
-#' Downloads font files for requested weights, creates a cache entry, and
-#' writes to cache. Does NOT register the font - caller should use
-#' register_from_cache() for that.
+#' Downloads font files for requested weights, creates a cache entry, and writes to cache. Does NOT register the font - caller should use register_from_cache() for that.
 #'
 #' @typed provider: FontProvider
 #'   Provider object used for downloads.
@@ -55,21 +53,15 @@ download_and_cache <- function(
     return(NULL)
   }
 
-  #------ Create cache entry
-  meta <- CacheMeta(
-    source = provider@source,
-    files = files_entry
-  )
+  # Record which requested normal-weight keys were not downloaded
+  requested_keys <- as.character(c(regular.wt, bold.wt))
+  failed_keys <- requested_keys[!requested_keys %in% names(files_entry)]
 
-  # Read current cache and update it
-  cel <- cache_read_safe(cache_dir)
-
-  cel <- cache_set(cel, family_name, meta)
-  cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
-
-  #------ Return CacheEntry for caller to register
-  CacheEntry(
-    family = family_name,
-    meta = meta
+  .persist_cache_entry(
+    provider@source,
+    family_name,
+    files_entry,
+    cache_dir,
+    failed_keys = failed_keys
   )
 }

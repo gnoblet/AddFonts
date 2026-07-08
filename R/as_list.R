@@ -20,7 +20,9 @@ as_list <- S7::new_generic(
 S7::method(as_list, CacheMeta) <- function(x) {
   list(
     source = x@source,
-    files = x@files
+    key_scheme = x@key_scheme,
+    files = x@files,
+    failed_keys = as.list(x@failed_keys)
   )
 }
 
@@ -38,5 +40,5 @@ S7::method(as_list, CacheEntry) <- function(x) {
 #' @name as_list
 #' @export
 S7::method(as_list, CacheEntryList) <- function(x) {
-  lapply(x@entries, as_list)
+  unname(lapply(x@entries, as_list))
 }

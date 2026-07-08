@@ -1,2 +1,9 @@
 /.quarto/
+**/*.quarto_ipynbtests/testthat/Rplots.pdf
+
 **/*.quarto_ipynb
+
+.claude/
+.codegraph/
+social-media-posts.md
+.vscode/

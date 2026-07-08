@@ -3,36 +3,59 @@
 #' @typed source: character(1)
 #'  Name of the provider or source that produced the cached font files.
 #'
+#' @typed key_scheme: character(1)
+#'  Key scheme used in `files`: `"weight"` for numeric weight keys (e.g. `"400"`, `"700italic"`) or `"symbolic"` for variant keys (`"regular"`, `"bold"`, etc.).
+#'
 #' @typed files: list(1+)
-#'  A non-empty named list of file paths. Names are weight identifiers (e.g., "400" for normal weight 400,
-#'  "400italic" for italic weight 400). Each element is a character(1) path to the local font files.
+#'  A non-empty named list of file paths. Names must follow the scheme declared by `key_scheme`. (default: NULL)
 #'
-#' @details
-#' The `added` property is a getter-only field that returns the current timestamp as a character string when accessed. It cannot be set during construction.
-#'
-#' Weights are not explicitly stored - they are derived from the names of the files list.
-#' Registration functions are responsible for selecting appropriate weights for regular/bold variants.
+#' @typed failed_keys: character(0+)
+#'  A character vector of keys that were requested but failed to download. Empty if all requested keys were successfully downloaded. (default: character(0))
 #'
 #' @typedreturn S7_object
 #'  A validated S7 `CacheMeta` object.
 #'
-#' @export
 CacheMeta <- S7::new_class(
   "CacheMeta",
   properties = list(
     source = S7::class_character,
+    key_scheme = S7::class_character,
     files = S7::class_list,
-    added = S7::new_property(S7::class_character, getter = function(self) {
-      as.character(Sys.time())
-    })
+    failed_keys = S7::class_character
   ),
+  constructor = function(
+    source,
+    files,
+    key_scheme = NULL,
+    failed_keys = character(0)
+  ) {
+    if (is.null(key_scheme)) {
+      symbolic_keys <- c("regular", "italic", "bold", "bolditalic")
+      key_scheme <- if (any(names(files) %in% symbolic_keys)) {
+        "symbolic"
+      } else {
+        "weight"
+      }
+    }
+    S7::new_object(
+      S7::S7_object(),
+      source = source,
+      key_scheme = key_scheme,
+      files = files,
+      failed_keys = failed_keys
+    )
+  },
   validator = function(self) {
-    # source is a non-empty string
     assert_null_or_non_empty_string(self@source, allow_null = FALSE)
 
+    if (!self@key_scheme %in% c("weight", "symbolic")) {
+      cli::cli_abort(
+        "@key_scheme must be {.val weight} or {.val symbolic}, not {.val {self@key_scheme}}."
+      )
+    }
+
     files <- self@files
-    # - non-empty list of non-empty character strings
-    if (!is.list(files) || length(files) == 0) {
+    if (length(files) == 0) {
       cli::cli_abort("self@files must be a non-empty list.")
     }
     for (f in files) {
@@ -42,31 +65,39 @@ CacheMeta <- S7::new_class(
         )
       }
     }
-    # = right path pattern
     lapply(files, function(f) {
       assert_pattern_with_ext(f, ext = ".ttf")
     })
 
-    # Validate file names follow weight pattern (e.g., "400", "400italic", "700italic")
     file_names <- names(files)
-    if (any(is.na(file_names)) || is.null(file_names) || any(file_names == "")) {
+    if (
+      any(is.na(file_names)) || is.null(file_names) || any(file_names == "")
+    ) {
       cli::cli_abort(
-        "All elements of self@files must be named (with weight identifiers)."
+        "All elements of self@files must be named with weight or variant keys."
       )
     }
 
-    # Check that names match the pattern: valid weight (100-900) followed by optional "italic"
-    valid_pattern <- grepl(
-      "^(100|200|300|400|500|600|700|800|900)(?:italic)?$",
-      file_names
-    )
-    if (!all(valid_pattern)) {
-      invalid_names <- file_names[!valid_pattern]
-      cli::cli_abort(c(
-        "File names in {.arg self@files} must follow {.val <weight>} or {.val <weight>italic}.",
-        "i" = "Valid weights: 100, 200, 300, 400, 500, 600, 700, 800, 900.",
-        "x" = "Invalid name{?s}: {.val {invalid_names}}"
-      ))
+    if (self@key_scheme == "symbolic") {
+      valid <- c("regular", "italic", "bold", "bolditalic")
+      bad <- setdiff(file_names, valid)
+      if (length(bad) > 0) {
+        cli::cli_abort(c(
+          "File names in {.arg self@files} must be weight keys or variant keys.",
+          "x" = "Invalid key{?s}: {.val {bad}}"
+        ))
+      }
+    } else {
+      weight_rx <- "^(100|200|300|400|500|600|700|800|900)(?:italic)?$"
+      bad <- file_names[!grepl(weight_rx, file_names)]
+      if (length(bad) > 0) {
+        cli::cli_abort(c(
+          "File names in {.arg self@files} must be weight keys or variant keys.",
+          "i" = "Weight keys: 100-900 with optional {.val italic} suffix (e.g. {.val 400}, {.val 700italic}).",
+          "i" = "Variant keys: {.val regular}, {.val italic}, {.val bold}, {.val bolditalic}.",
+          "x" = "Invalid key{?s}: {.val {bad}}"
+        ))
+      }
     }
 
     NULL

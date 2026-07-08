@@ -5,22 +5,26 @@
 \title{Read cache entry from disk}
 \usage{
 cache_read(cache_dir)
+
+## S7 method for class <character>
+cache_read(cache_dir)
 }
 \arguments{
-\item{cache_dir}{(\code{character | NULL}) Cache directory to use. Use \code{\link[=get_cache_dir]{get_cache_dir()}} to get the default cache directory.}
+\item{cache_dir}{(\code{character(1)}) Cache directory path. Must not be NULL. Use \code{cache_read_safe()} for a  NULL-tolerant variant that returns an empty index on error.}
 }
 \value{
-(\code{CacheEntryList}) The cache index as a \if{html}{\out{<CacheEntryList>}} if found and valid.
+(\code{CacheEntryList}) The cache index as a CacheEntryList if found and valid.
 }
 \description{
 Read cache entry from disk
 }
 \seealso{
-Other cache: 
-\code{\link{cache_clean}()},
-\code{\link{cache_get}()},
-\code{\link{cache_get_weights}()},
-\code{\link{cache_remove}()},
-\code{\link{cache_write}()}
+Other cache:
+\code{\link[=cache_clean]{cache_clean()}},
+\code{\link[=cache_get]{cache_get()}},
+\code{\link[=cache_get_variants]{cache_get_variants()}},
+\code{\link[=cache_get_weights]{cache_get_weights()}},
+\code{\link[=cache_remove]{cache_remove()}},
+\code{\link[=cache_write]{cache_write()}}
 }
 \concept{cache}

@@ -196,7 +196,6 @@ assert_pattern_with_ext <- function(
   if (allow_underscore) {
     comps <- c(comps, "_")
   }
-  # place hyphen at the end of the class to avoid being treated as a range
   if (allow_forward_slash) {
     comps <- c(comps, "/")
   }
@@ -209,6 +208,7 @@ assert_pattern_with_ext <- function(
   if (allow_tilde) {
     comps <- c(comps, "~")
   }
+  # hyphen must be last in the character class to avoid being treated as a range
   if (allow_hyphen) {
     comps <- c(comps, "-")
   }

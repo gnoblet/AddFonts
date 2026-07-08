@@ -4,27 +4,33 @@
 \alias{cache_get}
 \title{Get certain families from CacheEntryList}
 \usage{
-cache_get(x, families = NULL, quiet = TRUE)
+cache_get(x, families = NULL, source = NULL, quiet = TRUE)
+
+## S7 method for class <AddFonts::CacheEntryList>
+cache_get(x, families = NULL, source = NULL, quiet = TRUE)
 }
 \arguments{
 \item{x}{(\code{CacheEntryList}) The CacheEntryList object to query.}
 
 \item{families}{(\verb{character vector}) The family names to retrieve.}
 
+\item{source}{(\code{character(1) | NULL}) If provided, look up by exact compound \code{"{source}::{family}"} key (fast). If \code{NULL}, scan all entries and match on family name alone (default: NULL).}
+
 \item{quiet}{(\code{logical(1)}) If TRUE, suppress informational messages (default: TRUE).}
 }
 \value{
-(\code{list}) A list of CacheEntry objects matching the specified families. If no families
+(\code{list}) A list of CacheEntry objects matching the specified families, or NULL.
 }
 \description{
 Get certain families from CacheEntryList
 }
 \seealso{
-Other cache: 
-\code{\link{cache_clean}()},
-\code{\link{cache_get_weights}()},
-\code{\link{cache_read}()},
-\code{\link{cache_remove}()},
-\code{\link{cache_write}()}
+Other cache:
+\code{\link[=cache_clean]{cache_clean()}},
+\code{\link[=cache_get_variants]{cache_get_variants()}},
+\code{\link[=cache_get_weights]{cache_get_weights()}},
+\code{\link[=cache_read]{cache_read()}},
+\code{\link[=cache_remove]{cache_remove()}},
+\code{\link[=cache_write]{cache_write()}}
 }
 \concept{cache}

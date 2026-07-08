@@ -1,7 +1,6 @@
 #' Download missing weights and update an existing cache entry
 #'
-#' Downloads missing font weights and updates the cache entry.
-#' Does NOT register the font - use register_from_cache() after this.
+#' Downloads missing font weights and updates the cache entry. Does NOT register the font - use register_from_cache() after this.
 #'
 #' @typed entry: CacheEntry
 #'   Existing cache entry to update.
@@ -60,8 +59,14 @@ update_download_and_cache <- function(
     quiet = TRUE
   )
 
-  # Return NULL if no new files were downloaded
-  if (length(new_files) == 0) {
+  # Track which requested weights failed; merge with pre-existing failures
+  new_failed <- as.character(missing_weights)[
+    !as.character(missing_weights) %in% names(new_files)
+  ]
+  merged_failed <- unique(c(entry@meta@failed_keys, new_failed))
+
+  # If nothing changed (no new files, no new failures to record) return NULL
+  if (length(new_files) == 0 && length(new_failed) == 0) {
     return(NULL)
   }
 
@@ -71,7 +76,9 @@ update_download_and_cache <- function(
   #------ Create updated cache entry
   updated_meta <- CacheMeta(
     source = entry@meta@source,
-    files = updated_files
+    key_scheme = entry@meta@key_scheme,
+    files = updated_files,
+    failed_keys = merged_failed
   )
 
   updated_entry <- CacheEntry(
@@ -79,11 +86,12 @@ update_download_and_cache <- function(
     meta = updated_meta
   )
 
-  #------ Update cache if cel provided
-  if (!is.null(cel)) {
-    cel <- cache_set(cel, family_name, updated_meta)
-    cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
+  #------ Update cache (always persist the new entry)
+  if (is.null(cel)) {
+    cel <- cache_read_safe(cache_dir)
   }
+  cel <- cache_set(cel, family_name, updated_meta)
+  cache_write(cel, cache_dir = cache_dir, quiet = TRUE)
 
   updated_entry
 }

@@ -105,3 +105,46 @@ cache_ttf_filename <- function(source, font_id, subset, weight, style) {
     style
   )
 }
+
+#' Compute canonical cache path for a file-based (symbolic-variant) font file
+#'
+#' Used by file-based providers (e.g. Bye Bye Binary) where each variant is
+#' identified by a symbolic key (`"regular"`, `"italic"`, `"bold"`,
+#' `"bolditalic"`) rather than a numeric weight.
+#'
+#' @typed source: character(1)
+#'   Provider source identifier.
+#' @typed family: character(1)
+#'   Family name (will be made filesystem-safe via `safe_id()`).
+#' @typed variant: character(1)
+#'   Symbolic variant key: one of `"regular"`, `"italic"`, `"bold"`,
+#'   `"bolditalic"`.
+#' @typed file_ext: character(1)
+#'   File extension of the cached font (e.g. `"ttf"`, `"otf"`).
+#' @typed cache_dir: character | NULL
+#'   Cache directory. Defaults to `get_cache_dir()` when `NULL`.
+#'
+#' @typedreturn character(1)
+#'   Full path to the locally cached font file.
+#'
+cache_file_path <- function(
+  source,
+  family,
+  variant,
+  file_ext,
+  cache_dir = NULL
+) {
+  assert_null_or_non_empty_string(source, allow_null = FALSE)
+  assert_null_or_non_empty_string(family, allow_null = FALSE)
+  assert_null_or_non_empty_string(variant, allow_null = FALSE)
+  assert_null_or_non_empty_string(file_ext, allow_null = FALSE)
+  assert_null_or_non_empty_string(cache_dir, allow_null = TRUE)
+
+  if (is.null(cache_dir)) {
+    cache_dir <- get_cache_dir()
+  }
+
+  sid <- safe_id(family)
+  fname <- sprintf("%s-%s-%s.%s", source, sid, variant, file_ext)
+  fs::path(cache_dir, fname)
+}

@@ -31,7 +31,8 @@ test_that("CacheEntry validation works correctly", {
     CacheEntry(
       family = "",
       meta = meta
-    )
+    ),
+    "non-empty"
   )
 
   # meta is not CacheMeta
@@ -39,6 +40,7 @@ test_that("CacheEntry validation works correctly", {
     CacheEntry(
       family = "fid",
       meta = "not a CacheMeta"
-    )
+    ),
+    "CacheMeta"
   )
 })

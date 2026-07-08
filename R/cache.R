@@ -8,7 +8,7 @@ NULL
 #' @typed cache_dir: character(1)
 #'   The cache directory to write to (default: NULL).
 #' @typed quiet: logical(1)
-#'  Whether to suppress output messages (default: TRUE).
+#'   Whether to suppress output messages (default: TRUE).
 #'
 #' @family cache
 #'
@@ -88,11 +88,11 @@ S7::method(cache_write, CacheEntryList) <- function(
 
 #' Read cache entry from disk
 #'
-#' @typed cache_dir: character | NULL
-#'   Cache directory to use. Use [get_cache_dir()] to get the default cache directory.
+#' @typed cache_dir: character(1)
+#'   Cache directory path. Must not be NULL. Use `cache_read_safe()` for a  NULL-tolerant variant that returns an empty index on error.
 #'
 #' @typedreturn CacheEntryList
-#'   The cache index as a <CacheEntryList> if found and valid.
+#'   The cache index as a CacheEntryList if found and valid.
 #'
 #' @family cache
 #'
@@ -106,20 +106,11 @@ cache_read <- S7::new_generic(
 
 #' @rdname cache_read
 #' @name cache_read
-S7::method(cache_read, S7::class_character | NULL) <- function(
-  cache_dir
-) {
+S7::method(cache_read, S7::class_character) <- function(cache_dir) {
   #------ Arg check
-
-  # cache_dir is NULL or a path
-  assert_null_or_non_empty_string(cache_dir, allow_null = TRUE)
+  assert_null_or_non_empty_string(cache_dir, allow_null = FALSE)
 
   #------ Do stuff
-
-  # get cache dir path if NULL
-  if (is.null(cache_dir)) {
-    cache_dir <- get_cache_dir()
-  }
 
   # read index file
   cache_file <- fs::path(cache_dir, "fonts_db.json")
@@ -150,18 +141,20 @@ S7::method(cache_read, S7::class_character | NULL) <- function(
 #'   The CacheEntryList object to query.
 #' @typed families: character vector
 #'   The family names to retrieve.
+#' @typed source: character(1) | NULL
+#'   If provided, look up by exact compound `"{source}::{family}"` key (fast). If `NULL`, scan all entries and match on family name alone (default: NULL).
 #' @typed quiet: logical(1)
 #'   If TRUE, suppress informational messages (default: TRUE).
 #'
 #' @typedreturn list
-#'  A list of CacheEntry objects matching the specified families. If no families
+#'  A list of CacheEntry objects matching the specified families, or NULL.
 #'
 #' @family cache
 #'
 cache_get <- S7::new_generic(
   "cache_get",
   "x",
-  function(x, families = NULL, quiet = TRUE) {
+  function(x, families = NULL, source = NULL, quiet = TRUE) {
     S7::S7_dispatch()
   }
 )
@@ -171,61 +164,54 @@ cache_get <- S7::new_generic(
 S7::method(cache_get, CacheEntryList) <- function(
   x,
   families = NULL,
+  source = NULL,
   quiet = TRUE
 ) {
   #------ Arg check
-
-  # families is NULL or a character vector
-  assert_null_or_non_empty_character_vector(
-    families,
-    allow_null = TRUE
-  )
-
-  # quiet is a logical(1)
+  assert_null_or_non_empty_character_vector(families, allow_null = TRUE)
+  assert_null_or_non_empty_string(source, allow_null = TRUE)
   if (!is.logical(quiet) || length(quiet) != 1) {
     cli::cli_abort("`quiet` must be a logical scalar.")
   }
 
   #------ Do stuff
-
-  # get entries property
   entries <- x@entries
 
-  # if no families specified, return all
   if (is.null(families)) {
     return(entries)
   }
 
-  # lookup each family in @family property
-  # 1. get all family names in entries
-  get_entries <- function(entries, families = NULL) {
-    if (is.null(families)) {
-      return(entries)
-    }
-
-    entries_fams <- vapply(entries, function(e) e@family, character(1))
-    idx <- match(families, entries_fams, nomatch = 0L)
-
-    if (!quiet) {
-      if (all(idx == 0L)) {
-        cli::cli_alert_info(
-          "No matching families found in cache. Return NULL."
-        )
-      } else if (any(idx == 0L)) {
-        cli::cli_alert_info(c(
-          "Some of the specified families were not found: {.val {paste(families[idx == 0L], collapse = ', ')}}"
-        ))
-      }
-    }
-
-    entries[idx[idx > 0L]]
+  if (!is.null(source)) {
+    # Exact compound-key lookup: O(1) per family
+    keys <- paste0(source, "::", families)
+    found <- entries[keys[keys %in% names(entries)]]
+  } else {
+    # Scan by family name (works even for unnamed/legacy entries)
+    found <- entries[vapply(
+      entries,
+      function(e) e@family %in% families,
+      logical(1)
+    )]
   }
-  res <- get_entries(entries, families)
-  if (length(res) == 0) {
+
+  if (length(found) == 0) {
+    if (!quiet) {
+      cli::cli_alert_info("No matching families found in cache.")
+    }
     return(NULL)
   }
 
-  res
+  if (!quiet && length(found) < length(families)) {
+    missing_fams <- setdiff(
+      families,
+      vapply(found, function(e) e@family, character(1))
+    )
+    cli::cli_alert_info(
+      "Some families were not found in cache: {.val {missing_fams}}"
+    )
+  }
+
+  found
 }
 
 #' Set cache entries
@@ -256,36 +242,14 @@ S7::method(cache_set, CacheEntryList) <- function(
   meta
 ) {
   #------ Arg check
-
-  # family is a non-empty string
   assert_null_or_non_empty_string(family, allow_null = FALSE)
-
-  # meta is a CacheMeta object
   if (!S7::S7_inherits(meta, class = CacheMeta)) {
     cli::cli_abort("`meta` must be a <CacheMeta> object.")
   }
 
-  #------ Do stuff
-
-  # create CacheEntry
-  ce <- CacheEntry(
-    family = family,
-    meta = meta
-  )
-
-  # get entries
-  got <- cache_get(x, families = family)
-
-  # if family exists, replace entry
-  if (!is.null(got)) {
-    idx <- which(
-      vapply(x@entries, function(e) e@family, character(1)) == family
-    )
-    x@entries[[idx]] <- ce
-  } else {
-    # else, append entry
-    x@entries <- c(x@entries, list(ce))
-  }
+  #------ Do stuff: named-list upsert by compound key
+  key <- paste0(meta@source, "::", family)
+  x@entries[[key]] <- CacheEntry(family = family, meta = meta)
 
   x
 }
@@ -296,6 +260,9 @@ S7::method(cache_set, CacheEntryList) <- function(
 #'   The CacheEntryList object to modify.
 #' @typed families: character | NULL
 #'   The font families to delete. If NULL, all entries are deleted.
+#' @typed source: character(1) | NULL
+#'   If provided, remove only the entry for `"{source}::{family}"`. If NULL,
+#'   remove all entries whose family name matches, regardless of source.
 #' @typed remove_files: logical(1)
 #'  If `TRUE` attempt to delete files referenced by removed entries (default: TRUE).
 #' @typed cache_dir: character(1) | NULL
@@ -309,7 +276,13 @@ S7::method(cache_set, CacheEntryList) <- function(
 cache_remove <- S7::new_generic(
   "cache_remove",
   "x",
-  function(x, families = NULL, remove_files = TRUE, cache_dir = NULL) {
+  function(
+    x,
+    families = NULL,
+    source = NULL,
+    remove_files = TRUE,
+    cache_dir = NULL
+  ) {
     S7::S7_dispatch()
   }
 )
@@ -319,71 +292,60 @@ cache_remove <- S7::new_generic(
 S7::method(cache_remove, CacheEntryList) <- function(
   x,
   families = NULL,
+  source = NULL,
   remove_files = TRUE,
   cache_dir = NULL
 ) {
   #------ Arg check
-
-  # family is NULL or a character vector
-  assert_null_or_non_empty_character_vector(
-    families,
-    allow_null = TRUE
-  )
-
-  # remove_files is a logical(1)
+  assert_null_or_non_empty_character_vector(families, allow_null = TRUE)
+  assert_null_or_non_empty_string(source, allow_null = TRUE)
   if (!is.logical(remove_files) || length(remove_files) != 1) {
     cli::cli_abort("{.arg remove_files} must be a logical(1).")
   }
-
-  # cache_dir is character(1) or NULL
   assert_null_or_non_empty_string(cache_dir, allow_null = TRUE)
 
   #------ Do stuff
-
-  # get cache dir path if NULL
   if (is.null(cache_dir)) {
     cache_dir <- get_cache_dir()
   }
 
-  # get entries and family names
   entries <- x@entries
-  fams <- vapply(entries, function(e) e@family, character(1))
 
-  # if families is NULL, remove all entries
+  # Determine which keys to remove
   if (is.null(families)) {
-    res <- list()
+    keys_to_remove <- names(entries)
+  } else if (!is.null(source)) {
+    # Exact compound-key removal
+    candidate_keys <- paste0(source, "::", families)
+    keys_to_remove <- candidate_keys[candidate_keys %in% names(entries)]
   } else {
-    # else remove specified familie
-    idx <- which(!(fams %in% families))
-    res <- entries[idx]
+    # Remove all entries whose @family matches, any source
+    keys_to_remove <- names(entries)[
+      vapply(entries, function(e) e@family %in% families, logical(1))
+    ]
   }
 
-  # remove files from disk if requested
+  # Delete files from disk if requested
   if (remove_files) {
-    # get families to remove
-    if (is.null(families)) {
-      fams_to_remove <- fams
-    } else {
-      fams_to_remove <- intersect(fams, families)
-    }
-    for (fam in fams_to_remove) {
-      files <- cache_get(x, families = fam)[[1]]@meta@files |> unlist()
-      if (!is.null(files) && length(files) > 0) {
-        delete_files(fs::path(cache_dir, files), quiet = "none")
+    for (key in keys_to_remove) {
+      entry <- entries[[key]]
+      if (is.null(entry)) {
+        next
+      }
+      files <- unlist(entry@meta@files)
+      if (length(files) > 0) {
+        delete_files(fs::path(cache_dir, files), quiet = FALSE)
       } else {
         cli::cli_alert_info(
-          "No files to remove for family {.val {fam}}."
+          "No files to remove for {.val {key}}."
         )
       }
     }
   }
 
-  # set entries to remaining entries
-  x@entries <- res
-
+  x@entries[keys_to_remove] <- NULL
   x
 }
-
 
 #' Clean cache entries
 #'
@@ -425,7 +387,7 @@ cache_clean <- function(cache_dir = NULL, families = NULL, reset = FALSE) {
 
   # if reset, delete whole cache dir
   if (reset) {
-    if (dir.exists(cache_dir)) {
+    if (fs::dir_exists(cache_dir)) {
       fs::dir_delete(cache_dir)
     } else {
       cli::cli_alert_info(
@@ -508,9 +470,44 @@ S7::method(cache_get_weights, CacheEntry) <- function(entry, weights) {
   weight_keys %in% cached_weight_keys
 }
 
-# Read cache from disk, returning an empty CacheEntryList on any error.
-# Internal helper used wherever a missing/corrupt cache should not abort.
+#' Check which symbolic variant keys are present in a CacheEntry
+#'
+#' Used for file-based providers whose `CacheMeta@files` uses the key `"regular"`, `"italic"`, `"bold"`, `"bolditalic"` instead of numeric weight strings.
+#'
+#' @typed entry: CacheEntry
+#'   The cache entry to inspect.
+#' @typed variants: character
+#'   Character vector of symbolic variant names to check.
+#'
+#' @typedreturn lgl
+#'   Named logical vector indicating which variants are cached.
+#'
+#' @family cache
+#'
+cache_get_variants <- S7::new_generic(
+  "cache_get_variants",
+  "entry",
+  function(entry, variants) {
+    S7::S7_dispatch()
+  }
+)
+
+#' @rdname cache_get_variants
+#' @name cache_get_variants
+S7::method(cache_get_variants, CacheEntry) <- function(entry, variants) {
+  if (!is.character(variants) || length(variants) == 0) {
+    cli::cli_abort("{.arg variants} must be a non-empty character vector.")
+  }
+
+  cached_keys <- names(entry@meta@files)
+  stats::setNames(variants %in% cached_keys, variants)
+}
+
+# Read cache from disk, returning an empty CacheEntryList on any error. Internal helper used wherever a missing/corrupt cache should not abort.
 cache_read_safe <- function(cache_dir = NULL) {
+  if (is.null(cache_dir)) {
+    cache_dir <- get_cache_dir()
+  }
   tryCatch(
     cache_read(cache_dir),
     error = function(e) as_CacheEntryList(list())

@@ -2,9 +2,7 @@
 % Please edit documentation in R/register_from_cache.R
 \name{register_from_cache}
 \alias{register_from_cache}
-\title{Validate a cache entry and register the font with sysfonts if the
-required files exist. Returns the prepared \code{files} list or \code{NULL} when
-registration cannot proceed.}
+\title{Validate a cache entry and register the font with sysfonts if the required files exist. Returns the prepared \code{files} list or \code{NULL} when registration cannot proceed.}
 \usage{
 register_from_cache(entry, regular.wt = 400, bold.wt = 700)
 }
@@ -19,6 +17,5 @@ register_from_cache(entry, regular.wt = 400, bold.wt = 700)
 (\code{list | NULL}) Prepared \code{files} list (with \code{regular}, \code{italic}, \code{bold}, \code{bolditalic}) or \code{NULL}.
 }
 \description{
-This is the ONLY function that calls sysfonts::font_add(). It does not
-print success messages - callers should handle user feedback.
+This is the ONLY function that calls sysfonts::font_add(). It does not print success messages - callers should handle user feedback.
 }

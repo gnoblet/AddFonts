@@ -1,11 +1,12 @@
 # this config was migrated from renv.lock on 2025-12-01
 [project]
 name = "/home/gnoblet/Documents/Codeberg/AddFonts"
-r_version = "4.5"
+r_version = "4.6"
 
 repositories = [
-    { alias = "CRAN", url = "https://p3m.dev/cran/2025-11-25/bin/linux/manylinux_2_28-x86_64/4.5"}
+    { alias = "CRAN", url = "https://p3m.dev/cran/2026-06-30/bin/linux/manylinux_2_28-x86_64/4.6"}
 ]
+
 
 dependencies = [
     "httr2",
@@ -24,4 +25,5 @@ dependencies = [
     "pak",
     {name = "hexSticker", git = "https://github.com/GuangchuangYu/hexSticker.git",  branch = "master"},
     "svglite",
+    "covr",
 ]

@@ -5,6 +5,9 @@
 \title{Check which weights are available in a cache entry}
 \usage{
 cache_get_weights(entry, weights)
+
+## S7 method for class <AddFonts::CacheEntry>
+cache_get_weights(entry, weights)
 }
 \arguments{
 \item{entry}{(\code{CacheEntry}) The CacheEntry object to check.}
@@ -18,11 +21,12 @@ cache_get_weights(entry, weights)
 Check which weights are available in a cache entry
 }
 \seealso{
-Other cache: 
-\code{\link{cache_clean}()},
-\code{\link{cache_get}()},
-\code{\link{cache_read}()},
-\code{\link{cache_remove}()},
-\code{\link{cache_write}()}
+Other cache:
+\code{\link[=cache_clean]{cache_clean()}},
+\code{\link[=cache_get]{cache_get()}},
+\code{\link[=cache_get_variants]{cache_get_variants()}},
+\code{\link[=cache_read]{cache_read()}},
+\code{\link[=cache_remove]{cache_remove()}},
+\code{\link[=cache_write]{cache_write()}}
 }
 \concept{cache}

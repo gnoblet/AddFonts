@@ -28,8 +28,10 @@ download_variant_generic <- function(
   quiet = FALSE
 ) {
   #------ Arg check
-  if (!S7::S7_inherits(provider, FontProvider)) {
-    cli::cli_abort("{.arg provider} must be a <FontProvider> object.")
+  if (!S7::S7_inherits(provider, FontProviderWeight)) {
+    cli::cli_abort(
+      "{.arg provider} must be a {.cls FontProviderWeight} object."
+    )
   }
 
   if (
@@ -58,13 +60,14 @@ download_variant_generic <- function(
   )
 
   #------ Build URL and download
-  url <- sprintf(
-    provider@url_template,
-    family,
-    family,
-    subset,
-    as.integer(weight),
-    style
+  url <- glue::glue_data(
+    list(
+      family = family,
+      subset = subset,
+      weight = as.integer(weight),
+      style = style
+    ),
+    provider@url_template
   )
 
   # Determine download target
@@ -97,7 +100,12 @@ download_variant_generic <- function(
   if (!is.null(provider@conversion)) {
     conv_f <- conv_fun(provider@conversion)
     res <- tryCatch(
-      conv_f(paths$to_convert, overwrite = TRUE, remove_old = TRUE),
+      conv_f(
+        paths$to_convert,
+        overwrite = TRUE,
+        remove_old = TRUE,
+        quiet = quiet
+      ),
       error = function(e) e
     )
 

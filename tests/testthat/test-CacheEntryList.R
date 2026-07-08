@@ -24,7 +24,8 @@ test_that("CacheEntryList S7 class basics works correctly", {
   expect_s3_class(entry_list, "AddFonts::CacheEntryList")
   expect_s7_class(entry_list, CacheEntryList)
 
-  expect_equal(entry_list@entries, list(entry1, entry2))
+  expect_equal(names(entry_list@entries), c("bunny::fid1", "fox::fid2"))
+  expect_equal(unname(entry_list@entries), list(entry1, entry2))
 })
 
 test_that("CacheEntryList validation works correctly", {
@@ -51,5 +52,11 @@ test_that("CacheEntryList validation works correctly", {
       entries = list(entry, "not a CacheEntry")
     ),
     "All elements of self@entries must be <CacheEntry>"
+  )
+
+  # duplicate source::family combinations
+  expect_error(
+    CacheEntryList(entries = list(entry, entry)),
+    "unique source::family"
   )
 })

@@ -4,26 +4,20 @@
 \alias{CacheMeta}
 \title{S7-backed cache metadata (CacheMeta)}
 \usage{
-CacheMeta(family_id = character(0), source = character(0), files = list())
+CacheMeta(source, files, key_scheme = NULL, failed_keys = character(0))
 }
 \arguments{
-\item{family_id}{(\code{character(1)}) A non-empty safe identifier for the font family. Allowed characters: letters,
-digits and hyphen (no spaces, slashes, dots, colons, tildes, etc.).}
-
 \item{source}{(\code{character(1)}) Name of the provider or source that produced the cached font files.}
 
-\item{files}{(\verb{list(1+)}) A non-empty named list of file paths. Names are weight identifiers (e.g., "400" for normal weight 400,
-"400italic" for italic weight 400). Each element is a character(1) path to the local font files.}
+\item{files}{(\verb{list(1+)}) A non-empty named list of file paths. Names must follow the scheme declared by \code{key_scheme}. (default: NULL)}
+
+\item{key_scheme}{(\code{character(1)}) Key scheme used in \code{files}: \code{"weight"} for numeric weight keys (e.g. \code{"400"}, \code{"700italic"}) or \code{"symbolic"} for variant keys (\code{"regular"}, \code{"bold"}, etc.).}
+
+\item{failed_keys}{(\verb{character(0+)}) A character vector of keys that were requested but failed to download. Empty if all requested keys were successfully downloaded. (default: character(0))}
 }
 \value{
 (\code{S7_object}) A validated S7 \code{CacheMeta} object.
 }
 \description{
 S7-backed cache metadata (CacheMeta)
-}
-\details{
-The \code{added} property is a getter-only field that returns the current timestamp as a character string when accessed. It cannot be set during construction.
-
-Weights are not explicitly stored - they are derived from the names of the files list.
-Registration functions are responsible for selecting appropriate weights for regular/bold variants.
 }
